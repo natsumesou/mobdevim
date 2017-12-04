@@ -170,9 +170,6 @@ extern id AMDeviceCopyValueWithError(AMDeviceRef ref, NSString * domain, NSStrin
  ChipID = 9781473;
  ChipSerialNo = <fee5c8c3>;
  FusingStatus = 3;
- Nonce = <e8e30c90 f45c9df4 a31a376b d11fc74d 500a13ff>;
- PkHash = <89ff7c59 4d684edf a371a665 bd40bd00 e1bfae56 c9c59a48 37e720ed 1bf56c26>;
- SKeyHash = <bbefed70 2c2f690f b563db78 d08e327a 0084981d bc9802e5 6913a168 8546056a>;
  SKeyStatus = 0;
  VendorID = 3;
  }
@@ -180,7 +177,6 @@ extern id AMDeviceCopyValueWithError(AMDeviceRef ref, NSString * domain, NSStrin
  BasebandGoldCertId / 2315222105
  
  BasebandKeyHashInformation /     AKeyStatus = 2;
- SKeyHash = <bbefed70 2c2f690f b563db78 d08e327a 0084981d bc9802e5 6913a168 8546056a>;
  SKeyStatus = 0;
  PhoneNumber / (555) 632-1424
  RegionInfo / LL/A
