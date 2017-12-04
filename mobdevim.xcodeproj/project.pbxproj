@@ -1,0 +1,447 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		A626ED1A1FC7D713002584F1 /* debug_application.m in Sources */ = {isa = PBXBuildFile; fileRef = A626ED191FC7D713002584F1 /* debug_application.m */; };
+		A63035671F6B3EC200A5B0C6 /* mobdevim in CopyFiles */ = {isa = PBXBuildFile; fileRef = A6B3AEE61F5CB27900ECCBF2 /* mobdevim */; };
+		A645538D1FCCF19200C16506 /* get_provisioning_profiles.m in Sources */ = {isa = PBXBuildFile; fileRef = A645538C1FCCF19200C16506 /* get_provisioning_profiles.m */; };
+		A64553901FCD004E00C16506 /* list_applications.m in Sources */ = {isa = PBXBuildFile; fileRef = A645538F1FCD004E00C16506 /* list_applications.m */; };
+		A64553931FCD068E00C16506 /* yoink.m in Sources */ = {isa = PBXBuildFile; fileRef = A64553921FCD068E00C16506 /* yoink.m */; };
+		A64553961FCD088400C16506 /* get_device_info.m in Sources */ = {isa = PBXBuildFile; fileRef = A64553951FCD088400C16506 /* get_device_info.m */; };
+		A64553991FCD097200C16506 /* install_application.m in Sources */ = {isa = PBXBuildFile; fileRef = A64553981FCD097200C16506 /* install_application.m */; };
+		A652DF121F71C0F1002E08D4 /* MobileDevice in Frameworks */ = {isa = PBXBuildFile; fileRef = A60098A81F5CB7F7005692B6 /* MobileDevice */; };
+		A6AA84451FC77B9200F90C13 /* console.m in Sources */ = {isa = PBXBuildFile; fileRef = A6AA84441FC77B9200F90C13 /* console.m */; };
+		A6B3AEEA1F5CB27900ECCBF2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A6B3AEE91F5CB27900ECCBF2 /* main.m */; };
+		A6F0C26B1FC62CD2009897DD /* helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F0C26A1FC62CD2009897DD /* helpers.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A63035661F6B3EA900A5B0C6 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = "";
+			dstSubfolderSpec = 7;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A6B3AEE41F5CB27900ECCBF2 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 12;
+			dstPath = /usr/local/bin;
+			dstSubfolderSpec = 0;
+			files = (
+				A63035671F6B3EC200A5B0C6 /* mobdevim in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		A60098A61F5CB77E005692B6 /* MobileDevice.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileDevice.framework; path = ../../../../System/Library/PrivateFrameworks/MobileDevice.framework; sourceTree = "<group>"; };
+		A60098A81F5CB7F7005692B6 /* MobileDevice */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = MobileDevice; path = ../../../../System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/MobileDevice; sourceTree = "<group>"; };
+		A626ED181FC7D713002584F1 /* debug_application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = debug_application.h; sourceTree = "<group>"; };
+		A626ED191FC7D713002584F1 /* debug_application.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = debug_application.m; sourceTree = "<group>"; };
+		A645538B1FCCF19200C16506 /* get_provisioning_profiles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = get_provisioning_profiles.h; sourceTree = "<group>"; };
+		A645538C1FCCF19200C16506 /* get_provisioning_profiles.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = get_provisioning_profiles.m; sourceTree = "<group>"; };
+		A645538E1FCD004E00C16506 /* list_applications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = list_applications.h; sourceTree = "<group>"; };
+		A645538F1FCD004E00C16506 /* list_applications.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = list_applications.m; sourceTree = "<group>"; };
+		A64553911FCD068E00C16506 /* yoink.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yoink.h; sourceTree = "<group>"; };
+		A64553921FCD068E00C16506 /* yoink.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = yoink.m; sourceTree = "<group>"; };
+		A64553941FCD088400C16506 /* get_device_info.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = get_device_info.h; sourceTree = "<group>"; };
+		A64553951FCD088400C16506 /* get_device_info.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = get_device_info.m; sourceTree = "<group>"; };
+		A64553971FCD097200C16506 /* install_application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = install_application.h; sourceTree = "<group>"; };
+		A64553981FCD097200C16506 /* install_application.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = install_application.m; sourceTree = "<group>"; };
+		A660482E1FCFF871007F529E /* LLDBRPC */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = LLDBRPC; path = ../../../../Applications/Xcode.app/Contents/SharedFrameworks/LLDBRPC.framework/Versions/A/LLDBRPC; sourceTree = "<group>"; };
+		A6AA84431FC77B9200F90C13 /* console.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = console.h; sourceTree = "<group>"; };
+		A6AA84441FC77B9200F90C13 /* console.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = console.m; sourceTree = "<group>"; };
+		A6B3AEE61F5CB27900ECCBF2 /* mobdevim */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = mobdevim; sourceTree = BUILT_PRODUCTS_DIR; };
+		A6B3AEE91F5CB27900ECCBF2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A6F0C2681FC62C68009897DD /* ExternalDeclarations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExternalDeclarations.h; sourceTree = "<group>"; };
+		A6F0C2691FC62CD2009897DD /* helpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = helpers.h; sourceTree = "<group>"; };
+		A6F0C26A1FC62CD2009897DD /* helpers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = helpers.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A6B3AEE31F5CB27900ECCBF2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A652DF121F71C0F1002E08D4 /* MobileDevice in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A60098A51F5CB77E005692B6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A660482E1FCFF871007F529E /* LLDBRPC */,
+				A60098A81F5CB7F7005692B6 /* MobileDevice */,
+				A60098A61F5CB77E005692B6 /* MobileDevice.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A64336121FD4EC7100532C9D /* yoink */ = {
+			isa = PBXGroup;
+			children = (
+				A64553911FCD068E00C16506 /* yoink.h */,
+				A64553921FCD068E00C16506 /* yoink.m */,
+			);
+			path = yoink;
+			sourceTree = "<group>";
+		};
+		A645539A1FCD142000C16506 /* Install Application */ = {
+			isa = PBXGroup;
+			children = (
+				A64553971FCD097200C16506 /* install_application.h */,
+				A64553981FCD097200C16506 /* install_application.m */,
+			);
+			path = "Install Application";
+			sourceTree = "<group>";
+		};
+		A645539B1FCD144700C16506 /* List Applications */ = {
+			isa = PBXGroup;
+			children = (
+				A645538E1FCD004E00C16506 /* list_applications.h */,
+				A645538F1FCD004E00C16506 /* list_applications.m */,
+			);
+			path = "List Applications";
+			sourceTree = "<group>";
+		};
+		A645539C1FCD146200C16506 /* Provisioning Porfiles */ = {
+			isa = PBXGroup;
+			children = (
+				A645538B1FCCF19200C16506 /* get_provisioning_profiles.h */,
+				A645538C1FCCF19200C16506 /* get_provisioning_profiles.m */,
+			);
+			path = "Provisioning Porfiles";
+			sourceTree = "<group>";
+		};
+		A645539D1FCD148300C16506 /* Debug Application */ = {
+			isa = PBXGroup;
+			children = (
+				A626ED181FC7D713002584F1 /* debug_application.h */,
+				A626ED191FC7D713002584F1 /* debug_application.m */,
+			);
+			path = "Debug Application";
+			sourceTree = "<group>";
+		};
+		A645539E1FCD14BB00C16506 /* Device Info */ = {
+			isa = PBXGroup;
+			children = (
+				A64553941FCD088400C16506 /* get_device_info.h */,
+				A64553951FCD088400C16506 /* get_device_info.m */,
+			);
+			path = "Device Info";
+			sourceTree = "<group>";
+		};
+		A645539F1FCD150700C16506 /* misc */ = {
+			isa = PBXGroup;
+			children = (
+				A6F0C2681FC62C68009897DD /* ExternalDeclarations.h */,
+				A6F0C2691FC62CD2009897DD /* helpers.h */,
+				A6F0C26A1FC62CD2009897DD /* helpers.m */,
+			);
+			path = misc;
+			sourceTree = "<group>";
+		};
+		A64553A01FCD151E00C16506 /* Console */ = {
+			isa = PBXGroup;
+			children = (
+				A6AA84431FC77B9200F90C13 /* console.h */,
+				A6AA84441FC77B9200F90C13 /* console.m */,
+			);
+			path = Console;
+			sourceTree = "<group>";
+		};
+		A6B3AEDD1F5CB27900ECCBF2 = {
+			isa = PBXGroup;
+			children = (
+				A6B3AEE81F5CB27900ECCBF2 /* mobdevim */,
+				A6B3AEE71F5CB27900ECCBF2 /* Products */,
+				A60098A51F5CB77E005692B6 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		A6B3AEE71F5CB27900ECCBF2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A6B3AEE61F5CB27900ECCBF2 /* mobdevim */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A6B3AEE81F5CB27900ECCBF2 /* mobdevim */ = {
+			isa = PBXGroup;
+			children = (
+				A6B3AEE91F5CB27900ECCBF2 /* main.m */,
+				A64336121FD4EC7100532C9D /* yoink */,
+				A645539A1FCD142000C16506 /* Install Application */,
+				A645539B1FCD144700C16506 /* List Applications */,
+				A64553A01FCD151E00C16506 /* Console */,
+				A645539C1FCD146200C16506 /* Provisioning Porfiles */,
+				A645539E1FCD14BB00C16506 /* Device Info */,
+				A645539D1FCD148300C16506 /* Debug Application */,
+				A645539F1FCD150700C16506 /* misc */,
+			);
+			path = mobdevim;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A6B3AEE51F5CB27900ECCBF2 /* mobdevim */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A6B3AEED1F5CB27900ECCBF2 /* Build configuration list for PBXNativeTarget "mobdevim" */;
+			buildPhases = (
+				A6B3AEE21F5CB27900ECCBF2 /* Sources */,
+				A6B3AEE31F5CB27900ECCBF2 /* Frameworks */,
+				A6B3AEE41F5CB27900ECCBF2 /* CopyFiles */,
+				A63035661F6B3EA900A5B0C6 /* CopyFiles */,
+				A64336111FD4E56800532C9D /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = mobdevim;
+			productName = YOYO;
+			productReference = A6B3AEE61F5CB27900ECCBF2 /* mobdevim */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A6B3AEDE1F5CB27900ECCBF2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0900;
+				ORGANIZATIONNAME = Selander;
+				TargetAttributes = {
+					A6B3AEE51F5CB27900ECCBF2 = {
+						CreatedOnToolsVersion = 8.3.3;
+						DevelopmentTeam = H4U46V6494;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = A6B3AEE11F5CB27900ECCBF2 /* Build configuration list for PBXProject "mobdevim" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = A6B3AEDD1F5CB27900ECCBF2;
+			productRefGroup = A6B3AEE71F5CB27900ECCBF2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A6B3AEE51F5CB27900ECCBF2 /* mobdevim */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A64336111FD4E56800532C9D /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A6B3AEE21F5CB27900ECCBF2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A645538D1FCCF19200C16506 /* get_provisioning_profiles.m in Sources */,
+				A64553931FCD068E00C16506 /* yoink.m in Sources */,
+				A6B3AEEA1F5CB27900ECCBF2 /* main.m in Sources */,
+				A6AA84451FC77B9200F90C13 /* console.m in Sources */,
+				A626ED1A1FC7D713002584F1 /* debug_application.m in Sources */,
+				A64553901FCD004E00C16506 /* list_applications.m in Sources */,
+				A64553961FCD088400C16506 /* get_device_info.m in Sources */,
+				A6F0C26B1FC62CD2009897DD /* helpers.m in Sources */,
+				A64553991FCD097200C16506 /* install_application.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A6B3AEEB1F5CB27900ECCBF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		A6B3AEEC1F5CB27900ECCBF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		A6B3AEEE1F5CB27900ECCBF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = H4U46V6494;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks/MobileDevice.framework/Versions/A",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		A6B3AEEF1F5CB27900ECCBF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = H4U46V6494;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks/MobileDevice.framework/Versions/A",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A6B3AEE11F5CB27900ECCBF2 /* Build configuration list for PBXProject "mobdevim" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A6B3AEEB1F5CB27900ECCBF2 /* Debug */,
+				A6B3AEEC1F5CB27900ECCBF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A6B3AEED1F5CB27900ECCBF2 /* Build configuration list for PBXNativeTarget "mobdevim" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A6B3AEEE1F5CB27900ECCBF2 /* Debug */,
+				A6B3AEEF1F5CB27900ECCBF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A6B3AEDE1F5CB27900ECCBF2 /* Project object */;
+}
