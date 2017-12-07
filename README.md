@@ -24,7 +24,8 @@
     mobdevim -l com.apple.mobilesafari
 
     # Get detailed information about the Safari application
-    mobdevim -y com.apple.mobilesafari
+    # NOTE: YOU NEED TO HAVE MATCHING CERTIFICATES FOR THE APP OR ELSE THIS WILL FAIL!
+    mobdevim -y com.selander.TEST
     
     # Get a summary about the provisioning profiles found on the iOS device
     mobdevim -p
@@ -34,10 +35,7 @@
     
     # Copy all the (Developer) certificates from the device back onto computer
     mobdevim -C
-    
-    # Copy an apps Library/Cache/Document folder to your computer, whose bundle ID is "com.selander.TEST"
-    # NOTE: YOU NEED TO HAVE MATCHING CERTIFICATES FOR THE APP OR ELSE THIS WILL FAIL!
-    mobdevim -c com.selander.TEST
+  
     
     
 More commands will be coming soon...
