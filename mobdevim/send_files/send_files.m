@@ -95,7 +95,7 @@ int send_files(AMDeviceRef d, NSDictionary *options) {
     }
     
     uint8_t *buffer = malloc(0x1000);
-    id a = [dirEnumerator fileAttributes];
+//    id a = [dirEnumerator fileAttributes];
     
     for (NSURL *fileURL in [dirEnumerator fileAttributes]) {
         
