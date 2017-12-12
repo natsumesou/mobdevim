@@ -85,6 +85,7 @@ mach_error_t AFCFileRefWrite(AFCConnectionRef,AFCFileDescriptorRef ref, const vo
 mach_error_t AFCDirectoryOpen(AFCConnectionRef, const char *, AFCIteratorRef*);
 mach_error_t AFCDirectoryRead(AFCConnectionRef, AFCIteratorRef, void *);
 mach_error_t AFCDirectoryClose(AFCConnectionRef, AFCIteratorRef);
+mach_error_t AFCRemovePath(AFCConnectionRef, const char *); 
 
 mach_error_t AFCFileInfoOpen(AFCConnectionRef, const char *, AFCIteratorRef*);
 mach_error_t AFCKeyValueRead(AFCIteratorRef,  char **key,  char **val);

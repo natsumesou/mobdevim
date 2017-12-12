@@ -6,20 +6,22 @@
 //  Copyright © 2017 Selander. All rights reserved.
 //
 
-#import "yoink.h"
+#import "remove_file.h"
 #include <time.h>
 #include <utime.h>
 #include <sys/stat.h>
 
-NSString * const kYoinkBundleIDContents = @"com.selander.yoink.bundleid";
+NSString * const kRemoveFileBundleID = @"com.selander.removefile.bundleid";
+
+NSString * const kRemoveFileRemotePath = @"com.selander.removefile.removefilepath";
 
 /// Max file size found in AFCFileRefRead
-#define MAX_TRANSFER_FILE_SIZE 8191
+//#define MAX_TRANSFER_FILE_SIZE 8191
 
-int yoink_app(AMDeviceRef d, NSDictionary *options) {
+int remove_file(AMDeviceRef d, NSDictionary *options) {
     NSDictionary *dict;
     int returnError = 0;
-    NSString *appBundle = [options objectForKey:kYoinkBundleIDContents];
+    NSString *appBundle = [options objectForKey:kRemoveFileBundleID];
     NSDictionary *opts = @{ @"ApplicationType" : @"Any",
                             @"ReturnAttributes" : @[@"ApplicationDSID",
                                                     @"ApplicationType",
@@ -48,7 +50,14 @@ int yoink_app(AMDeviceRef d, NSDictionary *options) {
         return ENOENT;
     }
     
-    dsprintf(stdout, "Searching through directory contents for \"%s\"...\n", [appBundle UTF8String]);
+    NSString *remotePath = [options objectForKey:kRemoveFileRemotePath];
+    if (remotePath) {
+        dsprintf(stdout, "Searching for \"%s\" file on for \"%s\"\n", [remotePath UTF8String], [appBundle UTF8String]);
+        
+    } else {
+        dsprintf(stdout, "Searching files specified to delete for %s listing all potential files to delete\n", [appBundle UTF8String]);
+    }
+    
     
     AMDServiceConnectionRef serviceConnection = nil;
     NSDictionary *inputDict = @{@"CloseOnInvalidate" : @NO, @"UnlockEscrowBag": @YES};
@@ -133,80 +142,116 @@ int yoink_app(AMDeviceRef d, NSDictionary *options) {
         AFCDirectoryClose(connectionRef, iteratorRef);
     }
     
-    NSFileManager *manager = [NSFileManager defaultManager];
-
-    // write the directories first
-    for (NSString *path in exploredDirectories) {
-        NSString *finalizedDirectory = [outputDirectory stringByAppendingPathComponent:path];
-        [manager createDirectoryAtPath:finalizedDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    NSMutableDictionary *outputContent = [NSMutableDictionary new];
+    for (NSString *file in exploredFiles) {
+        NSString *path = [file stringByDeletingLastPathComponent];
+        if (![outputContent objectForKey:path]) {
+            NSMutableArray *array = [NSMutableArray new];
+            [outputContent setObject:array forKey:path];
+        }
+        
+        NSMutableArray *ar = [outputContent objectForKey:path];
+        
+        NSString *finalizedString = [NSString stringWithFormat:@"\"%@\"", file];
+        [ar addObject:finalizedString];
     }
+    
+    if (remotePath) {
+        if (AFCRemovePath(connectionRef, [remotePath UTF8String])) {
+            dsprintf(stderr, "couldn't remove file %s", [remotePath UTF8String]);
+        } else {
+            dsprintf(stdout, "Successfully removed file %s", [remotePath UTF8String]);
+        }
+        
+        return 0;
+    }
+    dsprintf(stdout, "\n");
+    for (NSString *key in outputContent) {
+        
+        NSArray *ar = [outputContent objectForKey:key];
+        
+        dsprintf(stdout, "%s%s%s\n", dcolor("yellow"),[key UTF8String], colorEnd());
+        for (NSString *filename in ar) {
+            dsprintf(stdout, "\t%s\n", [filename UTF8String]);
+        }
+        dsprintf(stdout, "\n");
+    }
+    
+//    NSFileManager *manager = [NSFileManager defaultManager];
+//
+//    // write the directories first
+//    for (NSString *path in exploredDirectories) {
+//        NSString *finalizedDirectory = [outputDirectory stringByAppendingPathComponent:path];
+//        [manager createDirectoryAtPath:finalizedDirectory withIntermediateDirectories:YES attributes:nil error:nil];
+//    }
     
     // write the files
-    NSArray *paths = [exploredFiles allObjects];
-    for (NSString *path in paths) {
-        NSString *finalizedFile = [outputDirectory stringByAppendingPathComponent:path];
-        
-        
-        AFCFileDescriptorRef ref = NULL;
-        if (AFCFileRefOpen(connectionRef, [path UTF8String], 0x1, &ref) || !ref) {
-            continue;
-        }
-        
-        NSError *err = NULL;
-        [[NSFileManager defaultManager] createFileAtPath:finalizedFile contents:nil attributes:nil];
-        NSFileHandle *handle = [NSFileHandle fileHandleForWritingToURL:[NSURL URLWithString:finalizedFile] error:&err];
-        if (err) {
-            dsprintf(stdout, "%s\nExiting...\n", [[err localizedDescription] UTF8String]);
-            return 1;
-        }
-        int fd = [handle fileDescriptor];
-        
-        if (fd == -1) {
-            dsprintf(stderr, "%sCan't open \"%s\" to write to, might be an existing file there.\n", dcolor("yellow"), [finalizedFile UTF8String], colorEnd());
-            returnError = 1;
-            continue;
-        }
-        
-        size_t size = BUFSIZ;
-        void *buffer[BUFSIZ];
-        while (AFCFileRefRead(connectionRef, ref, buffer, &size) == 0 && size != 0 && size != -1) {
-            write(fd, buffer, size);
-        }
-        
-        [handle closeFile];
-        AFCFileRefClose(connectionRef, ref);
-    }
-    
-    AFCConnectionClose(connectionRef);
-    
-    for (NSString *file in filePermissions) {
-        NSDictionary *permissions = filePermissions[file];
-        struct stat filestat;
-        if (stat([file UTF8String], &filestat) != 0) { continue; }
-        
-        
-        
-        for (NSString *permission in permissions) {
-            
-            if ([permission isEqualToString:@"st_birthtime"]) {
-                //        filestat.st_birthtimespec = time(<#time_t *#>);
-                
-            } else if ([permission isEqualToString:@"st_mtime"]) {
-                
-            }
-        }
-    }
-    
-    if (successfullyReadADirectory) {
-        dsprintf(stdout, "Opening \"%s\"...\n", [outputDirectory UTF8String]);
-        if (!quiet_mode) {
-            NSString *systemCMDString = [NSString stringWithFormat:@"open -R %@", outputDirectory];
-            system([systemCMDString UTF8String]);
-        }
-    } else {
-        dsprintf(stderr, "%sUnable to open \"%s\", likely due to not having certificates that match on this device%s\n", dcolor("yellow"), [appBundle UTF8String], colorEnd());
-        returnError = EACCES;
-    }
+//    NSArray *paths = [exploredFiles allObjects];
+//    for (NSString *path in paths) {
+//        NSString *finalizedFile = [outputDirectory stringByAppendingPathComponent:path];
+//
+//
+//        AFCFileDescriptorRef ref = NULL;
+//        if (AFCFileRefOpen(connectionRef, [path UTF8String], 0x1, &ref) || !ref) {
+//            continue;
+//        }
+//
+//        NSError *err = NULL;
+//        [[NSFileManager defaultManager] createFileAtPath:finalizedFile contents:nil attributes:nil];
+//        NSFileHandle *handle = [NSFileHandle fileHandleForWritingToURL:[NSURL URLWithString:finalizedFile] error:&err];
+//        if (err) {
+//            dsprintf(stdout, "%s\nExiting...\n", [[err localizedDescription] UTF8String]);
+//            return 1;
+//        }
+//        int fd = [handle fileDescriptor];
+//
+//        if (fd == -1) {
+//            dsprintf(stderr, "%sCan't open \"%s\" to write to, might be an existing file there.\n", dcolor("yellow"), [finalizedFile UTF8String], colorEnd());
+//            returnError = 1;
+//            continue;
+//        }
+//
+//        size_t size = BUFSIZ;
+//        void *buffer[BUFSIZ];
+//        while (AFCFileRefRead(connectionRef, ref, buffer, &size) == 0 && size != 0 && size != -1) {
+//            write(fd, buffer, size);
+//        }
+//
+//        [handle closeFile];
+//        AFCFileRefClose(connectionRef, ref);
+//    }
+//
+//    AFCConnectionClose(connectionRef);
+//
+//    for (NSString *file in filePermissions) {
+//        NSDictionary *permissions = filePermissions[file];
+//        struct stat filestat;
+//        if (stat([file UTF8String], &filestat) != 0) { continue; }
+//
+//
+//
+//        for (NSString *permission in permissions) {
+//
+//            if ([permission isEqualToString:@"st_birthtime"]) {
+//                //        filestat.st_birthtimespec = time(<#time_t *#>);
+//
+//            } else if ([permission isEqualToString:@"st_mtime"]) {
+//
+//            }
+//        }
+//    }
+//
+//    if (successfullyReadADirectory) {
+//        dsprintf(stdout, "Opening \"%s\"...\n", [outputDirectory UTF8String]);
+//        if (!quiet_mode) {
+//            NSString *systemCMDString = [NSString stringWithFormat:@"open -R %@", outputDirectory];
+//            system([systemCMDString UTF8String]);
+//        }
+//    } else {
+//        dsprintf(stderr, "%sUnable to open \"%s\", likely due to not having certificates that match on this device%s\n", dcolor("yellow"), [appBundle UTF8String], colorEnd());
+//        returnError = EACCES;
+//    }
     
     return returnError;
 }

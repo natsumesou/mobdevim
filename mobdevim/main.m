@@ -20,6 +20,8 @@
 #import "get_device_info.h"
 #import "install_application.h"
 #import "yoink.h"
+#import "remove_file.h"
+#import "send_files.h"
 
 static NSOperation *_op = nil; //
 static NSString *optionalArgument = nil;
@@ -85,10 +87,19 @@ int main(int argc, const char * argv[]) {
     
     getopt_options = [NSMutableDictionary new];
     
-    while ((option = getopt (argc, (char **)argv, ":d::rfn:qzd:hvl::i:Cc::p::y::")) != -1) {
+      while ((option = getopt (argc, (char **)argv, ":d::Rr:fn:qs:zd:hvl::i:Cc::p::y::")) != -1) {
           switch (option) {
-            case 'r': // Use color
+            case 'R': // Use color
                   setenv("DSCOLOR", "1", 1);
+                  break;
+              case 'r':
+                  assertArg();
+                  actionFunc = &remove_file;
+                  [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kRemoveFileBundleID];
+                  
+                  if (argc == 4) {
+                      [getopt_options setObject:[NSString stringWithUTF8String:argv[3]] forKey:kRemoveFileRemotePath];
+                  }
                   break;
               case 'v':
                   printf("%s v%s\n", program_name, version_string);
@@ -108,13 +119,18 @@ int main(int argc, const char * argv[]) {
             case 'n':
               assertArg();
               [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kOptionArgumentDestinationPath];
-              break;
+                  break;
+              case 's':
+                  assertArg();
+                  actionFunc = &send_files;
+                  [getopt_options setObject:[NSString stringWithUTF8String:argv[3]] forKey:kSendFilePath];
+                  [getopt_options setObject:[NSString stringWithUTF8String:argv[2]] forKey:kSendAppBundle];
+                  break;
               case 'i':
                   assertArg();
                   actionFunc = &install_application;
                   addr = strdup(optarg);
                   [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kInstallApplicationPath];
-
                   requiredArgument = [NSString stringWithUTF8String:addr];
                   break;
               case 'h':

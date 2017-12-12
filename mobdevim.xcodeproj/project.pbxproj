@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		A626ED1A1FC7D713002584F1 /* debug_application.m in Sources */ = {isa = PBXBuildFile; fileRef = A626ED191FC7D713002584F1 /* debug_application.m */; };
 		A63035671F6B3EC200A5B0C6 /* mobdevim in CopyFiles */ = {isa = PBXBuildFile; fileRef = A6B3AEE61F5CB27900ECCBF2 /* mobdevim */; };
+		A63CED0D1FD9167C00BE683E /* send_files.m in Sources */ = {isa = PBXBuildFile; fileRef = A63CED0C1FD9167C00BE683E /* send_files.m */; };
 		A645538D1FCCF19200C16506 /* get_provisioning_profiles.m in Sources */ = {isa = PBXBuildFile; fileRef = A645538C1FCCF19200C16506 /* get_provisioning_profiles.m */; };
 		A64553901FCD004E00C16506 /* list_applications.m in Sources */ = {isa = PBXBuildFile; fileRef = A645538F1FCD004E00C16506 /* list_applications.m */; };
 		A64553931FCD068E00C16506 /* yoink.m in Sources */ = {isa = PBXBuildFile; fileRef = A64553921FCD068E00C16506 /* yoink.m */; };
@@ -17,6 +18,7 @@
 		A652DF121F71C0F1002E08D4 /* MobileDevice in Frameworks */ = {isa = PBXBuildFile; fileRef = A60098A81F5CB7F7005692B6 /* MobileDevice */; };
 		A6AA84451FC77B9200F90C13 /* console.m in Sources */ = {isa = PBXBuildFile; fileRef = A6AA84441FC77B9200F90C13 /* console.m */; };
 		A6B3AEEA1F5CB27900ECCBF2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A6B3AEE91F5CB27900ECCBF2 /* main.m */; };
+		A6E7BB681FDF6CE9006DD293 /* remove_file.m in Sources */ = {isa = PBXBuildFile; fileRef = A6E7BB671FDF6CE8006DD293 /* remove_file.m */; };
 		A6F0C26B1FC62CD2009897DD /* helpers.m in Sources */ = {isa = PBXBuildFile; fileRef = A6F0C26A1FC62CD2009897DD /* helpers.m */; };
 /* End PBXBuildFile section */
 
@@ -47,6 +49,8 @@
 		A60098A81F5CB7F7005692B6 /* MobileDevice */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = MobileDevice; path = ../../../../System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/MobileDevice; sourceTree = "<group>"; };
 		A626ED181FC7D713002584F1 /* debug_application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = debug_application.h; sourceTree = "<group>"; };
 		A626ED191FC7D713002584F1 /* debug_application.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = debug_application.m; sourceTree = "<group>"; };
+		A63CED0B1FD9167C00BE683E /* send_files.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = send_files.h; sourceTree = "<group>"; };
+		A63CED0C1FD9167C00BE683E /* send_files.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = send_files.m; sourceTree = "<group>"; };
 		A645538B1FCCF19200C16506 /* get_provisioning_profiles.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = get_provisioning_profiles.h; sourceTree = "<group>"; };
 		A645538C1FCCF19200C16506 /* get_provisioning_profiles.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = get_provisioning_profiles.m; sourceTree = "<group>"; };
 		A645538E1FCD004E00C16506 /* list_applications.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = list_applications.h; sourceTree = "<group>"; };
@@ -62,6 +66,8 @@
 		A6AA84441FC77B9200F90C13 /* console.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = console.m; sourceTree = "<group>"; };
 		A6B3AEE61F5CB27900ECCBF2 /* mobdevim */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = mobdevim; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6B3AEE91F5CB27900ECCBF2 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		A6E7BB661FDF6CE8006DD293 /* remove_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = remove_file.h; sourceTree = "<group>"; };
+		A6E7BB671FDF6CE8006DD293 /* remove_file.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = remove_file.m; sourceTree = "<group>"; };
 		A6F0C2681FC62C68009897DD /* ExternalDeclarations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExternalDeclarations.h; sourceTree = "<group>"; };
 		A6F0C2691FC62CD2009897DD /* helpers.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = helpers.h; sourceTree = "<group>"; };
 		A6F0C26A1FC62CD2009897DD /* helpers.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = helpers.m; sourceTree = "<group>"; };
@@ -87,6 +93,15 @@
 				A60098A61F5CB77E005692B6 /* MobileDevice.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A63CED0A1FD9167C00BE683E /* send_files */ = {
+			isa = PBXGroup;
+			children = (
+				A63CED0B1FD9167C00BE683E /* send_files.h */,
+				A63CED0C1FD9167C00BE683E /* send_files.m */,
+			);
+			path = send_files;
 			sourceTree = "<group>";
 		};
 		A64336121FD4EC7100532C9D /* yoink */ = {
@@ -183,6 +198,8 @@
 			isa = PBXGroup;
 			children = (
 				A6B3AEE91F5CB27900ECCBF2 /* main.m */,
+				A6E7BB651FDF6CE8006DD293 /* remove_file */,
+				A63CED0A1FD9167C00BE683E /* send_files */,
 				A64336121FD4EC7100532C9D /* yoink */,
 				A645539A1FCD142000C16506 /* Install Application */,
 				A645539B1FCD144700C16506 /* List Applications */,
@@ -193,6 +210,15 @@
 				A645539F1FCD150700C16506 /* misc */,
 			);
 			path = mobdevim;
+			sourceTree = "<group>";
+		};
+		A6E7BB651FDF6CE8006DD293 /* remove_file */ = {
+			isa = PBXGroup;
+			children = (
+				A6E7BB661FDF6CE8006DD293 /* remove_file.h */,
+				A6E7BB671FDF6CE8006DD293 /* remove_file.m */,
+			);
+			path = remove_file;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -274,8 +300,10 @@
 				A645538D1FCCF19200C16506 /* get_provisioning_profiles.m in Sources */,
 				A64553931FCD068E00C16506 /* yoink.m in Sources */,
 				A6B3AEEA1F5CB27900ECCBF2 /* main.m in Sources */,
+				A6E7BB681FDF6CE9006DD293 /* remove_file.m in Sources */,
 				A6AA84451FC77B9200F90C13 /* console.m in Sources */,
 				A626ED1A1FC7D713002584F1 /* debug_application.m in Sources */,
+				A63CED0D1FD9167C00BE683E /* send_files.m in Sources */,
 				A64553901FCD004E00C16506 /* list_applications.m in Sources */,
 				A64553961FCD088400C16506 /* get_device_info.m in Sources */,
 				A6F0C26B1FC62CD2009897DD /* helpers.m in Sources */,

@@ -64,6 +64,12 @@
             ReferencedContainer = "container:mobdevim.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "-s com.selander.hacpoc &quot;/Users/derekselander/Desktop/com.godaddy.Voice 2017-12-03 12:22.00.169.xcappdata&quot;"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "DSCOLOR"
