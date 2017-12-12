@@ -97,8 +97,8 @@ int main(int argc, const char * argv[]) {
                   actionFunc = &remove_file;
                   [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kRemoveFileBundleID];
                   
-                  if (argc == 4) {
-                      [getopt_options setObject:[NSString stringWithUTF8String:argv[3]] forKey:kRemoveFileRemotePath];
+                  if (argc > optind) {
+                      [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kRemoveFileRemotePath];
                   }
                   break;
               case 'v':
@@ -123,8 +123,8 @@ int main(int argc, const char * argv[]) {
               case 's':
                   assertArg();
                   actionFunc = &send_files;
-                  [getopt_options setObject:[NSString stringWithUTF8String:argv[3]] forKey:kSendFilePath];
-                  [getopt_options setObject:[NSString stringWithUTF8String:argv[2]] forKey:kSendAppBundle];
+                  [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kSendFilePath];
+                  [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kSendAppBundle];
                   break;
               case 'i':
                   assertArg();

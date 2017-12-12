@@ -55,7 +55,7 @@ int remove_file(AMDeviceRef d, NSDictionary *options) {
         dsprintf(stdout, "Searching for \"%s\" file on for \"%s\"\n", [remotePath UTF8String], [appBundle UTF8String]);
         
     } else {
-        dsprintf(stdout, "Searching files specified to delete for %s listing all potential files to delete\n", [appBundle UTF8String]);
+        dsprintf(stdout, "Listing remote files for \"%s\", use the fullpath for a remote file to delete\n", [appBundle UTF8String]);
     }
     
     
