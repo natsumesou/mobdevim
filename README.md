@@ -1,6 +1,8 @@
 # mobdevim
 **Mobile Device Improved**: Command line utility that interacts with plugged in iOS devices. Uses Apple's MobileDevice framework 
 
+---
+
 <a href="https://store.raywenderlich.com/products/advanced-apple-debugging-and-reverse-engineering" target="_blank"><img align="right"  height="90"  src="https://github.com/DerekSelander/LLDB/blob/master/Media/dbgbook.png"></a>
 
 This information was extracted out using the help of <a href="https://github.com/DerekSelander/LLDB" target="_blank">**these LLDB scripts  found here**</a>. If you want to learn how to create these scripts or have a better understanding how one can reverse engineer a compiled binary, check out <a href="https://store.raywenderlich.com/products/advanced-apple-debugging-and-reverse-engineering" target="_blank">**Advanced Apple Debugging and Reverse Engineering**</a>
