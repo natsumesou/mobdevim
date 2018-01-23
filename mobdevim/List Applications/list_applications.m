@@ -9,6 +9,7 @@
 #import "list_applications.h"
 
 NSString *const kListApplicationsName = @"com.selander.listapplications.appname";
+NSString *const kListApplicationsKey = @"com.selander.listapplications.key";
 
 int list_applications(AMDeviceRef d, NSDictionary *options) {
   
@@ -23,7 +24,14 @@ int list_applications(AMDeviceRef d, NSDictionary *options) {
       return 1;
     }
     
-    dsprintf(stdout, "%sDumping info for \"%s\"%s\n\n%s\n", dcolor("red"), [name UTF8String], colorEnd(), [[[dict objectForKey:name] debugDescription] UTF8String]);
+    NSString *key = [options objectForKey:kListApplicationsKey];
+    
+      if (key) {
+          dsprintf(stdout, "%sDumping info for \"%s\"%s with key: \"%s\"\n\n%s\n", dcolor("red"), [name UTF8String], colorEnd(), [key UTF8String],  [[[[dict objectForKey:name] objectForKey:key] debugDescription] UTF8String]);
+      }
+      else {
+          dsprintf(stdout, "%sDumping info for \"%s\"%s\n\n%s\n", dcolor("red"), [name UTF8String], colorEnd(),  [[[dict objectForKey:name] debugDescription] UTF8String]);
+      }
   } else {
     NSMutableString *output = [NSMutableString string];
     for (NSString *key in [dict allKeys]) {

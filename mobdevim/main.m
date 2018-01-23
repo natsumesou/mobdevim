@@ -112,6 +112,9 @@ int main(int argc, const char * argv[]) {
                   actionFunc = &list_applications;
                   addr = strdup(optarg);
                  [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kListApplicationsName];
+                  if (argc > optind) {
+                      [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kListApplicationsKey];
+                  }
                   break;
               case 'q':
                   quiet_mode = YES;
