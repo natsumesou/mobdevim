@@ -116,7 +116,6 @@ int send_files(AMDeviceRef d, NSDictionary *options) {
         
         AFCFileDescriptorRef fileDescriptor = NULL;
         
-        [@"hi" containsString:@"Low"];
         AFCFileRefOpen(connectionRef, [remotePath fileSystemRepresentation], 0x3, &fileDescriptor);
         
         if (!fileDescriptor) {
