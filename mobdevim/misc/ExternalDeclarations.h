@@ -98,6 +98,7 @@ mach_error_t AMDeviceIsPaired(AMDeviceRef);
 mach_error_t AMDeviceValidatePairing(AMDeviceRef);
 mach_error_t AMDeviceStartSession(AMDeviceRef);
 mach_error_t AMDeviceStopSession(AMDeviceRef);
+id AMDServiceConnectionGetSecureIOContext(AMDServiceConnectionRef);
 
 mach_error_t AMDeviceNotificationUnsubscribe(AMDeviceRef);
 mach_error_t AMDeviceSecureTransferPath(int, AMDeviceRef, NSURL*, NSDictionary *, void *, int);
@@ -126,6 +127,7 @@ NSArray* AMDCreateDeviceList(void);
 NSString *AMDeviceGetName(AMDeviceRef);
 int AMDServiceConnectionGetSocket(AMDServiceConnectionRef);
 long AMDServiceConnectionReceive(AMDServiceConnectionRef, void *, long);
+void AMDServiceConnectionInvalidate(AMDServiceConnectionRef);
 id _AMDeviceCopyInstalledAppInfo(AMDeviceRef, char *);
 id AMDeviceCopyValue(AMDeviceRef, void *, NSString *, unsigned long int /* device id */);
 NSString *AMDeviceCopyDeviceIdentifier(AMDeviceRef);

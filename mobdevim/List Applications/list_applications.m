@@ -18,7 +18,6 @@ int list_applications(AMDeviceRef d, NSDictionary *options) {
   
   NSString *name = [options objectForKey:kListApplicationsName];
   if (name) {
-    
     if (![dict objectForKey:name]) {
       dsprintf(stderr, "%sCouldn't find the bundleIdentifier \"%s\", try listing all bundleIDs with %s%smobdevim -l%s\n", dcolor("yellow"), [name UTF8String], colorEnd(), dcolor("bold"), colorEnd());
       return 1;
@@ -27,9 +26,11 @@ int list_applications(AMDeviceRef d, NSDictionary *options) {
     NSString *key = [options objectForKey:kListApplicationsKey];
     
       if (key) {
-          dsprintf(stdout, "%sDumping info for \"%s\"%s with key: \"%s\"\n\n%s\n", dcolor("red"), [name UTF8String], colorEnd(), [key UTF8String],  [[[[dict objectForKey:name] objectForKey:key] debugDescription] UTF8String]);
-      }
-      else {
+          dsprintf(stdout, "%sDumping info for \"%s\"%s with key: \"%s\"\n%s\n", dcolor("red"), [name UTF8String], colorEnd(), [key UTF8String],  [[[[dict objectForKey:name] objectForKey:key] debugDescription] UTF8String]);
+          if (![[dict objectForKey:name] objectForKey:key]) {
+              return 1;
+          }
+      } else {
           dsprintf(stdout, "%sDumping info for \"%s\"%s\n\n%s\n", dcolor("red"), [name UTF8String], colorEnd(),  [[[dict objectForKey:name] debugDescription] UTF8String]);
       }
   } else {

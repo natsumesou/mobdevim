@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A601BF4420182F0500FF3BEB /* get_logs.m in Sources */ = {isa = PBXBuildFile; fileRef = A601BF4220182F0500FF3BEB /* get_logs.m */; };
 		A626ED1A1FC7D713002584F1 /* debug_application.m in Sources */ = {isa = PBXBuildFile; fileRef = A626ED191FC7D713002584F1 /* debug_application.m */; };
 		A63035671F6B3EC200A5B0C6 /* mobdevim in CopyFiles */ = {isa = PBXBuildFile; fileRef = A6B3AEE61F5CB27900ECCBF2 /* mobdevim */; };
 		A63CED0D1FD9167C00BE683E /* send_files.m in Sources */ = {isa = PBXBuildFile; fileRef = A63CED0C1FD9167C00BE683E /* send_files.m */; };
@@ -47,6 +48,8 @@
 /* Begin PBXFileReference section */
 		A60098A61F5CB77E005692B6 /* MobileDevice.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileDevice.framework; path = ../../../../System/Library/PrivateFrameworks/MobileDevice.framework; sourceTree = "<group>"; };
 		A60098A81F5CB7F7005692B6 /* MobileDevice */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = MobileDevice; path = ../../../../System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/MobileDevice; sourceTree = "<group>"; };
+		A601BF4220182F0500FF3BEB /* get_logs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = get_logs.m; sourceTree = "<group>"; };
+		A601BF4320182F0500FF3BEB /* get_logs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = get_logs.h; sourceTree = "<group>"; };
 		A626ED181FC7D713002584F1 /* debug_application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = debug_application.h; sourceTree = "<group>"; };
 		A626ED191FC7D713002584F1 /* debug_application.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = debug_application.m; sourceTree = "<group>"; };
 		A63CED0B1FD9167C00BE683E /* send_files.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = send_files.h; sourceTree = "<group>"; };
@@ -93,6 +96,15 @@
 				A60098A61F5CB77E005692B6 /* MobileDevice.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		A601BF41201824C300FF3BEB /* logs */ = {
+			isa = PBXGroup;
+			children = (
+				A601BF4320182F0500FF3BEB /* get_logs.h */,
+				A601BF4220182F0500FF3BEB /* get_logs.m */,
+			);
+			path = logs;
 			sourceTree = "<group>";
 		};
 		A63CED0A1FD9167C00BE683E /* send_files */ = {
@@ -198,6 +210,7 @@
 			isa = PBXGroup;
 			children = (
 				A6B3AEE91F5CB27900ECCBF2 /* main.m */,
+				A601BF41201824C300FF3BEB /* logs */,
 				A6E7BB651FDF6CE8006DD293 /* remove_file */,
 				A63CED0A1FD9167C00BE683E /* send_files */,
 				A64336121FD4EC7100532C9D /* yoink */,
@@ -298,6 +311,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A645538D1FCCF19200C16506 /* get_provisioning_profiles.m in Sources */,
+				A601BF4420182F0500FF3BEB /* get_logs.m in Sources */,
 				A64553931FCD068E00C16506 /* yoink.m in Sources */,
 				A6B3AEEA1F5CB27900ECCBF2 /* main.m in Sources */,
 				A6E7BB681FDF6CE9006DD293 /* remove_file.m in Sources */,

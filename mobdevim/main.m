@@ -22,6 +22,7 @@
 #import "yoink.h"
 #import "remove_file.h"
 #import "send_files.h"
+#import "get_logs.h"
 
 static NSOperation *_op = nil; //
 static NSString *optionalArgument = nil;
@@ -87,7 +88,7 @@ int main(int argc, const char * argv[]) {
     
     getopt_options = [NSMutableDictionary new];
     
-      while ((option = getopt (argc, (char **)argv, ":d::Rr:fn:qs:zd:hvl::i:Cc::p::y::")) != -1) {
+      while ((option = getopt (argc, (char **)argv, ":d::Rr:fn:qs:zd:hvg::l::i:Cc::p::y::")) != -1) {
           switch (option) {
             case 'R': // Use color
                   setenv("DSCOLOR", "1", 1);
@@ -104,6 +105,9 @@ int main(int argc, const char * argv[]) {
               case 'v':
                   printf("%s v%s\n", program_name, version_string);
                   exit(EXIT_SUCCESS);
+              case 'g':
+                  actionFunc = &get_logs;
+                  break;
               case 'f':
                   actionFunc = &get_device_info;
                   break;
@@ -166,6 +170,9 @@ int main(int argc, const char * argv[]) {
             case ':':
               switch (optopt)
             {
+              case 'g':
+                actionFunc = &get_logs;
+                break;
               case 'p':
                 actionFunc = &get_provisioning_profiles;
                 break;

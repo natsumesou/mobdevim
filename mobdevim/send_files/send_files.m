@@ -14,8 +14,6 @@ NSString * const kSendAppBundle = @"com.selander.appbundle";
 
 int send_files(AMDeviceRef d, NSDictionary *options) {
     
-
-    
     NSString *writingFromDirectory = [options objectForKey:kSendFilePath];
     if ([writingFromDirectory hasSuffix:@"xcappdata"]) {
         writingFromDirectory = [writingFromDirectory stringByAppendingPathComponent:@"AppData"];
