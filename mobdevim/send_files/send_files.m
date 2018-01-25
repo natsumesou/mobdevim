@@ -28,7 +28,7 @@ int send_files(AMDeviceRef d, NSDictionary *options) {
     NSFileManager* manager = [NSFileManager defaultManager];
     
     NSDirectoryEnumerator *dirEnumerator = [manager enumeratorAtURL:localFileURL includingPropertiesForKeys:@[NSURLIsDirectoryKey] options:0 errorHandler:^BOOL(NSURL * _Nonnull url, NSError * _Nonnull error) {
-       
+        
         
         if (error) {
             dsprintf(stderr, "Couldn't enumerate directory\n%s", [[error localizedDescription] UTF8String]);
@@ -44,23 +44,24 @@ int send_files(AMDeviceRef d, NSDictionary *options) {
     NSString *appBundle = [options objectForKey:kSendAppBundle];
     NSDictionary *opts = @{ @"ApplicationType" : @"Any",
                             @"ReturnAttributes" : @[@"ApplicationDSID",
-                                                    @"ApplicationType",
-                                                    @"CFBundleDisplayName",
-                                                    @"CFBundleExecutable",
+                                                    //                                                    @"ApplicationType",
+                                                    //                                                    @"CFBundleDisplayName",
+                                                    //                                                    @"CFBundleExecutable",
                                                     @"CFBundleIdentifier",
-                                                    @"CFBundleName",
-                                                    @"CFBundleShortVersionString",
-                                                    @"CFBundleVersion",
-                                                    @"Container",
-                                                    @"Entitlements",
-                                                    @"EnvironmentVariables",
-                                                    @"MinimumOSVersion",
+                                                    //                                                    @"CFBundleName",
+                                                    //                                                    @"CFBundleShortVersionString",
+                                                    //                                                    @"CFBundleVersion",
+                                                    //                                                    @"Container",
+                                                    //                                                    @"Entitlements",
+                                                    //                                                    @"EnvironmentVariables",
+                                                    //                                                    @"MinimumOSVersion",
                                                     @"Path",
-                                                    @"ProfileValidated",
-                                                    @"SBAppTags",
-                                                    @"SignerIdentity",
-                                                    @"UIDeviceFamily",
-                                                    @"UIRequiredDeviceCapabilities"]};
+                                                    //                                                    @"ProfileValidated",
+                                                    //                                                    @"SBAppTags",
+                                                    //                                                    @"SignerIdentity",
+                                                    //                                                    @"UIDeviceFamily",
+                                                    //                                                    @"UIRequiredDeviceCapabilities"
+                                                    ]};
     
     AMDeviceLookupApplications(d, opts, &dict);
     NSString *appPath = [[dict objectForKey:appBundle] objectForKey:@"Path"];
@@ -93,46 +94,76 @@ int send_files(AMDeviceRef d, NSDictionary *options) {
     }
     
     uint8_t *buffer = malloc(0x1000);
-//    id a = [dirEnumerator fileAttributes];
+    //    id a = [dirEnumerator fileAttributes];
     
-    for (NSURL *fileURL in [dirEnumerator fileAttributes]) {
+    for (NSURL *fileURL in dirEnumerator) {
         
         NSString *basePath = [NSString stringWithUTF8String:[fileURL fileSystemRepresentation]];
         NSRange range = [basePath rangeOfString:writingFromDirectory];
         
-//        NSInteger location = range.location;
+        //        NSInteger location = range.location;
         range.location = range.length;
         range.length = [basePath length] - range.location;
         assert(range.length != 0);
         
         NSString *remotePath = [basePath substringWithRange:range];
         
-        NSInputStream *stream = [NSInputStream inputStreamWithURL:fileURL];
-        if (!stream) {
-            dsprintf(stderr, "Invalid directory to write from: %s\n", [fileURL fileSystemRepresentation]);
-            return EACCES;
+        
+        BOOL isDirectory = NO;
+        NSString *remoteDirectory = nil;
+        NSString *fileName = [fileURL lastPathComponent];
+        
+        [manager fileExistsAtPath:[fileURL path] isDirectory:&isDirectory];
+        if ([fileName isEqualToString:@".DS_Store"]) {
+            continue;
+        }
+        
+        if (isDirectory) {
+            remoteDirectory = remotePath;
+        } else {
+            remoteDirectory = [remotePath stringByDeletingLastPathComponent];
         }
         
         
         AFCFileDescriptorRef fileDescriptor = NULL;
+        AFCIteratorRef iteratorRef = NULL;
+        AFCDirectoryOpen(connectionRef, [remotePath fileSystemRepresentation], &iteratorRef);
         
-        AFCFileRefOpen(connectionRef, [remotePath fileSystemRepresentation], 0x3, &fileDescriptor);
-        
-        if (!fileDescriptor) {
-            dsprintf(stderr, "Couldn't open file \"%s\" on the device side\n", [remotePath fileSystemRepresentation]);
+        // directory might not exist on the remote side, create it
+        if (isDirectory && !iteratorRef) {
+            if (AFCDirectoryCreate(connectionRef, [remotePath fileSystemRepresentation])) {
+                dsprintf(stderr, "Couldn't create directory: %s on the remote side\n", [remotePath fileSystemRepresentation]);
+            }
+            AFCDirectoryClose(connectionRef, iteratorRef);
+            iteratorRef = NULL;
+            
         }
         
-        uint32_t bytesWritten = (uint32_t)[stream read:buffer maxLength:0x1000];
+        else if (!isDirectory) {
+            AFCFileRefOpen(connectionRef, [remotePath fileSystemRepresentation], 0x3, &fileDescriptor);
+            if (!fileDescriptor) {
+                dsprintf(stderr, "Couldn't open file \"%s\" on the device side\n", [remotePath fileSystemRepresentation]);
+                continue;
+            }
+            
         
-        while(bytesWritten) {
-            AFCFileRefWrite(connectionRef, fileDescriptor, buffer, bytesWritten);
-            bytesWritten = (uint32_t)[stream read:buffer maxLength:0x1000];
+            NSData *data = [NSData dataWithContentsOfURL:fileURL];
+            if (!data) {
+                dsprintf(stderr, "Invalid directory to write from: %s\n", [fileURL fileSystemRepresentation]);
+                return EACCES;
+            }
+            
+            
+            mach_error_t err = AFCFileRefWrite(connectionRef, fileDescriptor, [data bytes], (uint32_t)[data length]);
+            if (err) {
+                dsprintf(stderr, "Error writing to \"%s\", %d\n", [remotePath fileSystemRepresentation], err);
+            }
+            
+            AFCFileRefClose(connectionRef, fileDescriptor);
         }
-        AFCFileRefClose(connectionRef, fileDescriptor);
-        
     }
     free(buffer);
-
+    
     
     return 0;
 }

@@ -191,12 +191,12 @@ int main(int argc, const char * argv[]) {
                 actionFunc = &list_applications;
                 break;
               default:
-                fprintf(stderr, "option -%c is missing a required argument\n", optopt);
+                dsprintf(stderr, "option -%c is missing a required argument\n", optopt);
                 return EXIT_FAILURE;
             }
               break;
               default:
-                  printf("%s\n", usage);
+                  dsprintf(stderr, "%s\n", usage);
                   exit(EXIT_FAILURE);
                   break;
           }
@@ -205,7 +205,7 @@ int main(int argc, const char * argv[]) {
     AMDeviceNotificationSubscribe(connect_callback, 0, 0, 0, &__n);
     
     _op = [NSBlockOperation blockOperationWithBlock:^{
-      printf("Your device might not be connected. You've got about 25 seconds to connect your device before the timeout gets fired or you can start fresh with a ctrl-c. Choose wisely... dun dun\n");
+      dsprintf(stderr, "Your device might not be connected. You've got about 25 seconds to connect your device before the timeout gets fired or you can start fresh with a ctrl-c. Choose wisely... dun dun\n");
     }];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
@@ -215,7 +215,7 @@ int main(int argc, const char * argv[]) {
     if (shouldDisableTimeout) {
       dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         CFRunLoopStop(CFRunLoopGetMain());
-        dsprintf(stdout, "Script timed out, exiting now.\n");
+        dsprintf(stderr, "Script timed out, exiting now.\n");
         exit(EXIT_FAILURE);
         
       });
