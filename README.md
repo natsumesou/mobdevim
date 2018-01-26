@@ -15,6 +15,10 @@ This information was extracted out using the help of <a href="https://github.com
 2. build project
 3. Upon build success,` mobdevim` will be placed in **/usr/local/bin**
 
+---
+
+Alternatively, a precompiled version is available <a href="https://github.com/DerekSelander/mobdevim/raw/master/compiled" target="_blank">here</a>.
+
 ## Commands
 
     # Get device information
