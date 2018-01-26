@@ -93,9 +93,6 @@ int send_files(AMDeviceRef d, NSDictionary *options) {
         return EACCES;
     }
     
-    uint8_t *buffer = malloc(0x1000);
-    //    id a = [dirEnumerator fileAttributes];
-    
     for (NSURL *fileURL in dirEnumerator) {
         
         NSString *basePath = [NSString stringWithUTF8String:[fileURL fileSystemRepresentation]];
@@ -124,7 +121,6 @@ int send_files(AMDeviceRef d, NSDictionary *options) {
             remoteDirectory = [remotePath stringByDeletingLastPathComponent];
         }
         
-        
         AFCFileDescriptorRef fileDescriptor = NULL;
         AFCIteratorRef iteratorRef = NULL;
         AFCDirectoryOpen(connectionRef, [remotePath fileSystemRepresentation], &iteratorRef);
@@ -146,7 +142,6 @@ int send_files(AMDeviceRef d, NSDictionary *options) {
                 continue;
             }
             
-        
             NSData *data = [NSData dataWithContentsOfURL:fileURL];
             if (!data) {
                 dsprintf(stderr, "Invalid directory to write from: %s\n", [fileURL fileSystemRepresentation]);
@@ -162,8 +157,6 @@ int send_files(AMDeviceRef d, NSDictionary *options) {
             AFCFileRefClose(connectionRef, fileDescriptor);
         }
     }
-    free(buffer);
-    
     
     return 0;
 }

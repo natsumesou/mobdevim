@@ -1,2 +1,4 @@
 /.DS_Store
 /mobdevim/.DS_Store
+*.xcuserstate
+*.xcbkptlist
