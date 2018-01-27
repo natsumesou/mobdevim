@@ -106,7 +106,13 @@ int main(int argc, const char * argv[]) {
                   printf("%s v%s\n", program_name, version_string);
                   exit(EXIT_SUCCESS);
               case 'g':
+                  assertArg();
                   actionFunc = &get_logs;
+                  [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kGetLogsAppBundle];
+                  
+                  if (argc > optind) {
+                      [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kGetLogsFilePath];
+                  }
                   break;
               case 'f':
                   actionFunc = &get_device_info;
