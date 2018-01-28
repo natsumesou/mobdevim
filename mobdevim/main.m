@@ -88,7 +88,7 @@ int main(int argc, const char * argv[]) {
     
     getopt_options = [NSMutableDictionary new];
     
-      while ((option = getopt (argc, (char **)argv, ":d::Rr:fn:qs:zd:hvg::l::i:Cc::p::y::")) != -1) {
+      while ((option = getopt (argc, (char **)argv, ":d::Rr:fqs:zd:hvg::l::i:Cc::p::y::")) != -1) {
           switch (option) {
             case 'R': // Use color
                   setenv("DSCOLOR", "1", 1);
@@ -128,10 +128,6 @@ int main(int argc, const char * argv[]) {
                   break;
               case 'q':
                   quiet_mode = YES;
-                  break;
-            case 'n':
-              assertArg();
-              [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kOptionArgumentDestinationPath];
                   break;
               case 's':
                   assertArg();

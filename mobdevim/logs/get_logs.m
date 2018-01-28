@@ -14,18 +14,22 @@ NSString * const kGetLogsAppBundle = @"com.selander.get_logs.appbundle";
 
 int get_logs(AMDeviceRef d, NSDictionary *options) {
     
-    NSDictionary *dict;
+    NSDictionary *dict = nil;
     NSString *appBundle = [options objectForKey:kGetLogsAppBundle];
     NSDictionary *opts = @{ @"ApplicationType" : @"Any",
                             @"ReturnAttributes" : @[@"CFBundleExecutable",
                                                     @"CFBundleIdentifier",
                                                     @"CFBundleDisplayName"]};
 
+    NSString *executableName = nil;
     AMDeviceLookupApplications(d, opts, &dict);
-    NSString *executableName = [[dict objectForKey:appBundle] objectForKey:@"CFBundleExecutable"];
-    if (!executableName) {
-        dsprintf(stderr, "%sCouldn't find the bundleIdentifier \"%s\", try listing all bundleIDs with %s%smobdevim -l%s\n", dcolor("yellow"), [appBundle UTF8String], colorEnd(), dcolor("bold"), colorEnd());
-        return 1;
+    
+    if (appBundle) {
+    executableName = [[dict objectForKey:appBundle] objectForKey:@"CFBundleExecutable"];
+        if (!executableName) {
+            dsprintf(stderr, "%sCouldn't find the bundleIdentifier \"%s\", try listing all bundleIDs with %s%smobdevim -l%s\n", dcolor("yellow"), [appBundle UTF8String], colorEnd(), dcolor("bold"), colorEnd());
+            return 1;
+        }
     }
     
     NSString *basePath = [[options objectForKey:kGetLogsFilePath] stringByExpandingTildeInPath];
@@ -93,6 +97,8 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     
     err = nil;
     char *remotePath = NULL;
+    NSMutableDictionary *outputDict = [NSMutableDictionary dictionary];//used for no appBund
+    
     while (AFCDirectoryRead(connectionRef, iteratorRef, &remotePath) == 0 && remotePath) {
         
         AFCFileDescriptorRef descriptorRef = NULL;
@@ -106,10 +112,6 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
             continue;
         }
         
-        if (![[NSString stringWithUTF8String:remotePath] hasPrefix:[NSString stringWithFormat:@"%@.", executableName]]) {
-            continue;
-        }
-        
         NSDictionary* fileAttributes = (__bridge NSDictionary *)(iteratorRef->fileAttributes);
         
         // is a directory? ignore
@@ -117,6 +119,23 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
             continue;
         }
         
+
+        if (appBundle && ![[NSString stringWithUTF8String:remotePath] hasPrefix:[NSString stringWithFormat:@"%@.", executableName]]) {
+            continue;
+        }
+        
+        
+        if (!appBundle) {
+            
+            NSString *procName = [[[[NSString stringWithUTF8String:remotePath] lastPathComponent] componentsSeparatedByString:@"-20"] firstObject];
+            if (![outputDict objectForKey:procName]) {
+                [outputDict setObject:@0 forKey:procName];
+            }
+            
+            [outputDict setObject:@([[outputDict objectForKey:procName] integerValue] + 1) forKey:procName];
+            AFCFileRefClose(connectionRef, descriptorRef);
+            continue;
+        }
         
   
         NSURL *finalizedURL = [baseURL URLByAppendingPathComponent:[NSString stringWithUTF8String:remotePath]];
@@ -147,10 +166,16 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     
     AFCConnectionClose(connectionRef);
     
-    dsprintf(stdout, "Opening \"%s\"...\n", [[baseURL path] UTF8String]);
-    if (!quiet_mode) {
-        NSString *systemCMDString = [NSString stringWithFormat:@"open -R %@", [baseURL path]];
-        system([systemCMDString UTF8String]);
+    if (appBundle) {
+        dsprintf(stdout, "Opening \"%s\"...\n", [[baseURL path] UTF8String]);
+        if (!quiet_mode) {
+            NSString *systemCMDString = [NSString stringWithFormat:@"open -R %@", [baseURL path]];
+            system([systemCMDString UTF8String]);
+        }
+    } else {
+        for (NSString *key in outputDict) {
+            dsprintf(stdout, "%s issues: %d\n", [key UTF8String], [[outputDict objectForKey:key] integerValue]);
+        }
     }
 
     return 0;

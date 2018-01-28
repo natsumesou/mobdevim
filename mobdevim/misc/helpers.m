@@ -89,31 +89,42 @@ void print_manpage(void) {
   %sName%s\n\
   %s%s%s -- (mobiledevice-improved) Interact with an iOS device (compiled %s)\n\n\
   %sSynopsis%s\n\
+  \tmobdevim [-rq][-f]\n\
   \tmobdevim [-rq][-l | -l bundleIdentifier][key]\n\
   \tmobdevim [-rq][-p | -p provisioningUUID]\n\
+  \tmobdevim [-rq][-g][bundleIdentifier][path]\n\
   \tmobdevim [-rq][-i pathToIPA]\n\
-  \tmobdevim [-rq][-f]\n\
-  \tmobdevim [-q ][-C]\n\
+  \tmobdevim [-q][-C]\n\
+  \tmobdevim [-q][-y bun]eIdentifier]\n\
+  \tmobdevim [-q][-s bundeIdentifier][path]\n\
   \tmobdevim [-c]\n\n\
   %sDescription%s\n\
   \tThe mobdevim utlity interacts with your plugged in iOS device over USB using Apple's private\n\
-  framework, MobileDevice. The functionality in this utility has been reverse engineered out the\n\
-  functionality of MobileDevice\n\
-  \n\
+  framework, MobileDevice.\n\n\
   The options are as follows:\n\
-  \t%s-f%s\tGet information about the device\n\n\
+  \t%s-f%s\tGet device info\n\n\
+  \t%s-g%s\tGet device logs/issues\n\n\
+  \t%s-y%s\tYoink sandbox content\n\n\
+  \t%s-s%s\tSend content to device (use content from yoink command)\n\n\
   \t%s-i%s\tInstall application, expects path to .ipa file\n\n\
   \t%s-c%s\tDump out the console information. Use ctrl-c to terminate\n\n\
+  \t%s-C%s\tGet certificates on device\n\n\
   \t%s-l%s\tDump info about all apps, if a bundleIdentifier is given, it will dump the info for that app.\n\t\tIf a bundleIdentifier and key is given, then it will dump only the info for that key for a bundleIdentifier\n\n\
+  \t%s-R%s\tUse color\n\n\
   \t%s-q%s\tQuiet mode, ideal for limiting output or checking if a value exists based upon return status\n\n";
   
   char formattedString[2000];
   snprintf(formattedString, 2000, manDescription, dcolor("bold"), colorEnd(), dcolor("bold"), program_name, colorEnd(), __DATE__, dcolor("bold"), colorEnd(),
-           dcolor("bold"), colorEnd(), //
            dcolor("bold"), colorEnd(), // -f
+           dcolor("bold"), colorEnd(), // -g
            dcolor("bold"), colorEnd(), // -i
+           dcolor("bold"), colorEnd(), // -y
+           dcolor("bold"), colorEnd(), // -s
+           dcolor("bold"), colorEnd(), // -c
+           dcolor("bold"), colorEnd(), // -C
            dcolor("bold"), colorEnd(), // -c
            dcolor("bold"), colorEnd(), // -l
+             dcolor("bold"), colorEnd(), // -l
            dcolor("bold"), colorEnd()); // -q
   
   dsprintf(stdout, "%s", formattedString);
