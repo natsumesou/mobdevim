@@ -119,15 +119,15 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
             continue;
         }
         
-//        if (!appBundle) {
-//            NSString *procName = [[[[NSString stringWithUTF8String:remotePath] lastPathComponent] componentsSeparatedByString:@"-20"] firstObject];
-//            if (![outputDict objectForKey:procName]) {
-//                [outputDict setObject:@0 forKey:procName];
-//            }
-//            [outputDict setObject:@([[outputDict objectForKey:procName] integerValue] + 1) forKey:procName];
-//            AFCFileRefClose(connectionRef, descriptorRef);
-//            continue;
-//        }
+        if (!appBundle) {
+            NSString *procName = [[[[NSString stringWithUTF8String:remotePath] lastPathComponent] componentsSeparatedByString:@"-20"] firstObject];
+            if (![outputDict objectForKey:procName]) {
+                [outputDict setObject:@0 forKey:procName];
+            }
+            [outputDict setObject:@([[outputDict objectForKey:procName] integerValue] + 1) forKey:procName];
+            AFCFileRefClose(connectionRef, descriptorRef);
+            continue;
+        }
   
         NSURL *finalizedURL = [baseURL URLByAppendingPathComponent:[NSString stringWithUTF8String:remotePath]];
         
