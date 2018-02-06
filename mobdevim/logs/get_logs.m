@@ -23,8 +23,8 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
 
     NSString *executableName = nil;
     AMDeviceLookupApplications(d, opts, &dict);
-    
-    if (appBundle) {
+
+    if (appBundle && ![appBundle isEqualToString:@"_all"]) {
     executableName = [[dict objectForKey:appBundle] objectForKey:@"CFBundleExecutable"];
         if (!executableName) {
             dsprintf(stderr, "%sCouldn't find the bundleIdentifier \"%s\", try listing all bundleIDs with %s%smobdevim -l%s\n", dcolor("yellow"), [appBundle UTF8String], colorEnd(), dcolor("bold"), colorEnd());
@@ -119,48 +119,49 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
             continue;
         }
         
-
-        if (appBundle && ![[NSString stringWithUTF8String:remotePath] hasPrefix:[NSString stringWithFormat:@"%@.", executableName]]) {
-            continue;
-        }
-        
-        
-        if (!appBundle) {
-            
-            NSString *procName = [[[[NSString stringWithUTF8String:remotePath] lastPathComponent] componentsSeparatedByString:@"-20"] firstObject];
-            if (![outputDict objectForKey:procName]) {
-                [outputDict setObject:@0 forKey:procName];
-            }
-            
-            [outputDict setObject:@([[outputDict objectForKey:procName] integerValue] + 1) forKey:procName];
-            AFCFileRefClose(connectionRef, descriptorRef);
-            continue;
-        }
-        
+//        if (!appBundle) {
+//            NSString *procName = [[[[NSString stringWithUTF8String:remotePath] lastPathComponent] componentsSeparatedByString:@"-20"] firstObject];
+//            if (![outputDict objectForKey:procName]) {
+//                [outputDict setObject:@0 forKey:procName];
+//            }
+//            [outputDict setObject:@([[outputDict objectForKey:procName] integerValue] + 1) forKey:procName];
+//            AFCFileRefClose(connectionRef, descriptorRef);
+//            continue;
+//        }
   
         NSURL *finalizedURL = [baseURL URLByAppendingPathComponent:[NSString stringWithUTF8String:remotePath]];
-        [[NSFileManager defaultManager] createFileAtPath:[finalizedURL path] contents:nil attributes:nil];
         
-        NSFileHandle *handle = [NSFileHandle fileHandleForWritingToURL:finalizedURL error:&err];
-        
-        if (err) {
-            dsprintf(stdout, "%s, exiting...\n", [[err localizedDescription] UTF8String]);
-            return 1;
-        }
-        
-        int fd = [handle fileDescriptor];
-        if (fd == -1) {
-            dsprintf(stderr, "%sCan't open \"%s\" to write to, might be an existing file there.\n", [finalizedURL path]);
-            continue;
-        }
-        
-        size_t size = BUFSIZ;
-        void *buffer[BUFSIZ];
-        while (AFCFileRefRead(connectionRef, descriptorRef, buffer, &size) == 0 && size != 0 && size != -1) {
+        size_t size = 2048;
+        char *buffer = calloc(2048, 1);
+        BOOL hasSearchedBundleID = NO;
+        NSFileHandle *handle = nil;
+        int fd = -1;
+        while (AFCFileRefRead(connectionRef, descriptorRef, (void **)buffer, &size) == 0 && size != 0 && size != -1) {
+            if (!hasSearchedBundleID) {
+                if(![appBundle isEqualToString:@"_all"] && !strstr(buffer, [appBundle UTF8String])) {
+                    break;
+                }
+                hasSearchedBundleID = YES;
+                [[NSFileManager defaultManager] createFileAtPath:[finalizedURL path] contents:nil attributes:nil];
+                handle = [NSFileHandle fileHandleForWritingToURL:finalizedURL error:&err];
+                
+                if (err) {
+                    dsprintf(stdout, "%s, exiting...\n", [[err localizedDescription] UTF8String]);
+                    return 1;
+                }
+                
+                fd = [handle fileDescriptor];
+                if (fd == -1) {
+                    dsprintf(stderr, "%sCan't open \"%s\" to write to, might be an existing file there.\n", [finalizedURL path]);
+                    continue;
+                }
+            }
+            
             write(fd, buffer, size);
         }
         
         [handle closeFile];
+        free(buffer);
         AFCFileRefClose(connectionRef, descriptorRef);
     }
     
