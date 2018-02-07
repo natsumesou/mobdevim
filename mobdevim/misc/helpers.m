@@ -92,7 +92,7 @@ void print_manpage(void) {
   \tmobdevim [-rq][-f]\n\
   \tmobdevim [-rq][-l | -l bundleIdentifier][key]\n\
   \tmobdevim [-rq][-p | -p provisioningUUID]\n\
-  \tmobdevim [-rq][-g][bundleIdentifier][path]\n\
+  \tmobdevim [-rq][-g | -g bundleIdentifier | -g number]\n\
   \tmobdevim [-rq][-i pathToIPA]\n\
   \tmobdevim [-q][-C]\n\
   \tmobdevim [-q][-y bun]eIdentifier]\n\
@@ -103,7 +103,7 @@ void print_manpage(void) {
   framework, MobileDevice.\n\n\
   The options are as follows:\n\
   \t%s-f%s\tGet device info\n\n\
-  \t%s-g%s\tGet device logs/issues\n\n\
+  \t%s-g%s\tGet device logs/issues, use bundleIdentifier or _all, or number for most recent\n\n\
   \t%s-y%s\tYoink sandbox content\n\n\
   \t%s-s%s\tSend content to device (use content from yoink command)\n\n\
   \t%s-i%s\tInstall application, expects path to .ipa file\n\n\

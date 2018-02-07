@@ -24,7 +24,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     NSString *executableName = nil;
     AMDeviceLookupApplications(d, opts, &dict);
 
-    if (appBundle && ![appBundle isEqualToString:@"_all"]) {
+    if (appBundle && ![appBundle isEqualToString:@"_all"] && ![appBundle integerValue]) {
     executableName = [[dict objectForKey:appBundle] objectForKey:@"CFBundleExecutable"];
         if (!executableName) {
             dsprintf(stderr, "%sCouldn't find the bundleIdentifier \"%s\", try listing all bundleIDs with %s%smobdevim -l%s\n", dcolor("yellow"), [appBundle UTF8String], colorEnd(), dcolor("bold"), colorEnd());
@@ -86,7 +86,10 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     }
     
     AFCIteratorRef iteratorRef = NULL;
-    AFCDirectoryOpen(connectionRef, ".", &iteratorRef);
+    NSMutableSet *unexploredDirectories = [NSMutableSet set];
+    [unexploredDirectories addObject:@"."];
+    
+    AFCDirectoryOpen(connectionRef, [[unexploredDirectories anyObject] UTF8String], &iteratorRef);
     NSError *err = NULL;
     [[NSFileManager defaultManager] createDirectoryAtPath:[baseURL path] withIntermediateDirectories:YES attributes:nil error:&err];
     
@@ -98,6 +101,8 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     err = nil;
     char *remotePath = NULL;
     NSMutableDictionary *outputDict = [NSMutableDictionary dictionary];//used for no appBund
+    NSMutableSet *mostRecentSent = [NSMutableSet set];
+    size_t maxRecentSize = [appBundle integerValue];
     
     while (AFCDirectoryRead(connectionRef, iteratorRef, &remotePath) == 0 && remotePath) {
         
@@ -116,7 +121,30 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
         
         // is a directory? ignore
         if ([[fileAttributes objectForKey:@"st_ifmt"] isEqualToString:@"S_IFDIR"]) {
+            if (strcmp(remotePath, ".") != 0 && strcmp(remotePath, "..") != 0) {
+                [unexploredDirectories addObject:[NSString stringWithUTF8String:remotePath]];
+            }
             continue;
+        }
+        
+        // If numbers are used as an argument
+        if (maxRecentSize) {
+            if ([mostRecentSent count] < maxRecentSize) {
+                [mostRecentSent addObject:@{@"mod" : @([fileAttributes[@"st_mtime"] integerValue]), @"path" : [NSString stringWithUTF8String:remotePath] }];
+            }
+            NSDictionary *candidate = nil;
+            for (NSDictionary *dict in mostRecentSent) {
+                if ([dict[@"mod"] integerValue] > [fileAttributes[@"st_mtime"] integerValue]) {
+                    candidate = dict;
+                    break;
+                }
+            }
+            
+            if (candidate) {
+                [mostRecentSent removeObject:candidate];
+                [mostRecentSent addObject:@{@"mod" : @([fileAttributes[@"st_mtime"] integerValue]), @"path" : [NSString stringWithUTF8String:remotePath] }];
+            }
+            
         }
         
         if (!appBundle) {
@@ -131,49 +159,80 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
   
         NSURL *finalizedURL = [baseURL URLByAppendingPathComponent:[NSString stringWithUTF8String:remotePath]];
         
-        size_t size = 2048;
-        char *buffer = calloc(2048, 1);
-        BOOL hasSearchedBundleID = NO;
-        NSFileHandle *handle = nil;
-        int fd = -1;
-        while (AFCFileRefRead(connectionRef, descriptorRef, (void **)buffer, &size) == 0 && size != 0 && size != -1) {
-            if (!hasSearchedBundleID) {
-                if(![appBundle isEqualToString:@"_all"] && !strstr(buffer, [appBundle UTF8String])) {
-                    break;
-                }
-                hasSearchedBundleID = YES;
-                [[NSFileManager defaultManager] createFileAtPath:[finalizedURL path] contents:nil attributes:nil];
-                handle = [NSFileHandle fileHandleForWritingToURL:finalizedURL error:&err];
-                
-                if (err) {
-                    dsprintf(stdout, "%s, exiting...\n", [[err localizedDescription] UTF8String]);
-                    return 1;
-                }
-                
-                fd = [handle fileDescriptor];
-                if (fd == -1) {
-                    dsprintf(stderr, "%sCan't open \"%s\" to write to, might be an existing file there.\n", [finalizedURL path]);
-                    continue;
-                }
-            }
-            
-            write(fd, buffer, size);
+        size_t size = [[fileAttributes objectForKey:@"st_size"] longLongValue];
+        if (size) {
+            size = BUFSIZ;
         }
         
-        [handle closeFile];
-        free(buffer);
+        if (![appBundle integerValue]) {
+            
+            char *buffer = calloc(size, 1);
+            BOOL hasSearchedBundleID = NO;
+            NSFileHandle *handle = nil;
+            int fd = -1;
+            while (AFCFileRefRead(connectionRef, descriptorRef, (void **)buffer, &size) == 0 && size != 0 && size != -1) {
+                if (!hasSearchedBundleID) {
+                    if(![appBundle isEqualToString:@"_all"] && !strstr(buffer, [appBundle UTF8String])) {
+                        break;
+                    }
+                    hasSearchedBundleID = YES;
+                    [[NSFileManager defaultManager] createFileAtPath:[finalizedURL path] contents:nil attributes:nil];
+                    handle = [NSFileHandle fileHandleForWritingToURL:finalizedURL error:&err];
+                    
+                    if (err) {
+                        dsprintf(stdout, "%s, exiting...\n", [[err localizedDescription] UTF8String]);
+                        return 1;
+                    }
+                    
+                    fd = [handle fileDescriptor];
+                    if (fd == -1) {
+                        dsprintf(stderr, "%sCan't open \"%s\" to write to, might be an existing file there.\n", [finalizedURL path]);
+                        continue;
+                    }
+                }
+                
+                write(fd, buffer, size);
+            }
+            
+            [handle closeFile];
+            free(buffer);
+        }
         AFCFileRefClose(connectionRef, descriptorRef);
+    }
+    
+    if ([appBundle integerValue]) {
+        
+        for (NSDictionary *dict in mostRecentSent) {
+            AFCFileDescriptorRef descriptorRef = NULL;
+            if (AFCFileRefOpen(connectionRef, [dict[@"path"] UTF8String], 0x1, &descriptorRef) || !descriptorRef) {
+                continue;
+            }
+            
+            AFCIteratorRef iteratorRef = NULL;
+            if (AFCFileInfoOpen(connectionRef,  [dict[@"path"] UTF8String], &iteratorRef) && !iteratorRef) {
+                dsprintf(stderr, "Couldn't open \"%s\"", remotePath);
+                continue;
+            }
+            
+            size_t size = 1024;
+            char buffer[1024];
+            dsprintf(stdout, "****************************************\n%s\n****************************************\n", [dict[@"path"] UTF8String]);
+            while (AFCFileRefRead(connectionRef, descriptorRef, (void **)buffer, &size) == 0 && size != 0 && size != -1) {
+                dsprintf(stdout, "%s", buffer);
+                memset(buffer, '\0', size);
+            }
+        }
     }
     
     AFCConnectionClose(connectionRef);
     
-    if (appBundle) {
+    if (appBundle && ![appBundle integerValue]) {
         dsprintf(stdout, "Opening \"%s\"...\n", [[baseURL path] UTF8String]);
         if (!quiet_mode) {
             NSString *systemCMDString = [NSString stringWithFormat:@"open -R %@", [baseURL path]];
             system([systemCMDString UTF8String]);
         }
-    } else {
+    }  else {
         for (NSString *key in outputDict) {
             dsprintf(stdout, "%s issues: %d\n", [key UTF8String], [[outputDict objectForKey:key] integerValue]);
         }
