@@ -7,74 +7,44 @@
 //
 
 #import "debug_application.h"
+#import "helpers.h"
 #import <dlfcn.h>
+@import Cocoa;
+@import Darwin;
+@import AppKit;
+
+#define LLDB_SETUP_FILE "/tmp/ds_lldbinit_setup"
+#define LLDB_SETUP_CONTENT "# "
 
 int debug_application(AMDeviceRef d, NSDictionary* options) {
   
+  NSDictionary *dict = nil;
+  AMDeviceLookupApplications(d, @{@"ReturnAttributes": @[@"ProfileValidated", @"CFBundleIdentifier", @"Path"], @"ShowLaunchProhibitedApps" : @YES}, &dict);
   AMDServiceConnectionRef connection = NULL;
   NSDictionary *params = @{@"CloseOnInvalidate" : @YES, @"InvalidateOnDetach" : @YES};
   AMDeviceSecureStartService(d, @"com.apple.debugserver", params, &connection);
-//  int socket = (int)AMDServiceConnectionGetSocket(connection);
+  int socket = (int)AMDServiceConnectionGetSocket(connection);
   
-//  void * handle = dlopen("/Users/derekselander/Desktop/LLDBRPC", RTLD_NOW);
+  void * handle = dlopen("/Applications/Xcode.app/Contents/SharedFrameworks/LLDBRPC.framework/Versions/A/LLDBRPC", RTLD_NOW);
 
-//  void *socketHandle = NULL;
-//  int (*createSocket)(void *, char *) = dlsym(handle, "_ZN3rpc10Connection18ConnectToRPCServerEPKc");
-//  int (*getConnection)(void *, int) = dlsym(handle, "_ZNK3rpc10Connection18SendFileDescriptorEi");
-//  assert(createSocket && getConnection);
+  void *socketHandle = NULL;
+  int (*ConnectToRPCServer)(void *, const char *) = dlsym(handle, "_ZN3rpc10Connection18ConnectToRPCServerEPKc");
+  int (*SendFileDescriptor)(void *, int) = dlsym(handle, "_ZNK3rpc10Connection18SendFileDescriptorEi");
+  assert(ConnectToRPCServer && SendFileDescriptor);
   
+  NSString* xcodePath = [[NSWorkspace sharedWorkspace] fullPathForApplication:@"Xcode"];
+  if (!xcodePath) {
+    dsprintf(stderr, "Make sure Xcode is installed to debug, use \"xcode-select -p\" to verify");
+    exit(1);
+  }
+  xcodePath = [xcodePath stringByAppendingPathComponent:@"Contents/SharedFrameworks"];
   
-//  createSocket(&socketHandle, "/Applications/Xcode.app/Contents/SharedFrameworks");
+  ConnectToRPCServer(&socketHandle, [xcodePath UTF8String]);
+  int remoteFD = SendFileDescriptor(&socketHandle, socket);
   
-//  int remoteFD = getConnection(&socketHandle, socket);
-  
-  
-//  int remoteFD = getConnection(, socket);
-  
-  
-  //  AFCDirectoryRead(connectionRef, <#char *#>, <#void *#>)
-  //  while ([outstandingDirectories count]) {
-  //    dirContents = nil;
-  //
-  //    for (NSString *path in dirContents) {
-  //
-  //      NSString *newString = [currentDirectory stringByAppendingPathComponent:path];
-  //      AFCDirectoryOpen(connectionRef, [newString UTF8String], &dirContents);
-  ////      [currentDirectory stringByDeletingLastPathComponent];
-  //
-  //      NSLog(@"%@", dirContents);
-  //    }
-  //
-  //  }
-  //  while
-  
-  //
-  //
-  //  __unused long rr = AMDServiceConnectionGetSocket(serviceConnect);
-  //  int removeSuccess = AMDeviceSecureRemoveApplicationArchive(serviceConnect, d, requiredArgument, rr, rr, rr);
-  //  if (removeSuccess) {
-  //    dsprintf(stderr, "Error removing archived application: %d", removeSuccess);
-  //  }
-  //
-  //
-  //
-  //
-  //  NSDictionary *params = @{@"ArchiveType" : @"ApplicationOnly", @"SkippUninstall" : @YES};
-  //
-  //  int archiveSuccess = AMDeviceSecureArchiveApplication(serviceConnect, d, requiredArgument, params, &yoink_callbackfunc, requiredArgument);
-  //
-  //  if (archiveSuccess != ERR_SUCCESS && archiveSuccess != kAMDAlreadyArchivedError) {
-  //    NSLog(@"Error: %d, exiting early", archiveSuccess);
-  //    return 1;
-  //  }
-  //
-  //
-  //  //  perform_command(AMDServiceConnectionRef, @"Browse", 0, callback_func, NSDictionary *, @"ClientOptions")
-  //  //  AMDeviceSecureStartService(d, @"com.apple.mobile.debug", inputDict, &f);
-  //  //  AFCConnectionSetSecureContext
-  //  //  AFCConnectionOpen(f, 0, &conn);
-  //
-  //  //   AMDeviceSecureRemoveApplicationArchive(var_48, [var_28 GetDevice], var_8->srcFilePath_, 0x0, 0x0, 0x0);
+  printf("fd://%d, socket %d", remoteFD, socket);
+//  write(remoteFD, <#const void *__buf#>, <#size_t __nbyte#>)
+  CFRunLoopRun();
 
   return 0;
 }

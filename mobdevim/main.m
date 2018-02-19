@@ -51,7 +51,11 @@ __unused static void connect_callback(AMDeviceRef deviceArray, int cookie) {
   assert((AMDeviceIsPaired(deviceArray) == ERR_SUCCESS));
   
   // Validate Pairing
-  assert(!AMDeviceValidatePairing(d));
+  if (AMDeviceValidatePairing(d)) {
+    dsprintf(stderr, "The device \"%s\" might not have been paired yet, Trust this computer on the device\n", [AMDeviceCopyValue(d, nil, @"DeviceName", 0) UTF8String]);
+    exit(1);
+  }
+//  assert(!AMDeviceValidatePairing(d));
 
   // Start Session
   assert(!AMDeviceStartSession(d));
@@ -148,6 +152,7 @@ int main(int argc, const char * argv[]) {
                   exit(EXIT_SUCCESS);
               case 'd':
                   // TODO
+                  shouldDisableTimeout = NO;
                   actionFunc = debug_application;
                   break;
               case 'c':
@@ -187,6 +192,7 @@ int main(int argc, const char * argv[]) {
                 actionFunc = &list_applications;
                 break;
               case 'd':
+                shouldDisableTimeout = NO;
                 actionFunc = debug_application;
                 break;
               case 'y':
