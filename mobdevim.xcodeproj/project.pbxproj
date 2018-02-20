@@ -16,7 +16,6 @@
 		A64553931FCD068E00C16506 /* yoink.m in Sources */ = {isa = PBXBuildFile; fileRef = A64553921FCD068E00C16506 /* yoink.m */; };
 		A64553961FCD088400C16506 /* get_device_info.m in Sources */ = {isa = PBXBuildFile; fileRef = A64553951FCD088400C16506 /* get_device_info.m */; };
 		A64553991FCD097200C16506 /* install_application.m in Sources */ = {isa = PBXBuildFile; fileRef = A64553981FCD097200C16506 /* install_application.m */; };
-		A652DF121F71C0F1002E08D4 /* MobileDevice in Frameworks */ = {isa = PBXBuildFile; fileRef = A60098A81F5CB7F7005692B6 /* MobileDevice */; };
 		A6AA84451FC77B9200F90C13 /* console.m in Sources */ = {isa = PBXBuildFile; fileRef = A6AA84441FC77B9200F90C13 /* console.m */; };
 		A6B2C143201AB2890096C077 /* mobdevim in CopyFiles */ = {isa = PBXBuildFile; fileRef = A6B3AEE61F5CB27900ECCBF2 /* mobdevim */; };
 		A6B3AEEA1F5CB27900ECCBF2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A6B3AEE91F5CB27900ECCBF2 /* main.m */; };
@@ -92,7 +91,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A652DF121F71C0F1002E08D4 /* MobileDevice in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,6 +452,10 @@
 					"$(inherited)",
 					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks/MobileDevice.framework/Versions/A",
 				);
+				OTHER_LDFLAGS = (
+					"-fobjc-link-runtime",
+					/System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/MobileDevice,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -469,6 +471,10 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SYSTEM_LIBRARY_DIR)/PrivateFrameworks/MobileDevice.framework/Versions/A",
+				);
+				OTHER_LDFLAGS = (
+					"-fobjc-link-runtime",
+					/System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/MobileDevice,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
