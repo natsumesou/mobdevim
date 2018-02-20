@@ -6,6 +6,7 @@
 //  Copyright © 2017 Selander. All rights reserved.
 //
 
+@import Security;
 #import "get_provisioning_profiles.h"
 
 NSString * const kProvisioningProfilesCopyDeveloperCertificates =  @"com.selander.provisioningprofiles.copydevelopercertificates";
@@ -47,6 +48,47 @@ int get_provisioning_profiles(AMDeviceRef d, NSDictionary *options) {
     NSString *apsEnv = dict[@"Entitlements"][@"aps-environment"];
     NSString *uuid = dict[@"UUID"];
     NSString *name = dict[@"Name"];
+    NSArray *certs = dict[@"DeveloperCertificates"];
+      NSMutableArray *certificateNames = [NSMutableArray new];
+      for (int i = 0; i < [certs count]; i++) {
+          NSData *data = certs[i];
+          CFDataRef dataRef = CFDataCreate(NULL, [data bytes], [data length]);
+          SecCertificateRef secref = SecCertificateCreateWithData(nil, dataRef);
+          
+          
+          // Common name
+          CFStringRef commonNameRef = NULL;
+          SecCertificateCopyCommonName(secref, &commonNameRef);
+          NSString *commonName = CFBridgingRelease(commonNameRef);
+          
+//          NSString* objectSummary = CFBridgingRelease(SecCertificateCopySubjectSummary(secref));
+          
+          CFArrayRef keysRef = NULL;
+          NSDictionary* certDict =  CFBridgingRelease(SecCertificateCopyValues(secref, keysRef, nil));
+          
+          NSNumber *validBefore = nil;
+          NSNumber *validAfter = nil;
+          NSString *serialValue = nil;
+          for (NSDictionary *key in certDict) {
+               if ([certDict[key][@"label"] isEqualToString:@"Serial Number"]) {
+                   serialValue = certDict[key][@"value"];
+                   continue;
+               } else if ([certDict[key][@"label"] isEqualToString:@"Not Valid Before"]) {
+                  validBefore = certDict[key][@"value"];
+                  continue;
+              } else if ([certDict[key][@"label"] isEqualToString:@"Not Valid After"]) {
+                  validAfter = certDict[key][@"value"];
+                  continue;
+              }
+          }
+          
+          [certificateNames addObject:@{@"Common Name"  : commonName,
+                                        @"Serial Number": serialValue ? serialValue : @"NULL",
+                                        @"Valid Before" : (validBefore ? [NSDate dateWithTimeIntervalSinceReferenceDate:[validBefore doubleValue]] : @"NULL"),
+                                        @"Valid After"  : (validAfter ? [NSDate dateWithTimeIntervalSinceReferenceDate:[validAfter doubleValue]] : @"NULL"),
+                                        }];
+
+      }
 
     if (filterProvisioninProfilesThatOnlyFitDevice) {
       NSArray *provisionedDevices = dict[@"ProvisionedDevices"];
@@ -78,7 +120,10 @@ int get_provisioning_profiles(AMDeviceRef d, NSDictionary *options) {
                                      dcolor("bold"), apsEnv ? apsEnv : @"[NONE]", colorEnd(),
                                      dcolor("bold"), uuid, colorEnd()];
     if (filterProvisioninProfilesThatOnlyFitDevice) {
-      dsprintf(stdout, "Dumping Provisioning Profile info for UDID \"%s%s%s\"...\n%s\n", dcolor("cyan"), [filterProvisioninProfilesThatOnlyFitDevice UTF8String], colorEnd(), [[dict debugDescription] UTF8String]);
+        NSMutableDictionary *outputDict = [NSMutableDictionary dictionaryWithDictionary:dict];
+        [outputDict removeObjectForKey:@"DeveloperCertificates"];
+        [outputDict setObject:certificateNames forKey:@"DeveloperCertificates"];
+      dsprintf(stdout, "Dumping Provisioning Profile info for UDID \"%s%s%s\"...\n%s\n", dcolor("cyan"), [filterProvisioninProfilesThatOnlyFitDevice UTF8String], colorEnd(), [[outputDict debugDescription] UTF8String]);
     } else {
       dsprintf(stdout, "%s\n", [outputString UTF8String]);
     }
