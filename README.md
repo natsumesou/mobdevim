@@ -49,3 +49,7 @@ Alternatively, a precompiled version is available <a href="https://github.com/De
     
     
 More commands will be coming soon...
+
+Use DSCOLOR env var for all the colors!!!
+
+![yoink example](https://github.com/DerekSelander/mobdevim/raw/master/media/color_wow.png)
