@@ -18,7 +18,7 @@ const char *version_string = "0.0.1";
 const char *program_name = "mobdevim";
 // TODO
 // const char *git_hash = "|||||";
-const char *usage = "mobdevim [-v] [-l] [-L appbundleID] [-i path_to_app_dir] [-p -c] [-c -P UUID]";
+const char *usage = "mobdevim [-v] [-l|-l appIdent][-i path_to_app_dir] [-p|-p UUID_PROVSIONPROFILE] [-c] [-C] [-s bundleIdent path] [-f]";
 BOOL quiet_mode = NO;
 
 
@@ -95,8 +95,8 @@ void print_manpage(void) {
   \tmobdevim [-rq][-g | -g bundleIdentifier | -g number]\n\
   \tmobdevim [-rq][-i pathToIPA]\n\
   \tmobdevim [-q][-C]\n\
-  \tmobdevim [-q][-y bun]eIdentifier]\n\
-  \tmobdevim [-q][-s bundeIdentifier][path]\n\
+  \tmobdevim [-q][-y bundleIdentifier]\n\
+  \tmobdevim [-q][-s bundleIdentifier path]\n\
   \tmobdevim [-c]\n\n\
   %sDescription%s\n\
   \tThe mobdevim utlity interacts with your plugged in iOS device over USB using Apple's private\n\
@@ -109,6 +109,7 @@ void print_manpage(void) {
   \t%s-i%s\tInstall application, expects path to .ipa file\n\n\
   \t%s-c%s\tDump out the console information. Use ctrl-c to terminate\n\n\
   \t%s-C%s\tGet certificates on device\n\n\
+  \t%s-p%s\tDisplay developer provisioning profile info\n\n\
   \t%s-l%s\tDump info about all apps, if a bundleIdentifier is given, it will dump the info for that app.\n\t\tIf a bundleIdentifier and key is given, then it will dump only the info for that key for a bundleIdentifier\n\n\
   \t%s-R%s\tUse color\n\n\
   \t%s-q%s\tQuiet mode, ideal for limiting output or checking if a value exists based upon return status\n\n";
@@ -123,6 +124,7 @@ void print_manpage(void) {
            dcolor("bold"), colorEnd(), // -c
            dcolor("bold"), colorEnd(), // -C
            dcolor("bold"), colorEnd(), // -c
+           dcolor("bold"), colorEnd(), // -p
            dcolor("bold"), colorEnd(), // -l
              dcolor("bold"), colorEnd(), // -l
            dcolor("bold"), colorEnd()); // -q
