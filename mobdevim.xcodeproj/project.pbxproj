@@ -16,6 +16,9 @@
 		A64553931FCD068E00C16506 /* yoink.m in Sources */ = {isa = PBXBuildFile; fileRef = A64553921FCD068E00C16506 /* yoink.m */; };
 		A64553961FCD088400C16506 /* get_device_info.m in Sources */ = {isa = PBXBuildFile; fileRef = A64553951FCD088400C16506 /* get_device_info.m */; };
 		A64553991FCD097200C16506 /* install_application.m in Sources */ = {isa = PBXBuildFile; fileRef = A64553981FCD097200C16506 /* install_application.m */; };
+		A66B9EC320405BFF0014CB4E /* delete_application.m in Sources */ = {isa = PBXBuildFile; fileRef = A66B9EC220405BFF0014CB4E /* delete_application.m */; };
+		A66B9EC72042292E0014CB4E /* statusbar.c in Sources */ = {isa = PBXBuildFile; fileRef = A66B9EC52042292E0014CB4E /* statusbar.c */; };
+		A66B9EC82042292E0014CB4E /* progressbar.c in Sources */ = {isa = PBXBuildFile; fileRef = A66B9EC62042292E0014CB4E /* progressbar.c */; };
 		A6AA84451FC77B9200F90C13 /* console.m in Sources */ = {isa = PBXBuildFile; fileRef = A6AA84441FC77B9200F90C13 /* console.m */; };
 		A6B2C143201AB2890096C077 /* mobdevim in CopyFiles */ = {isa = PBXBuildFile; fileRef = A6B3AEE61F5CB27900ECCBF2 /* mobdevim */; };
 		A6B3AEEA1F5CB27900ECCBF2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A6B3AEE91F5CB27900ECCBF2 /* main.m */; };
@@ -75,6 +78,12 @@
 		A64553971FCD097200C16506 /* install_application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = install_application.h; sourceTree = "<group>"; };
 		A64553981FCD097200C16506 /* install_application.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = install_application.m; sourceTree = "<group>"; };
 		A660482E1FCFF871007F529E /* LLDBRPC */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = LLDBRPC; path = ../../../../Applications/Xcode.app/Contents/SharedFrameworks/LLDBRPC.framework/Versions/A/LLDBRPC; sourceTree = "<group>"; };
+		A66B9EC120405BFF0014CB4E /* delete_application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = delete_application.h; sourceTree = "<group>"; };
+		A66B9EC220405BFF0014CB4E /* delete_application.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = delete_application.m; sourceTree = "<group>"; };
+		A66B9EC52042292E0014CB4E /* statusbar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = statusbar.c; sourceTree = "<group>"; };
+		A66B9EC62042292E0014CB4E /* progressbar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = progressbar.c; sourceTree = "<group>"; };
+		A66B9ECB204229570014CB4E /* progressbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = progressbar.h; sourceTree = "<group>"; };
+		A66B9ECC204229570014CB4E /* statusbar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = statusbar.h; sourceTree = "<group>"; };
 		A6AA84431FC77B9200F90C13 /* console.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = console.h; sourceTree = "<group>"; };
 		A6AA84441FC77B9200F90C13 /* console.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = console.m; sourceTree = "<group>"; };
 		A6B3AEE61F5CB27900ECCBF2 /* mobdevim */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = mobdevim; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -182,6 +191,7 @@
 		A645539F1FCD150700C16506 /* misc */ = {
 			isa = PBXGroup;
 			children = (
+				A66B9EC42042291B0014CB4E /* Progress Bar */,
 				A6F0C2681FC62C68009897DD /* ExternalDeclarations.h */,
 				A6F0C2691FC62CD2009897DD /* helpers.h */,
 				A6F0C26A1FC62CD2009897DD /* helpers.m */,
@@ -196,6 +206,26 @@
 				A6AA84441FC77B9200F90C13 /* console.m */,
 			);
 			path = Console;
+			sourceTree = "<group>";
+		};
+		A66B9EC020405BC20014CB4E /* Delete Application */ = {
+			isa = PBXGroup;
+			children = (
+				A66B9EC120405BFF0014CB4E /* delete_application.h */,
+				A66B9EC220405BFF0014CB4E /* delete_application.m */,
+			);
+			path = "Delete Application";
+			sourceTree = "<group>";
+		};
+		A66B9EC42042291B0014CB4E /* Progress Bar */ = {
+			isa = PBXGroup;
+			children = (
+				A66B9ECB204229570014CB4E /* progressbar.h */,
+				A66B9ECC204229570014CB4E /* statusbar.h */,
+				A66B9EC62042292E0014CB4E /* progressbar.c */,
+				A66B9EC52042292E0014CB4E /* statusbar.c */,
+			);
+			path = "Progress Bar";
 			sourceTree = "<group>";
 		};
 		A6B3AEDD1F5CB27900ECCBF2 = {
@@ -224,6 +254,7 @@
 				A63CED0A1FD9167C00BE683E /* send_files */,
 				A64336121FD4EC7100532C9D /* yoink */,
 				A645539A1FCD142000C16506 /* Install Application */,
+				A66B9EC020405BC20014CB4E /* Delete Application */,
 				A645539B1FCD144700C16506 /* List Applications */,
 				A64553A01FCD151E00C16506 /* Console */,
 				A645539C1FCD146200C16506 /* Provisioning Porfiles */,
@@ -321,11 +352,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				A645538D1FCCF19200C16506 /* get_provisioning_profiles.m in Sources */,
+				A66B9EC82042292E0014CB4E /* progressbar.c in Sources */,
 				A601BF4420182F0500FF3BEB /* get_logs.m in Sources */,
 				A64553931FCD068E00C16506 /* yoink.m in Sources */,
+				A66B9EC72042292E0014CB4E /* statusbar.c in Sources */,
 				A6B3AEEA1F5CB27900ECCBF2 /* main.m in Sources */,
 				A6E7BB681FDF6CE9006DD293 /* remove_file.m in Sources */,
 				A6AA84451FC77B9200F90C13 /* console.m in Sources */,
+				A66B9EC320405BFF0014CB4E /* delete_application.m in Sources */,
 				A626ED1A1FC7D713002584F1 /* debug_application.m in Sources */,
 				A63CED0D1FD9167C00BE683E /* send_files.m in Sources */,
 				A64553901FCD004E00C16506 /* list_applications.m in Sources */,
@@ -455,6 +489,7 @@
 				OTHER_LDFLAGS = (
 					"-fobjc-link-runtime",
 					/System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/MobileDevice,
+					"-lncurses",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -475,6 +510,7 @@
 				OTHER_LDFLAGS = (
 					"-fobjc-link-runtime",
 					/System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/MobileDevice,
+					"-lncurses",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

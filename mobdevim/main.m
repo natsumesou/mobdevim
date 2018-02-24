@@ -71,10 +71,8 @@ __unused static void connect_callback(AMDeviceRef deviceArray, int cookie) {
   }
   
   
-  if (shouldDisableTimeout) {
     AMDeviceNotificationUnsubscribe(deviceArray);
     CFRunLoopStop(CFRunLoopGetMain());
-  }
 }
 
 //*****************************************************************************/
@@ -93,7 +91,7 @@ int main(int argc, const char * argv[]) {
     
     getopt_options = [NSMutableDictionary new];
     
-      while ((option = getopt (argc, (char **)argv, ":d::Rr:fqs:zd:hvg::l::i:Cc::p::y::")) != -1) {
+      while ((option = getopt (argc, (char **)argv, ":d::Rr:fqs:zd:D:hvg::l::i:Cc::p::y::")) != -1) {
           switch (option) {
             case 'R': // Use color
                   setenv("DSCOLOR", "1", 1);
@@ -113,7 +111,11 @@ int main(int argc, const char * argv[]) {
               case 'g':
                   assertArg();
                   actionFunc = &get_logs;
-                  [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kGetLogsAppBundle];
+                  if (strcmp("__delete", optarg) == 0) {
+                      [getopt_options setObject:@YES forKey:kGetLogsDelete];
+                  } else {
+                      [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kGetLogsAppBundle];
+                  }
                   
                   if (argc > optind) {
                       [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kGetLogsFilePath];
@@ -142,6 +144,7 @@ int main(int argc, const char * argv[]) {
                   break;
               case 'i':
                   assertArg();
+                  shouldDisableTimeout = NO;
                   actionFunc = &install_application;
                   addr = strdup(optarg);
                   [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kInstallApplicationPath];

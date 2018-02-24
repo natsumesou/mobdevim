@@ -7,10 +7,13 @@
 //
 
 #import "send_files.h"
+#import <stdio.h>
 
 NSString * const kGetLogsFilePath = @"com.selander.get_logs.sendfilepath";
 
 NSString * const kGetLogsAppBundle = @"com.selander.get_logs.appbundle";
+
+NSString * const kGetLogsDelete = @"com.selander.get_logs.delete";
 
 int get_logs(AMDeviceRef d, NSDictionary *options) {
     
@@ -104,10 +107,24 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     NSMutableSet *mostRecentSent = [NSMutableSet set];
     size_t maxRecentSize = [appBundle integerValue];
     
+    BOOL shouldDelete = [[options objectForKey:kGetLogsDelete] boolValue];
+    if (shouldDelete && !quiet_mode) {
+        dsprintf(stdout, "About to delete all logs, please confirm [Y] ");
+        if (getchar() != 89) {
+            dsprintf(stdout, "Exiting\n");
+            exit(0);
+        }
+    }
+    
     while (AFCDirectoryRead(connectionRef, iteratorRef, &remotePath) == 0 && remotePath) {
         
         AFCFileDescriptorRef descriptorRef = NULL;
         if (AFCFileRefOpen(connectionRef, remotePath, 0x1, &descriptorRef) || !descriptorRef) {
+            continue;
+        }
+        
+        if (shouldDelete) {
+            AFCRemovePath(connectionRef, remotePath);
             continue;
         }
         
@@ -116,6 +133,8 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
             dsprintf(stderr, "Couldn't open \"%s\"", remotePath);
             continue;
         }
+        
+
         
         NSDictionary* fileAttributes = (__bridge NSDictionary *)(iteratorRef->fileAttributes);
         

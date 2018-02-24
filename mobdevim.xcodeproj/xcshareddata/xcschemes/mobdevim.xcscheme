@@ -66,7 +66,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-g"
+            argument = "-i ~/Desktop/UT.app"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
@@ -78,6 +78,11 @@
          </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>
+         <AdditionalOption
+            key = "MallocStackLogging"
+            value = ""
+            isEnabled = "YES">
+         </AdditionalOption>
       </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
