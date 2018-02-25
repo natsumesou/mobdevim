@@ -89,11 +89,12 @@ void print_manpage(void) {
   %sName%s\n\
   %s%s%s -- (mobiledevice-improved) Interact with an iOS device (compiled %s)\n\n\
   %sSynopsis%s\n\
-  \tmobdevim [-rq][-f]\n\
-  \tmobdevim [-rq][-l | -l bundleIdentifier][key]\n\
-  \tmobdevim [-rq][-p | -p provisioningUUID]\n\
-  \tmobdevim [-rq][-g | -g bundleIdentifier | -g number]\n\
-  \tmobdevim [-rq][-i pathToIPA]\n\
+  \tmobdevim [-Rq][-f]\n\
+  \tmobdevim [-Rq][-l | -l bundleIdentifier][key]\n\
+  \tmobdevim [-Rq][-p | -p provisioningUUID]\n\
+  \tmobdevim [-Rq][-g | -g bundleIdentifier | -g number]\n\
+  \tmobdevim [-Rq][-i pathToIPA]\n\
+  \tmobdevim [-Rq][-D bun]eIdentifier\n\
   \tmobdevim [-q][-C]\n\
   \tmobdevim [-q][-y bundleIdentifier]\n\
   \tmobdevim [-q][-s bundleIdentifier path]\n\
@@ -107,6 +108,7 @@ void print_manpage(void) {
   \t%s-y%s\tYoink sandbox content\n\n\
   \t%s-s%s\tSend content to device (use content from yoink command)\n\n\
   \t%s-i%s\tInstall application, expects path to .ipa file\n\n\
+  \t%s-i%s\tInstall application, expects bundleIdentifier\n\n\
   \t%s-c%s\tDump out the console information. Use ctrl-c to terminate\n\n\
   \t%s-C%s\tGet certificates on device\n\n\
   \t%s-p%s\tDisplay developer provisioning profile info\n\n\
@@ -119,6 +121,7 @@ void print_manpage(void) {
            dcolor("bold"), colorEnd(), // -f
            dcolor("bold"), colorEnd(), // -g
            dcolor("bold"), colorEnd(), // -i
+           dcolor("bold"), colorEnd(), // -D
            dcolor("bold"), colorEnd(), // -y
            dcolor("bold"), colorEnd(), // -s
            dcolor("bold"), colorEnd(), // -c

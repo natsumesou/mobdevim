@@ -9,12 +9,12 @@
 #import "install_application.h"
 
 
-NSString * const kDeleteApplicationPath = @"com.selander.delete.path";
+NSString * const kDeleteApplicationIdentifier = @"com.selander.delete.path";
 
 int delete_application(AMDeviceRef d, NSDictionary *options) {
     
     NSDictionary *dict;
-    NSString *name = [options objectForKey:kDeleteApplicationPath];
+    NSString *name = [options objectForKey:kDeleteApplicationIdentifier];
     
     if (!name) {
         dsprintf(stderr, "You must provide a bundleIdentifier to delete\n");
@@ -26,32 +26,26 @@ int delete_application(AMDeviceRef d, NSDictionary *options) {
         dsprintf(stderr, "%sCouldn't find the bundleIdentifier \"%s\", try listing all bundleIDs with %s%smobdevim -l%s\n", dcolor("yellow"), [name UTF8String], colorEnd(), dcolor("bold"), colorEnd());
         return 1;
     }
-
+    
     if (!quiet_mode) {
-        dsprintf(stdout, "Are you sure you want to delete \"%s\"? [Y]", name);
+        dsprintf(stdout, "Are you sure you want to delete \"%s\"? [Y] ", [name UTF8String]);
         if (getchar() != 89) {
             return 0;
         }
     }
-//    AMDeviceSecureUninstallApplicatio
-//    AMDeviceSecureRemoveApplicationArchive(<#AMDServiceConnectionRef#>, <#AMDeviceRef#>, <#NSString *#>, <#void *#>, <#void *#>, <#void *#>)
     
-//  // Get path to generated file
-//  NSString *path = (NSString *)[options objectForKey:kInstallApplicationPath];
-//  NSURL *local_app_url = [NSURL fileURLWithPath:path isDirectory:TRUE];
-//  NSDictionary *params = @{@"PackageType" : @"Developer"};
-//  NSString *deviceName = AMDeviceCopyValue(d, nil, @"DeviceName", 0);
-//
-//  // Get a secure path
-//  assert(!AMDeviceSecureTransferPath(0, d, local_app_url, options, NULL, 0));
-//
-//  int error = AMDeviceSecureInstallApplication(0, d, local_app_url, params, NULL, 0);
-//  if (error) {
-//    dsprintf(stderr, "Error: \"%s\" was unable to install on \"%s\"\n", [[[path lastPathComponent] stringByDeletingPathExtension] UTF8String], [deviceName UTF8String]);
-//    return 1;
-//  } else {
-//    dsprintf(stdout, "Success: \"%s\" app successfully installed on \"%s\"\n", [[[path lastPathComponent] stringByDeletingPathExtension] UTF8String], [deviceName UTF8String]);
-//  }
-//
-  return 0;
+    AMDServiceConnectionRef serviceConnection = nil;
+    NSDictionary *inputDict = @{@"CloseOnInvalidate" : @YES};
+    AMDeviceSecureStartService(d, @"com.apple.mobile.installation_proxy", inputDict, &serviceConnection);
+    if (!serviceConnection) {
+        return EACCES;
+    }
+    int error = AMDeviceSecureUninstallApplication(serviceConnection, NULL, name, @{}, NULL);
+    if (error) {
+        dsprintf(stderr, "Error removing \"%s\"\n", [name UTF8String]);
+        return 1;
+    }
+    
+    dsprintf(stdout, "Successfully removed \"%s\"\n", [name UTF8String]);
+    return 0;
 }

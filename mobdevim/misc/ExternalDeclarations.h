@@ -104,6 +104,7 @@ id AMDServiceConnectionGetSecureIOContext(AMDServiceConnectionRef);
 mach_error_t AMDeviceNotificationUnsubscribe(AMDeviceRef);
 mach_error_t AMDeviceSecureTransferPath(int, AMDeviceRef, NSURL*, NSDictionary *, void *, int);
 mach_error_t AMDeviceSecureInstallApplication(int, AMDeviceRef, NSURL*, NSDictionary*, void *, int);
+mach_error_t AMDeviceSecureUninstallApplication(AMDServiceConnectionRef connection, void * dunno, NSString *bundleIdentifier, NSDictionary *params, void (*installCallback)(NSDictionary*, void *));
 mach_error_t AMDeviceSecureInstallApplicationBundle(AMDeviceRef, NSURL *path, NSDictionary *params, void (*installCallback)(NSDictionary*, void *));
 
 mach_error_t AMDeviceStartHouseArrestService(AMDeviceRef, id, id, int *, void *);

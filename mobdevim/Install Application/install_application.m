@@ -45,6 +45,7 @@ int install_application(AMDeviceRef d, NSDictionary *options) {
     } else {
         progress = progressbar_new("Installing... ", 100);
         error = AMDeviceSecureInstallApplication(0, d, local_app_url, params, installCallback, 0);
+    
         progressbar_update(progress, 100);
         if (error) {
             progressbar_update_label(progress, "Error:");

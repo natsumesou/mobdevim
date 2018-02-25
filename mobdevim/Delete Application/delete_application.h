@@ -11,7 +11,7 @@
 #import "helpers.h"
 
 /// The path to the IPA file
-extern NSString * const kDeleteApplicationPath;
+extern NSString * const kDeleteApplicationIdentifier;
 
 /// Delete an application. Expects a path to an IPA in options
 int delete_application(AMDeviceRef d, NSDictionary *options);

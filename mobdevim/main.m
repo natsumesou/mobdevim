@@ -23,7 +23,7 @@
 #import "remove_file.h"
 #import "send_files.h"
 #import "get_logs.h"
-
+#import "delete_application.h"
 
 static NSOperation *_op = nil; //
 static NSString *optionalArgument = nil;
@@ -132,6 +132,11 @@ int main(int argc, const char * argv[]) {
                   if (argc > optind) {
                       [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kListApplicationsKey];
                   }
+                  break;
+              case 'D':
+                  assertArg();
+                  actionFunc = &delete_application;
+                 [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kDeleteApplicationIdentifier];
                   break;
               case 'q':
                   quiet_mode = YES;
