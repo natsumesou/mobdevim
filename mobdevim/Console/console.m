@@ -7,48 +7,30 @@
 //
 
 #import "console.h"
+//#import <stdio.h>
 #import <sys/socket.h>
 
+#define SIZE 2
 NSString *const kConsoleProcessName = @"com.selander.console.processname";
 
 int console(AMDeviceRef d, NSDictionary* options) {
-
-  AMDServiceConnectionRef connection = NULL;
-  AMDeviceSecureStartService(d, @"com.apple.syslog_relay",
-                                @{@"UnlockEscrowBag" : @YES},
-                                &connection);
-  
-  
-  int socket = (int)AMDServiceConnectionGetSocket(connection);
-  AMDeviceStopSession(d);
-  
-  NSString *name = [options objectForKey:kConsoleProcessName];
-  NSMutableString *bufferString = [NSMutableString string];
-  while (1) {
-    void *opt = NULL;
-    socklen_t len = 0x8;
-    char *buffer = calloc(1, len + 1);
-    if (getsockopt(socket, SOL_SOCKET, SO_NREAD, &opt, &len) == 0) {
-      AMDServiceConnectionReceive(connection, buffer, len);
-      if (name) {
-        [bufferString appendFormat:@"%s", buffer];
-        if ( strstr(buffer, "\n\0")) {
-
-          if ([bufferString containsString:name]) {
-            dsprintf(stdout, "%s", [bufferString UTF8String]);
-          }
-          [bufferString setString:@""];
-        }
-      } else {
+    
+    AMDServiceConnectionRef connection = NULL;
+    AMDeviceSecureStartService(d, @"com.apple.syslog_relay",
+                               @{@"UnlockEscrowBag" : @YES},
+                               &connection);
+    AMDeviceStopSession(d);
+    
+    char buffer[SIZE];
+    memset(buffer, '\0', SIZE);
+    
+    int amountRead = 0;
+    setbuf(stdout, NULL);
+    while (1) {
+        amountRead = (int)AMDServiceConnectionReceive(connection, buffer, SIZE - 1 ); // Get those "P-\x01" bytes then end, easiest way to fix
         dsprintf(stdout, "%s", buffer);
-      }
-      
-    } else {
-      dsprintf(stdout, "error, exiting\n");
-      break;
+        memset(buffer, '\0', SIZE);
     }
-    free(buffer);
-  }
-  
-  return 0;
+
+    return 0;
 }
