@@ -16,9 +16,6 @@ NSString * const kInstallApplicationPath = @"com.selander.installapplication.pat
 static progressbar *progress = nil;
 void installCallback(CFDictionaryRef d) {
 
-//    if (arg == 0) {
-//        return;
-//    }
     if (progress) {
         NSDictionary *dict = (__bridge NSDictionary *)(d);
         NSNumber *complete = dict[@"PercentComplete"];
@@ -29,6 +26,17 @@ void installCallback(CFDictionaryRef d) {
     }
 }
 
+
+void printInstallErrorAndDie(mach_error_t error, const char *path) {
+    switch (error) {
+        default:
+            dsprintf(stderr, "Error installing \"%s\", err: %d\n", path, error);
+            break;
+    }
+    
+    exit(1);
+}
+
 int install_application(AMDeviceRef d, NSDictionary *options) {
     // Get path to generated file
     NSString *path = [(NSString *)[options objectForKey:kInstallApplicationPath] stringByExpandingTildeInPath];
@@ -37,13 +45,17 @@ int install_application(AMDeviceRef d, NSDictionary *options) {
     NSString *deviceName = AMDeviceCopyValue(d, nil, @"DeviceName", 0);
     
     // Get a secure path
-    assert(!AMDeviceSecureTransferPath(0, d, local_app_url, params, NULL, 0));
-    int error = 0;
     
     if (quiet_mode) {
-        error = AMDeviceSecureInstallApplication(0, d, local_app_url, params, NULL, 0);
+        assert(!AMDeviceSecureTransferPath(0, d, local_app_url, params, NULL, 0));
+        return AMDeviceSecureInstallApplication(0, d, local_app_url, params, NULL, 0);
     } else {
-        progress = progressbar_new("Installing... ", 100);
+        progress = progressbar_new("Processing... ", 100);
+        assert(!AMDeviceSecureTransferPath(0, d, local_app_url, params, installCallback, 0));
+        progressbar_update(progress, 100);
+        int error = 0;
+        progressbar_update_label(progress, "Installing...");
+        progressbar_update(progress, 0);
         error = AMDeviceSecureInstallApplication(0, d, local_app_url, params, installCallback, 0);
     
         progressbar_update(progress, 100);
@@ -51,8 +63,7 @@ int install_application(AMDeviceRef d, NSDictionary *options) {
             progressbar_update_label(progress, "Error:");
             progressbar_update(progress, 0);
             progressbar_finish(progress);
-            dsprintf(stderr, "Error: \"%s\" was unable to install on \"%s\"\n", [[[path lastPathComponent] stringByDeletingPathExtension] UTF8String], [deviceName UTF8String]);
-            return 1;
+            printInstallErrorAndDie(error, [path UTF8String]);
         } else {
             progressbar_update_label(progress, "Installed!");
             progressbar_finish(progress);
