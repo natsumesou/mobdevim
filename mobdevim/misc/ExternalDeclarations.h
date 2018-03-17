@@ -95,6 +95,7 @@ mach_error_t AFCKeyValueClose(AFCIteratorRef);
 
 mach_error_t AMDeviceNotificationSubscribe(void (*)(AMDeviceRef, int), int, int, int, void *);
 mach_error_t AMDeviceConnect(AMDeviceRef);
+mach_error_t AMDeviceDisconnect(AMDeviceRef);
 mach_error_t AMDeviceIsPaired(AMDeviceRef);
 mach_error_t AMDeviceValidatePairing(AMDeviceRef);
 mach_error_t AMDeviceStartSession(AMDeviceRef);

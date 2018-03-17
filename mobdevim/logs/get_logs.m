@@ -153,7 +153,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
             }
             NSDictionary *candidate = nil;
             for (NSDictionary *dict in mostRecentSent) {
-                if ([dict[@"mod"] integerValue] > [fileAttributes[@"st_mtime"] integerValue]) {
+                if ([dict[@"mod"] integerValue] < [fileAttributes[@"st_mtime"] integerValue]) {
                     candidate = dict;
                     break;
                 }
