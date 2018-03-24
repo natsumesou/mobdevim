@@ -104,7 +104,10 @@ void print_manpage(void) {
   framework, MobileDevice.\n\n\
   The options are as follows:\n\
   \t%s-f%s\tGet device info\n\n\
-  \t%s-g%s\tGet device logs/issues, use bundleIdentifier or _all, or number for most recent\n\n\
+  \t%s-g%s\tGet device logs/issues\n\
+          \t\t%smobdevim -g com.example.name%s Get issues for com.example.name app\n\
+          \t\t%smobdevim -g 3%s Get the 3rd most recent issue\n\
+          \t\t%smobdevim -g __all%s Get all the logs\n\n\
   \t%s-y%s\tYoink sandbox content\n\n\
   \t%s-s%s\tSend content to device (use content from yoink command)\n\n\
   \t%s-i%s\tInstall application, expects path to .ipa file\n\n\
@@ -120,6 +123,9 @@ void print_manpage(void) {
   snprintf(formattedString, 2000, manDescription, dcolor("bold"), colorEnd(), dcolor("bold"), program_name, colorEnd(), __DATE__, dcolor("bold"), colorEnd(),
            dcolor("bold"), colorEnd(), // -f
            dcolor("bold"), colorEnd(), // -g
+               dcolor("bold"), colorEnd(), // -g
+               dcolor("bold"), colorEnd(), // -g
+               dcolor("bold"), colorEnd(), // -g
            dcolor("bold"), colorEnd(), // -i
            dcolor("bold"), colorEnd(), // -D
            dcolor("bold"), colorEnd(), // -y

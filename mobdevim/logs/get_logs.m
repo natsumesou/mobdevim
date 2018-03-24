@@ -41,7 +41,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     }
     AMDeviceLookupApplications(d, opts, &dict);
     
-    if (appBundle && ![appBundle isEqualToString:@"_all"] && ![appBundle integerValue]) {
+    if (appBundle && ![appBundle isEqualToString:@"__all"] && ![appBundle integerValue]) {
         executableName = [[dict objectForKey:appBundle] objectForKey:@"CFBundleExecutable"];
         if (!executableName) {
             dsprintf(stderr, "%sCouldn't find the bundleIdentifier \"%s\", try listing all bundleIDs with %s%smobdevim -l%s\n", dcolor("yellow"), [appBundle UTF8String], colorEnd(), dcolor("bold"), colorEnd());
@@ -125,7 +125,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     if (shouldDelete && !quiet_mode) {
         dsprintf(stdout, "About to delete all logs, please confirm [Y] ");
         if (getchar() != 89) {
-            dsprintf(stdout, "Exiting\n");
+            dsprintf(stdout, "\nExiting\n");
             exit(0);
         }
     }
@@ -134,11 +134,6 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
         
         AFCFileDescriptorRef descriptorRef = NULL;
         if (AFCFileRefOpen(connectionRef, remotePath, 0x1, &descriptorRef) || !descriptorRef) {
-            continue;
-        }
-        
-        if (shouldDelete) {
-            AFCRemovePath(connectionRef, remotePath);
             continue;
         }
         
@@ -152,6 +147,9 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
         
         NSDictionary* fileAttributes = (__bridge NSDictionary *)(iteratorRef->fileAttributes);
         
+        
+        
+        
         // is a directory? ignore
         if ([[fileAttributes objectForKey:@"st_ifmt"] isEqualToString:@"S_IFDIR"]) {
             if (strcmp(remotePath, ".") != 0 && strcmp(remotePath, "..") != 0) {
@@ -160,6 +158,13 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
             continue;
         }
         
+        /* Not ready yet....
+        if (shouldDelete) {
+            int val = AFCRemovePath(connectionRef, remotePath);
+            printf("%d %s\n", val, remotePath);
+            continue;
+        } */
+
         // If numbers are used as an argument
         if (maxRecentSize) {
             if ([mostRecentSent count] < maxRecentSize) {
@@ -205,7 +210,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
             int fd = -1;
             while (AFCFileRefRead(connectionRef, descriptorRef, (void **)buffer, &size) == 0 && size != 0 && size != -1) {
                 if (!hasSearchedBundleID) {
-                    if(![appBundle isEqualToString:@"_all"] && !strstr(buffer, [appBundle UTF8String])) {
+                    if(![appBundle isEqualToString:@"__all"] && !strstr(buffer, [appBundle UTF8String])) {
                         break;
                     }
                     hasSearchedBundleID = YES;
