@@ -35,7 +35,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
                                                     @"CFBundleDisplayName"]};
     
     NSString *executableName = nil;
-    if ([appBundle ds_isAllDigits] && [appBundle integerValue] <= 1) {
+    if ([appBundle ds_isAllDigits] && [appBundle integerValue] < 1) {
         dsprintf(stderr, "Must use positive integer value\n");
         return 1;
     }
