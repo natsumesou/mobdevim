@@ -15,6 +15,16 @@ NSString * const kGetLogsAppBundle = @"com.selander.get_logs.appbundle";
 
 NSString * const kGetLogsDelete = @"com.selander.get_logs.delete";
 
+@implementation NSString (STUFF)
+
+- (BOOL)ds_isAllDigits {
+    NSCharacterSet* nonNumbers = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
+    NSRange r = [self rangeOfCharacterFromSet: nonNumbers];
+    return r.location == NSNotFound && self.length > 0;
+}
+
+@end
+
 int get_logs(AMDeviceRef d, NSDictionary *options) {
     
     NSDictionary *dict = nil;
@@ -23,12 +33,16 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
                             @"ReturnAttributes" : @[@"CFBundleExecutable",
                                                     @"CFBundleIdentifier",
                                                     @"CFBundleDisplayName"]};
-
+    
     NSString *executableName = nil;
+    if ([appBundle ds_isAllDigits] && [appBundle integerValue] <= 1) {
+        dsprintf(stderr, "Must use positive integer value\n");
+        return 1;
+    }
     AMDeviceLookupApplications(d, opts, &dict);
-
+    
     if (appBundle && ![appBundle isEqualToString:@"_all"] && ![appBundle integerValue]) {
-    executableName = [[dict objectForKey:appBundle] objectForKey:@"CFBundleExecutable"];
+        executableName = [[dict objectForKey:appBundle] objectForKey:@"CFBundleExecutable"];
         if (!executableName) {
             dsprintf(stderr, "%sCouldn't find the bundleIdentifier \"%s\", try listing all bundleIDs with %s%smobdevim -l%s\n", dcolor("yellow"), [appBundle UTF8String], colorEnd(), dcolor("bold"), colorEnd());
             return 1;
@@ -51,7 +65,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
         dsprintf(stderr, "Couldn't create access path \"%s\", exiting\n", baseURL);
         return 1;
     }
-
+    
     AMDServiceConnectionRef serviceConnection = nil;
     NSDictionary *inputDict = @{@"CloseOnInvalidate" : @YES, @"InvalidateOnDetach": @YES};
     AMDeviceSecureStartService(d, @"com.apple.crashreportmover", inputDict, &serviceConnection);
@@ -76,11 +90,11 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
         return EACCES;
     }
     long socket = AMDServiceConnectionGetSocket(serviceConnection);
-    id context = AMDServiceConnectionGetSecureIOContext(serviceConnection);
-    if (context) {
-        // TODO Implement this if it's ever valid
-        assert(0);
-    }
+    //    id context = AMDServiceConnectionGetSecureIOContext(serviceConnection);
+    //    if (context) {
+    //        // TODO Implement this if it's ever valid
+    //        assert(0);
+    //    }
     
     AFCConnectionRef connectionRef = AFCConnectionCreate(0, (int)socket, 1, 0, 0);
     if (!connectionRef) {
@@ -104,7 +118,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     err = nil;
     char *remotePath = NULL;
     NSMutableDictionary *outputDict = [NSMutableDictionary dictionary];//used for no appBund
-    NSMutableSet *mostRecentSent = [NSMutableSet set];
+    NSMutableArray *mostRecentSent = [NSMutableArray array];
     size_t maxRecentSize = [appBundle integerValue];
     
     BOOL shouldDelete = [[options objectForKey:kGetLogsDelete] boolValue];
@@ -134,7 +148,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
             continue;
         }
         
-
+        
         
         NSDictionary* fileAttributes = (__bridge NSDictionary *)(iteratorRef->fileAttributes);
         
@@ -175,7 +189,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
             AFCFileRefClose(connectionRef, descriptorRef);
             continue;
         }
-  
+        
         NSURL *finalizedURL = [baseURL URLByAppendingPathComponent:[NSString stringWithUTF8String:remotePath]];
         
         size_t size = [[fileAttributes objectForKey:@"st_size"] longLongValue];
@@ -221,25 +235,34 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     
     if ([appBundle integerValue]) {
         
-        for (NSDictionary *dict in mostRecentSent) {
-            AFCFileDescriptorRef descriptorRef = NULL;
-            if (AFCFileRefOpen(connectionRef, [dict[@"path"] UTF8String], 0x1, &descriptorRef) || !descriptorRef) {
-                continue;
+        [mostRecentSent sortUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+            if ([obj1[@"mod"] longValue] < [obj1[@"mod"] longValue]) {
+                return NSOrderedAscending;
             }
-            
-            AFCIteratorRef iteratorRef = NULL;
-            if (AFCFileInfoOpen(connectionRef,  [dict[@"path"] UTF8String], &iteratorRef) && !iteratorRef) {
-                dsprintf(stderr, "Couldn't open \"%s\"", remotePath);
-                continue;
-            }
-            
-            size_t size = 1024;
-            char buffer[1024];
-            dsprintf(stdout, "****************************************\n%s\n****************************************\n", [dict[@"path"] UTF8String]);
-            while (AFCFileRefRead(connectionRef, descriptorRef, (void **)buffer, &size) == 0 && size != 0 && size != -1) {
-                dsprintf(stdout, "%s", buffer);
-                memset(buffer, '\0', size);
-            }
+            return NSOrderedDescending;
+        }];
+        
+        if ([mostRecentSent count] < [appBundle integerValue]) {
+            return 0;
+        }
+        NSDictionary *dict = [mostRecentSent objectAtIndex:[appBundle integerValue] - 1];
+        AFCFileDescriptorRef descriptorRef = NULL;
+        if (AFCFileRefOpen(connectionRef, [dict[@"path"] UTF8String], 0x1, &descriptorRef) || !descriptorRef) {
+            return 1;
+        }
+        
+        AFCIteratorRef iteratorRef = NULL;
+        if (AFCFileInfoOpen(connectionRef,  [dict[@"path"] UTF8String], &iteratorRef) && !iteratorRef) {
+            dsprintf(stderr, "Couldn't open \"%s\"", remotePath);
+            return 1;
+        }
+        
+        size_t size = 1024;
+        char buffer[1024];
+        dsprintf(stdout, "****************************************\n%s\n****************************************\n", [dict[@"path"] UTF8String]);
+        while (AFCFileRefRead(connectionRef, descriptorRef, (void **)buffer, &size) == 0 && size != 0 && size != -1) {
+            dsprintf(stdout, "%s", buffer);
+            memset(buffer, '\0', size);
         }
     }
     
@@ -256,6 +279,6 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
             dsprintf(stdout, "%s issues: %d\n", [key UTF8String], [[outputDict objectForKey:key] integerValue]);
         }
     }
-
+    
     return 0;
 }
