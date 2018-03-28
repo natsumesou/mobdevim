@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A601BF4420182F0500FF3BEB /* get_logs.m in Sources */ = {isa = PBXBuildFile; fileRef = A601BF4220182F0500FF3BEB /* get_logs.m */; };
+		A62202C42066E81300E1556B /* instruments.m in Sources */ = {isa = PBXBuildFile; fileRef = A62202C32066E81300E1556B /* instruments.m */; };
 		A626ED1A1FC7D713002584F1 /* debug_application.m in Sources */ = {isa = PBXBuildFile; fileRef = A626ED191FC7D713002584F1 /* debug_application.m */; };
 		A63035671F6B3EC200A5B0C6 /* mobdevim in CopyFiles */ = {isa = PBXBuildFile; fileRef = A6B3AEE61F5CB27900ECCBF2 /* mobdevim */; };
 		A63CED0D1FD9167C00BE683E /* send_files.m in Sources */ = {isa = PBXBuildFile; fileRef = A63CED0C1FD9167C00BE683E /* send_files.m */; };
@@ -63,6 +64,8 @@
 		A60098A81F5CB7F7005692B6 /* MobileDevice */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = MobileDevice; path = ../../../../System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/MobileDevice; sourceTree = "<group>"; };
 		A601BF4220182F0500FF3BEB /* get_logs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = get_logs.m; sourceTree = "<group>"; };
 		A601BF4320182F0500FF3BEB /* get_logs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = get_logs.h; sourceTree = "<group>"; };
+		A62202C22066E81300E1556B /* instruments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = instruments.h; sourceTree = "<group>"; };
+		A62202C32066E81300E1556B /* instruments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = instruments.m; sourceTree = "<group>"; };
 		A626ED181FC7D713002584F1 /* debug_application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = debug_application.h; sourceTree = "<group>"; };
 		A626ED191FC7D713002584F1 /* debug_application.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = debug_application.m; sourceTree = "<group>"; };
 		A63CED0B1FD9167C00BE683E /* send_files.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = send_files.h; sourceTree = "<group>"; };
@@ -123,6 +126,15 @@
 				A601BF4220182F0500FF3BEB /* get_logs.m */,
 			);
 			path = logs;
+			sourceTree = "<group>";
+		};
+		A62202C12066E7E200E1556B /* Instruments */ = {
+			isa = PBXGroup;
+			children = (
+				A62202C22066E81300E1556B /* instruments.h */,
+				A62202C32066E81300E1556B /* instruments.m */,
+			);
+			path = Instruments;
 			sourceTree = "<group>";
 		};
 		A63CED0A1FD9167C00BE683E /* send_files */ = {
@@ -256,6 +268,7 @@
 				A645539A1FCD142000C16506 /* Install Application */,
 				A66B9EC020405BC20014CB4E /* Delete Application */,
 				A645539B1FCD144700C16506 /* List Applications */,
+				A62202C12066E7E200E1556B /* Instruments */,
 				A64553A01FCD151E00C16506 /* Console */,
 				A645539C1FCD146200C16506 /* Provisioning Porfiles */,
 				A645539E1FCD14BB00C16506 /* Device Info */,
@@ -355,6 +368,7 @@
 				A66B9EC82042292E0014CB4E /* progressbar.c in Sources */,
 				A601BF4420182F0500FF3BEB /* get_logs.m in Sources */,
 				A64553931FCD068E00C16506 /* yoink.m in Sources */,
+				A62202C42066E81300E1556B /* instruments.m in Sources */,
 				A66B9EC72042292E0014CB4E /* statusbar.c in Sources */,
 				A6B3AEEA1F5CB27900ECCBF2 /* main.m in Sources */,
 				A6E7BB681FDF6CE9006DD293 /* remove_file.m in Sources */,

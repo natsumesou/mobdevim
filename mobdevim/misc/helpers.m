@@ -109,12 +109,15 @@ void print_manpage(void) {
           \t\t%smobdevim -g 3%s Get the 3rd most recent issue\n\
           \t\t%smobdevim -g __all%s Get all the logs\n\n\
   \t%s-y%s\tYoink sandbox content\n\n\
-  \t%s-s%s\tSend content to device (use content from yoink command)\n\n\
-  \t%s-i%s\tInstall application, expects path to .ipa file\n\n\
-  \t%s-i%s\tInstall application, expects bundleIdentifier\n\n\
+  \t%s-s%s\tSend content to device (use content from yoink command)\n\
+          \t\t%smobdevim -s com.example.test /tmp/com.example.test%s Send contents in /tmp/com.example.test to app\n\n\
+  \t%s-i%s\tInstall application, expects path to bundle\n\n\
+  \t%s-u%s\tUninstall application, expects bundleIdentifier\n\n\
   \t%s-c%s\tDump out the console information. Use ctrl-c to terminate\n\n\
   \t%s-C%s\tGet certificates on device\n\n\
-  \t%s-p%s\tDisplay developer provisioning profile info\n\n\
+  \t%s-p%s\tDisplay developer provisioning profile info\n\
+            \t\t%smobdevim -p%s List all installed provisioning profiles\n\
+            \t\t%smobdevim -p b68410a1-d825-4b7c-8e5d-0f76a9bde6b9%s Get detailed provisioning UUID info\n\n\
   \t%s-l%s\tDump info about all apps, if a bundleIdentifier is given, it will dump the info for that app.\n\t\tIf a bundleIdentifier and key is given, then it will dump only the info for that key for a bundleIdentifier\n\n\
   \t%s-R%s\tUse color\n\n\
   \t%s-q%s\tQuiet mode, ideal for limiting output or checking if a value exists based upon return status\n\n";
@@ -127,13 +130,17 @@ void print_manpage(void) {
                dcolor("bold"), colorEnd(), // -g
                dcolor("bold"), colorEnd(), // -g
            dcolor("bold"), colorEnd(), // -i
+           dcolor("bold"), colorEnd(), // -u
            dcolor("bold"), colorEnd(), // -D
            dcolor("bold"), colorEnd(), // -y
            dcolor("bold"), colorEnd(), // -s
+               dcolor("bold"), colorEnd(), // -g
            dcolor("bold"), colorEnd(), // -c
            dcolor("bold"), colorEnd(), // -C
            dcolor("bold"), colorEnd(), // -c
            dcolor("bold"), colorEnd(), // -p
+               dcolor("bold"), colorEnd(), // -p
+               dcolor("bold"), colorEnd(), // -p
            dcolor("bold"), colorEnd(), // -l
              dcolor("bold"), colorEnd(), // -l
            dcolor("bold"), colorEnd()); // -q

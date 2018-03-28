@@ -24,6 +24,7 @@
 #import "send_files.h"
 #import "get_logs.h"
 #import "delete_application.h"
+#import "instruments.h"
 
 static NSOperation *_op = nil; //
 static NSString *optionalArgument = nil;
@@ -91,7 +92,7 @@ int main(int argc, const char * argv[]) {
         
         getopt_options = [NSMutableDictionary new];
         
-        while ((option = getopt (argc, (char **)argv, ":d::Rr:fqs:zd:D:hvg::l::i:Cc::p::y::")) != -1) {
+        while ((option = getopt (argc, (char **)argv, ":d::Rr:fFqs:zd:u:hvg::l::i:Cc::p::y::")) != -1) {
             switch (option) {
                 case 'R': // Use color
                     setenv("DSCOLOR", "1", 1);
@@ -124,6 +125,9 @@ int main(int argc, const char * argv[]) {
                 case 'f':
                     actionFunc = &get_device_info;
                     break;
+                case 'F':
+                    actionFunc = &instruments;
+                    break;
                 case 'l':
                     assertArg();
                     actionFunc = &list_applications;
@@ -133,7 +137,7 @@ int main(int argc, const char * argv[]) {
                         [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kListApplicationsKey];
                     }
                     break;
-                case 'D':
+                case 'u':
                     assertArg();
                     actionFunc = &delete_application;
                     [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kDeleteApplicationIdentifier];
@@ -143,6 +147,10 @@ int main(int argc, const char * argv[]) {
                     break;
                 case 's':
                     assertArg();
+                    if(argc != 4) {
+                        dsprintf(stderr, "Err: mobdevim -s BundleIdentifier /path/to/directories\n");
+                        exit(1);
+                    }
                     actionFunc = &send_files;
                     [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kSendFilePath];
                     [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kSendAppBundle];

@@ -112,6 +112,7 @@ mach_error_t AMDeviceStartHouseArrestService(AMDeviceRef, id, id, int *, void *)
 
 mach_error_t AMDeviceLookupApplications(AMDeviceRef, id, NSDictionary **);
 mach_error_t AMDeviceSecureStartService(AMDeviceRef, NSString *, NSDictionary *, void *);
+mach_error_t AMDeviceStartServiceWithOptions(AMDeviceRef, NSString *, NSDictionary *, int *socket);
 mach_error_t AMDeviceSecureArchiveApplication(AMDServiceConnectionRef, AMDeviceRef, NSString *, NSDictionary *, void * /* */, id);
 mach_error_t AMDeviceGetTypeID(AMDeviceRef);
 
