@@ -118,12 +118,15 @@ void print_manpage(void) {
   \t%s-p%s\tDisplay developer provisioning profile info\n\
             \t\t%smobdevim -p%s List all installed provisioning profiles\n\
             \t\t%smobdevim -p b68410a1-d825-4b7c-8e5d-0f76a9bde6b9%s Get detailed provisioning UUID info\n\n\
-  \t%s-l%s\tDump info about all apps, if a bundleIdentifier is given, it will dump the info for that app.\n\t\tIf a bundleIdentifier and key is given, then it will dump only the info for that key for a bundleIdentifier\n\n\
+  \t%s-l%s\tList app information\n\
+        \t\t%smobdevim -l%s List all apps\n\
+        \t\t%smobdevim -l com.example.test%s Get detailed information about app, com.example.test\n\
+        \t\t%smobdevim -l com.example.test Entitlements%s List \"Entitlements\" key from com.example.test\n\
   \t%s-R%s\tUse color\n\n\
   \t%s-q%s\tQuiet mode, ideal for limiting output or checking if a value exists based upon return status\n\n";
   
-  char formattedString[2000];
-  snprintf(formattedString, 2000, manDescription, dcolor("bold"), colorEnd(), dcolor("bold"), program_name, colorEnd(), __DATE__, dcolor("bold"), colorEnd(),
+  char formattedString[4096];
+  snprintf(formattedString, 4096, manDescription, dcolor("bold"), colorEnd(), dcolor("bold"), program_name, colorEnd(), __DATE__, dcolor("bold"), colorEnd(),
            dcolor("bold"), colorEnd(), // -f
            dcolor("bold"), colorEnd(), // -g
                dcolor("bold"), colorEnd(), // -g
@@ -142,7 +145,10 @@ void print_manpage(void) {
                dcolor("bold"), colorEnd(), // -p
                dcolor("bold"), colorEnd(), // -p
            dcolor("bold"), colorEnd(), // -l
-             dcolor("bold"), colorEnd(), // -l
+               dcolor("bold"), colorEnd(), // -l
+               dcolor("bold"), colorEnd(), // -l
+               dcolor("bold"), colorEnd(), // -l
+           dcolor("bold"), colorEnd(), // -R
            dcolor("bold"), colorEnd()); // -q
   
   dsprintf(stdout, "%s", formattedString);
