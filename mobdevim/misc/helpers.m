@@ -108,11 +108,14 @@ void print_manpage(void) {
           \t\t%smobdevim -g com.example.name%s Get issues for com.example.name app\n\
           \t\t%smobdevim -g 3%s Get the 3rd most recent issue\n\
           \t\t%smobdevim -g __all%s Get all the logs\n\n\
-  \t%s-y%s\tYoink sandbox content\n\n\
+  \t%s-y%s\tYoink sandbox content\n\
+          \t\t%smobdevim -y com.example.test%s Yoink contacts from app\n\n\
   \t%s-s%s\tSend content to device (use content from yoink command)\n\
           \t\t%smobdevim -s com.example.test /tmp/com.example.test%s Send contents in /tmp/com.example.test to app\n\n\
-  \t%s-i%s\tInstall application, expects path to bundle\n\n\
-  \t%s-u%s\tUninstall application, expects bundleIdentifier\n\n\
+  \t%s-i%s\tInstall application, expects path to bundle\n\
+          \t\t%smobdevim -i /path/to/app/bundle%s Install app\n\n\
+  \t%s-u%s\tUninstall application, expects bundleIdentifier\n\
+          \t\t%smobdevim -u com.example.test%s Uninstall app\n\n\
   \t%s-c%s\tDump out the console information. Use ctrl-c to terminate\n\n\
   \t%s-C%s\tGet certificates on device\n\n\
   \t%s-p%s\tDisplay developer provisioning profile info\n\
@@ -133,9 +136,12 @@ void print_manpage(void) {
                dcolor("bold"), colorEnd(), // -g
                dcolor("bold"), colorEnd(), // -g
            dcolor("bold"), colorEnd(), // -i
+               dcolor("bold"), colorEnd(), // -i
            dcolor("bold"), colorEnd(), // -u
+               dcolor("bold"), colorEnd(), // -u
            dcolor("bold"), colorEnd(), // -D
            dcolor("bold"), colorEnd(), // -y
+               dcolor("bold"), colorEnd(), // -y
            dcolor("bold"), colorEnd(), // -s
                dcolor("bold"), colorEnd(), // -g
            dcolor("bold"), colorEnd(), // -c
