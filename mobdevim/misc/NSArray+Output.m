@@ -87,3 +87,15 @@
 @end
 
 
+@implementation NSDate (Output)
+
+- (const char *)dsformattedOutput {
+    NSMutableString *outputString = [NSMutableString string];
+    
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"MMM d, yyyy h:mm a"];
+    [outputString appendFormat:@"%@ (%@)", self, [formatter stringFromDate:self] ];
+    return [outputString UTF8String];
+}
+
+@end
