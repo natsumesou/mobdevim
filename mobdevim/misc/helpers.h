@@ -41,6 +41,9 @@ char *colorEnd(void);
 /// My printf
 void dsprintf(FILE * f, const char *format, ...);
 
+/// Message then die
+void ErrorMessageThenDie(const char *message, ...);
+
 /// If true this will disable stderr/stdout
 extern BOOL quiet_mode;
 

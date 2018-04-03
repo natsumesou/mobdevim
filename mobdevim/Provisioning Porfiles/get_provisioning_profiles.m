@@ -15,7 +15,6 @@ NSString * const kProvisioningProfilesFilteredByDevice =  @"com.selander.provisi
 
 int get_provisioning_profiles(AMDeviceRef d, NSDictionary *options) {
     
-    NSString *deviceIdentifier = AMDeviceGetName(d);
     NSArray *profiles = AMDeviceCopyProvisioningProfiles(d);
     
     BOOL copyDeveloperCertificates = [[options objectForKey:kProvisioningProfilesCopyDeveloperCertificates] boolValue];

@@ -64,6 +64,9 @@ int yoink_app(AMDeviceRef d, NSDictionary *options) {
     }
     
     __unused NSString *outputDirectory = [options objectForKey:kOptionArgumentDestinationPath] ? [options objectForKey:kOptionArgumentDestinationPath] : [NSString stringWithFormat:@"/tmp/%@_app", appBundle];
+    if ([outputDirectory hasPrefix:@"/tmp/"]) {
+        [[NSFileManager defaultManager] removeItemAtPath:outputDirectory error:nil];
+    }
     [[NSFileManager defaultManager] createDirectoryAtPath:outputDirectory withIntermediateDirectories:YES attributes:nil error:nil];
     long socket = AMDServiceConnectionGetSocket(serviceConnection);
     

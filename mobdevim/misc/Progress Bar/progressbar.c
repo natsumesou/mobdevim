@@ -159,7 +159,7 @@ static progressbar_time_components progressbar_calc_time_components(int seconds)
 static void progressbar_draw(const progressbar *bar)
 {
   int screen_width = get_screen_width();
-  int label_length = strlen(bar->label);
+  int label_length = (int)strlen(bar->label);
   int bar_width = progressbar_bar_width(screen_width, label_length);
   int label_width = progressbar_label_width(screen_width, label_length, bar_width);
 

@@ -19,8 +19,8 @@ statusbar *statusbar_new_with_format(const char *label, const char *format)
   }
 
   new->label = label;
-  new->start_time = time(0);
-  new->format_length = strlen(format);
+  new->start_time = (unsigned int)time(0);
+  new->format_length = (unsigned int)strlen(format);
   new->format = malloc( sizeof(char) * (new->format_length + 1) );
   if(new->format == NULL) {
     free(new);
@@ -82,7 +82,7 @@ void statusbar_draw(statusbar *bar)
 void statusbar_finish(statusbar *bar)
 {
   // Draw one more time, with the actual time to completion.
-  unsigned int offset = time(0) - (bar->start_time);
+  unsigned int offset = (unsigned int)(time(0) - (bar->start_time));
 
   // Convert the time to display into HHH:MM:SS
   unsigned int h = offset/3600;
