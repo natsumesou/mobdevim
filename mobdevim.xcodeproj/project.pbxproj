@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A601BF4420182F0500FF3BEB /* get_logs.m in Sources */ = {isa = PBXBuildFile; fileRef = A601BF4220182F0500FF3BEB /* get_logs.m */; };
+		A614DCC02072F3FE00814170 /* NSArray+Output.m in Sources */ = {isa = PBXBuildFile; fileRef = A614DCBF2072F3FE00814170 /* NSArray+Output.m */; };
 		A62202C42066E81300E1556B /* instruments.m in Sources */ = {isa = PBXBuildFile; fileRef = A62202C32066E81300E1556B /* instruments.m */; };
 		A626ED1A1FC7D713002584F1 /* debug_application.m in Sources */ = {isa = PBXBuildFile; fileRef = A626ED191FC7D713002584F1 /* debug_application.m */; };
 		A63035671F6B3EC200A5B0C6 /* mobdevim in CopyFiles */ = {isa = PBXBuildFile; fileRef = A6B3AEE61F5CB27900ECCBF2 /* mobdevim */; };
@@ -64,6 +65,8 @@
 		A60098A81F5CB7F7005692B6 /* MobileDevice */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = MobileDevice; path = ../../../../System/Library/PrivateFrameworks/MobileDevice.framework/Versions/A/MobileDevice; sourceTree = "<group>"; };
 		A601BF4220182F0500FF3BEB /* get_logs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = get_logs.m; sourceTree = "<group>"; };
 		A601BF4320182F0500FF3BEB /* get_logs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = get_logs.h; sourceTree = "<group>"; };
+		A614DCBE2072F3FE00814170 /* NSArray+Output.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSArray+Output.h"; sourceTree = "<group>"; };
+		A614DCBF2072F3FE00814170 /* NSArray+Output.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSArray+Output.m"; sourceTree = "<group>"; };
 		A62202C22066E81300E1556B /* instruments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = instruments.h; sourceTree = "<group>"; };
 		A62202C32066E81300E1556B /* instruments.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = instruments.m; sourceTree = "<group>"; };
 		A626ED181FC7D713002584F1 /* debug_application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = debug_application.h; sourceTree = "<group>"; };
@@ -207,6 +210,8 @@
 				A6F0C2681FC62C68009897DD /* ExternalDeclarations.h */,
 				A6F0C2691FC62CD2009897DD /* helpers.h */,
 				A6F0C26A1FC62CD2009897DD /* helpers.m */,
+				A614DCBE2072F3FE00814170 /* NSArray+Output.h */,
+				A614DCBF2072F3FE00814170 /* NSArray+Output.m */,
 			);
 			path = misc;
 			sourceTree = "<group>";
@@ -378,6 +383,7 @@
 				A63CED0D1FD9167C00BE683E /* send_files.m in Sources */,
 				A64553901FCD004E00C16506 /* list_applications.m in Sources */,
 				A64553961FCD088400C16506 /* get_device_info.m in Sources */,
+				A614DCC02072F3FE00814170 /* NSArray+Output.m in Sources */,
 				A6F0C26B1FC62CD2009897DD /* helpers.m in Sources */,
 				A64553991FCD097200C16506 /* install_application.m in Sources */,
 			);

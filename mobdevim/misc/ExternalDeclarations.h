@@ -127,11 +127,11 @@ mach_error_t AFCConnectionOpen(AMDServiceConnectionRef, int, AFCConnectionRef * 
 
 mach_error_t AFCConnectionClose(AFCConnectionRef);
 mach_error_t AMDServiceConnectionSendMessage(AMDServiceConnectionRef serviceConnection, NSDictionary* message, CFPropertyListFormat format);
-mach_error_t AMDServiceConnectionReceiveMessage(AMDServiceConnectionRef serviceConnection, id*, NSError **);
 NSArray* AMDCreateDeviceList(void);
 NSString *AMDeviceGetName(AMDeviceRef);
 int AMDServiceConnectionGetSocket(AMDServiceConnectionRef);
 long AMDServiceConnectionReceive(AMDServiceConnectionRef, void *, long);
+mach_error_t AMDServiceConnectionReceiveMessage(AMDServiceConnectionRef serviceConnection, CFPropertyListRef, CFPropertyListFormat*);
 void AMDServiceConnectionInvalidate(AMDServiceConnectionRef);
 id _AMDeviceCopyInstalledAppInfo(AMDeviceRef, char *);
 id AMDeviceCopyValue(AMDeviceRef, void *, NSString *, unsigned long int /* device id */);

@@ -7,6 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
+#import "NSArray+Output.h"
 
 /// Version String
 extern const char *version_string;

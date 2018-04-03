@@ -8,14 +8,12 @@
 
 #import "install_application.h"
 
-
-NSString * const kDeleteApplicationIdentifier = @"com.selander.delete.path";
+NSString * const kDeleteApplicationIdentifier = @"com.selander.delete.bundleidentifier";
 
 int delete_application(AMDeviceRef d, NSDictionary *options) {
     
     NSDictionary *dict;
     NSString *name = [options objectForKey:kDeleteApplicationIdentifier];
-    
     if (!name) {
         dsprintf(stderr, "You must provide a bundleIdentifier to delete\n");
         return 1;

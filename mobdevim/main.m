@@ -37,11 +37,13 @@ static BOOL shouldDisableTimeout = YES;
 static NSMutableDictionary *getopt_options;
 
 
-
+static BOOL isCurrentlyRunning = NO;
 __unused static void connect_callback(AMDeviceRef deviceArray, int cookie) {
     
     [_op cancel];
     _op = nil;
+    
+    if (isCurrentlyRunning) { return; }
     
     AMDeviceRef d = *(AMDeviceRef *) deviceArray;
     
@@ -68,12 +70,15 @@ __unused static void connect_callback(AMDeviceRef deviceArray, int cookie) {
     }
     
     if (actionFunc) {
+        isCurrentlyRunning = YES;
         return_error = actionFunc(d, getopt_options);
     }
     
     
-    AMDeviceNotificationUnsubscribe(deviceArray);
-    CFRunLoopStop(CFRunLoopGetMain());
+    if (actionFunc != &debug_application) {
+        AMDeviceNotificationUnsubscribe(deviceArray);
+        CFRunLoopStop(CFRunLoopGetMain());
+    }
 }
 
 //*****************************************************************************/
@@ -167,8 +172,9 @@ int main(int argc, const char * argv[]) {
                     print_manpage();
                     exit(EXIT_SUCCESS);
                 case 'd':
-                    // TODO
+                    assertArg();
                     shouldDisableTimeout = NO;
+                     [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kDebugApplicationIdentifier];
                     actionFunc = debug_application;
                     break;
                 case 'c':
