@@ -51,7 +51,7 @@ NSString* extractDummyTarget(NSString *name) {
         NSData *data = [NSData dataWithBytes:dataStart length:size];
         [data writeToFile:DUMMY_TARGET_BLOB atomically:YES];
     }
-    NSArray *arguments = @[DUMMY_TARGET_BLOB, @"-q",  @"-d", targetFolder];
+    NSArray *arguments = @[@"-q", DUMMY_TARGET_BLOB, @"-d", targetFolder];
     
     NSTask *unzipTask = [[NSTask alloc] init];
     [unzipTask setLaunchPath:@"/usr/bin/unzip"];
