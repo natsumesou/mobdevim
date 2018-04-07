@@ -10,6 +10,7 @@
 
 NSString * const kDeleteApplicationIdentifier = @"com.selander.delete.bundleidentifier";
 
+
 int delete_application(AMDeviceRef d, NSDictionary *options) {
     
     NSDictionary *dict;

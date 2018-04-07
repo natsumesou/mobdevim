@@ -109,6 +109,9 @@ void lldb_callback(CFSocketRef s, CFSocketCallBackType callbackType, CFDataRef a
         dsprintf(stdout, "Connected!\n");
     });
     
+    NSData *objcData = (__bridge NSData*)data;
+    NSString *str = [[NSString alloc] initWithData:objcData encoding:NSUTF8StringEncoding];
+    dsdebug("%s: %s\n", __FUNCTION__, [str UTF8String]);
     if (CFDataGetLength (data) == 0) {
         // close the socket on which we've got end-of-file, the lldb_socket.
         CFSocketInvalidate(s);
@@ -125,7 +128,9 @@ void
 server_callback (CFSocketRef s, CFSocketCallBackType callbackType, CFDataRef address, const void *data, void *info)
 {
     ssize_t res;
-//    NSLog(@"server_callbakc %lu %@", callbackType, [[NSString alloc] initWithData:(__bridge NSData * _Nonnull)(data) encoding:NSUTF8StringEncoding]);
+    NSData *objcData = (__bridge NSData*)data;
+    NSString *str = [[NSString alloc] initWithData:objcData encoding:NSUTF8StringEncoding];
+    dsdebug("%s: %s\n", __FUNCTION__, [str UTF8String]);
     if (CFDataGetLength (data) == 0) {
         // close the socket on which we've got end-of-file, the server_socket.
         CFSocketInvalidate(s);
@@ -139,7 +144,7 @@ server_callback (CFSocketRef s, CFSocketCallBackType callbackType, CFDataRef add
 void fdvendor_callback(CFSocketRef s, CFSocketCallBackType callbackType, CFDataRef address, const void *data, void *info) {
     CFSocketNativeHandle socket = (CFSocketNativeHandle)(*((CFSocketNativeHandle *)data));
 
-    dsprintf(stdout, "Connecting to debugserver...\n");
+    dsprintf(stdout, "Connecting to debugserver...");
     assert (callbackType == kCFSocketAcceptCallBack);
 
     lldb_socket  = CFSocketCreateWithNative(NULL, socket, kCFSocketDataCallBack, &lldb_callback, NULL);
@@ -159,7 +164,7 @@ void fdvendor_callback(CFSocketRef s, CFSocketCallBackType callbackType, CFDataR
 static pid_t childPID = 0;
 void Kill_The_Spare__AVADA_KEDAVRA() {
     if (childPID) {
-        dsprintf(stdout, "Killing the child PID %d", childPID);
+        dsdebug("Killing the child PID %d\n", childPID);
         kill(childPID, SIGKILL);
     }
 }

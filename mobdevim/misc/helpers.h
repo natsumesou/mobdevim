@@ -41,6 +41,9 @@ char *colorEnd(void);
 /// My printf
 void dsprintf(FILE * f, const char *format, ...);
 
+/// Enabled by DSDEBUG env var
+void dsdebug(const char *format, ...);
+
 /// Message then die
 void ErrorMessageThenDie(const char *message, ...);
 

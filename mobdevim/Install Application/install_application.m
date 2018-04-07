@@ -11,11 +11,11 @@
 
 
 NSString * const kInstallApplicationPath = @"com.selander.installapplication.path";
-
-
 static progressbar *progress = nil;
-void installCallback(CFDictionaryRef d) {
 
+
+void installCallback(CFDictionaryRef d) {
+    
     if (progress) {
         NSDictionary *dict = (__bridge NSDictionary *)(d);
         NSNumber *complete = dict[@"PercentComplete"];
@@ -25,7 +25,6 @@ void installCallback(CFDictionaryRef d) {
         }
     }
 }
-
 
 void printInstallErrorAndDie(mach_error_t error, const char *path) {
     switch (error) {
@@ -57,7 +56,7 @@ int install_application(AMDeviceRef d, NSDictionary *options) {
         progressbar_update_label(progress, "Installing...");
         progressbar_update(progress, 0);
         error = AMDeviceSecureInstallApplication(0, d, local_app_url, params, installCallback, 0);
-    
+        
         progressbar_update(progress, 100);
         if (error) {
             progressbar_update_label(progress, "Error:");

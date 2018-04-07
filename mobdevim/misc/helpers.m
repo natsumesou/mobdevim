@@ -79,6 +79,28 @@ void dsprintf(FILE * f, const char *format, ...) {
   va_end( args );
 }
 
+void dsdebug(const char *format, ...) {
+    if (quiet_mode) { return; }
+    
+    static dispatch_once_t onceToken;
+    static BOOL debugFlag = 0;
+    dispatch_once(&onceToken, ^{
+        if (getenv("DSDEBUG")) {
+            debugFlag = YES;
+        } else {
+            debugFlag = NO;
+        }
+    });
+    
+    if (debugFlag) {
+        va_list args;
+        va_start( args, format);
+        vfprintf(stdout, format, args );
+        va_end( args );
+    }
+    
+}
+
 
 void ErrorMessageThenDie(const char *message, ...) {
     if (quiet_mode) {
@@ -129,7 +151,8 @@ void print_manpage(void) {
         \t\t%smobdevim -l com.example.test%s Get detailed information about app, com.example.test\n\
         \t\t%smobdevim -l com.example.test Entitlements%s List \"Entitlements\" key from com.example.test\n\
   \t%s-R%s\tUse color\n\n\
-  \t%s-q%s\tQuiet mode, ideal for limiting output or checking if a value exists based upon return status\n\n";
+  \t%s-q%s\tQuiet mode, ideal for limiting output or checking if a value exists based upon return status\n\n\n\
+  Environment variables:\n\t%sDSCOLOR%s - Use color (same as -R)\n\n\t%sDSDEBUG%s - verbose debugging\n";
   
   char formattedString[4096];
   snprintf(formattedString, 4096, manDescription, dcolor("bold"), colorEnd(), dcolor("bold"), program_name, colorEnd(), __DATE__, dcolor("bold"), colorEnd(),
@@ -159,6 +182,8 @@ void print_manpage(void) {
                dcolor("bold"), colorEnd(), // -l
                dcolor("bold"), colorEnd(), // -l
                dcolor("bold"), colorEnd(), // -l
+           dcolor("bold"), colorEnd(), // -R
+           dcolor("bold"), colorEnd(), // -R
            dcolor("bold"), colorEnd(), // -R
            dcolor("bold"), colorEnd()); // -q
   
