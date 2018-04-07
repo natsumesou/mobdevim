@@ -37,7 +37,7 @@
         currentOffset = @1;
     }
     
-    if ([self count] == 0 || [self count] == 1) {
+    if ([self count] == 0) {
         [outputString appendFormat:@"%s[ ]%s", dcolor("bold"), colorEnd()];
         return [outputString UTF8String];
     }
@@ -93,8 +93,8 @@
     NSMutableString *outputString = [NSMutableString string];
     
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"MMM d, yyyy h:mm a"];
-    [outputString appendFormat:@"%@ (%@)", self, [formatter stringFromDate:self] ];
+    [formatter setDateFormat:@"MMMM d, yyyy h:mm a"];
+    [outputString appendFormat:@"%@", [formatter stringFromDate:self] ];
     return [outputString UTF8String];
 }
 

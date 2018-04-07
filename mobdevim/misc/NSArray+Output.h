@@ -16,6 +16,10 @@
 - (const char *)dsformattedOutput;
 @end
 
+@interface NSDate (Output)
+- (const char *)dsformattedOutput;
+@end
+
 @interface NSObject (Output)
 @property (nonatomic, strong) NSNumber* dsIndentOffset;
 @end

@@ -8,7 +8,6 @@
 
 @import Security;
 #import "get_provisioning_profiles.h"
-
 NSString * const kProvisioningProfilesCopyDeveloperCertificates =  @"com.selander.provisioningprofiles.copydevelopercertificates";
 
 NSString * const kProvisioningProfilesFilteredByDevice =  @"com.selander.provisioningprofiles.filteredbydevice";
@@ -47,6 +46,7 @@ int get_provisioning_profiles(AMDeviceRef d, NSDictionary *options) {
         NSString *uuid = dict[@"UUID"];
         NSString *name = dict[@"Name"];
         NSArray *certs = dict[@"DeveloperCertificates"];
+        NSDate *expirationDate = dict[@"ExpirationDate"];
         NSMutableArray *certificateNames = [NSMutableArray new];
         for (int i = 0; i < [certs count]; i++) {
             NSData *data = certs[i];
@@ -109,13 +109,13 @@ int get_provisioning_profiles(AMDeviceRef d, NSDictionary *options) {
         }
         
         
-        NSMutableString *outputString = [NSMutableString stringWithFormat:@"\n%s**************************************%s\nApplication-identifier: %s%@%s\nTeamName: %s%@%s\nAppIDName: %s%@%s\nProvisioning Profile: %s%@%s\nAps-Environment: %s%@%s\nUUID: %s%@%s",
+        NSMutableString *outputString = [NSMutableString stringWithFormat:@"\n%s**************************************%s\nApplication-identifier: %s%@%s\nTeamName: %s%@%s\nAppIDName: %s%@%s\nProvisioning Profile: %s%@%s\nExpiration: %s%s%s\nUUID: %s%@%s",
                                          dcolor("yellow"), colorEnd(),
                                          dcolor("bold"), appID, colorEnd(),
                                          dcolor("bold"), teamName, colorEnd(),
                                          dcolor("bold"), appIDName, colorEnd(),
                                          dcolor("bold"), name, colorEnd(),
-                                         dcolor("bold"), apsEnv ? apsEnv : @"[NONE]", colorEnd(),
+                                         dcolor("bold"), [expirationDate dsformattedOutput], colorEnd(),
                                          dcolor("bold"), uuid, colorEnd()];
         if (filterProvisioninProfilesThatOnlyFitDevice) {
             NSMutableDictionary *outputDict = [NSMutableDictionary dictionaryWithDictionary:dict];

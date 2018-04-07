@@ -92,6 +92,7 @@ process connect connect://127.0.0.1:%d\n\
 }
 
 static NSString *appPath;
+
 /********************************************************************************
  Source start https://github.com/phonegap/ios-deploy GPL v3 license
 ********************************************************************************/
@@ -154,6 +155,14 @@ void fdvendor_callback(CFSocketRef s, CFSocketCallBackType callbackType, CFDataR
 /********************************************************************************
  Source end https://github.com/phonegap/ios-deploy GPL v3 license
 ********************************************************************************/
+
+static pid_t childPID = 0;
+void Kill_The_Spare__AVADA_KEDAVRA() {
+    if (childPID) {
+        dsprintf(stdout, "Killing the child PID %d", childPID);
+        kill(childPID, SIGKILL);
+    }
+}
 
 int debug_application(AMDeviceRef d, NSDictionary* options) {
 
@@ -244,9 +253,18 @@ int debug_application(AMDeviceRef d, NSDictionary* options) {
     }
     generateSetupScript([localApplicationPath UTF8String], [appPath UTF8String], port);
     
-    system("echo \"lldb -s /tmp/mobdevim_setupscript\" | pbcopy");
-    dsprintf(stdout, "Connection setup, paste script: \"%slldb -s %s%s\" (copied to cliboard)\n*******************************\n%sMake sure device is not locked%s\n*******************************\n", dcolor("cyan"), [LLDB_SCRIPT_PATH UTF8String], colorEnd(), dcolor("red"), colorEnd());
-    
+    pid_t pid;
+    if ((pid = fork()) == 0) {
+        childPID = getpid();
+        char *const params[] = {"lldb", "-s", "/tmp/mobdevim_setupscript", NULL};
+        execv("/usr/bin/lldb", params);
+    } else if ((childPID = pid) > 0) {
+        atexit(Kill_The_Spare__AVADA_KEDAVRA);
+        signal(SIGINT, Kill_The_Spare__AVADA_KEDAVRA);
+    } else {
+        ErrorMessageThenDie("Couldn't fork(), exiting...\n");
+    }
+
     return 0;
 }
 

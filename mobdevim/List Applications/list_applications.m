@@ -59,5 +59,7 @@ int list_applications(AMDeviceRef d, NSDictionary *options) {
         dsprintf(stdout, "Dumping bundleIDs for all apps\n\n%s%s\n\n", [colorHelper UTF8String],  [output UTF8String]);
     }
     
+    AMDeviceDisconnect(d);
+    
     return 0;
 }

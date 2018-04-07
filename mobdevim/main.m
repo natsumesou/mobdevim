@@ -43,6 +43,7 @@ __unused static void connect_callback(AMDeviceRef deviceArray, int cookie) {
     [_op cancel];
     _op = nil;
     
+    // For now, only support one device
     if (isCurrentlyRunning) { return; }
     
     AMDeviceRef d = *(AMDeviceRef *) deviceArray;
