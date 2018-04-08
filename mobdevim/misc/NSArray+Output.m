@@ -51,7 +51,7 @@
             [outputString appendFormat:@"%*s%@\n", [currentOffset intValue] * 4 , "", itemObject];
         }
     }
-    [outputString appendFormat:@"%*s%s]%s\n", ([currentOffset intValue]-1) * 4 , "",  dcolor("bold"), colorEnd()];
+    [outputString appendFormat:@"%*s%s]%s", ([currentOffset intValue]-1) * 4 , "",  dcolor("bold"), colorEnd()];
     
     return [outputString UTF8String];
     

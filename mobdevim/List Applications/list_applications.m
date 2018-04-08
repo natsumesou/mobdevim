@@ -25,7 +25,7 @@ int list_applications(AMDeviceRef d, NSDictionary *options) {
         
         NSString *key = [options objectForKey:kListApplicationsKey];
         if (key) {
-            dsprintf(stdout, "Dumping info for \"%s%s\"%s\" with key: \"%s%s%s\"\n%s\n", dcolor("red"), [name UTF8String], colorEnd(), dcolor("red"),  [key UTF8String], colorEnd(), [[[dict objectForKey:name] objectForKey:key] dsformattedOutput]);
+            dsprintf(stdout, "Dumping info for \"%s%s%s\" with key: \"%s%s%s\"\n%s\n", dcolor("red"), [name UTF8String], colorEnd(), dcolor("red"),  [key UTF8String], colorEnd(), [[[dict objectForKey:name] objectForKey:key] dsformattedOutput]);
             if (![[dict objectForKey:name] objectForKey:key]) {
                 return 1;
             }
