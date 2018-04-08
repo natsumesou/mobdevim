@@ -52,7 +52,9 @@ __unused static void connect_callback(AMDeviceListRef deviceList, int cookie) {
     
     NSDictionary *connectionDetails = ((__bridge NSDictionary *)(deviceList->connectionDeets))[@"Properties"];
     NSString *connectionType = connectionDetails[@"ConnectionType"];
-    if ([connectedDevices containsObject:connectionDetails[@"DeviceID"]]) {
+    
+    // For now, just force a USB connection
+    if ([connectionDetails[@"ConnectionType"] isEqualToString:@"Network"]) {
         return;
     }
     
