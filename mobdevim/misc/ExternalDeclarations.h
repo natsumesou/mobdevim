@@ -55,6 +55,18 @@ typedef struct AMDServiceConnection *AMDServiceConnectionRef;
 typedef struct _AFCConnection  {} AFCConnection;
 typedef AFCConnection *AFCConnectionRef;
 
+
+typedef struct _AMDeviceList {
+    AMDeviceRef device;
+    int dunno0;
+    int dunno1;
+    void *dunno2;
+    int dunno[4];
+    
+    CFDictionaryRef connectionDeets;
+} AMDeviceList;
+typedef AMDeviceList *AMDeviceListRef;
+
 typedef struct _AFCIterator {
   char boring[0x10];
   CFDictionaryRef fileAttributes;
@@ -93,16 +105,17 @@ mach_error_t AFCKeyValueRead(AFCIteratorRef,  char **key,  char **val);
 mach_error_t AFCKeyValueClose(AFCIteratorRef);
 
 
-mach_error_t AMDeviceNotificationSubscribe(void (*)(AMDeviceRef, int), int, int, int, void *);
+mach_error_t AMDeviceNotificationSubscribe(void (*)(AMDeviceListRef, int), int, int, int, void *);
+mach_error_t AMDeviceNotificationSubscribeWithOptions(void (*)(AMDeviceListRef, int), int, int, int, void *, NSDictionary *);
 mach_error_t AMDeviceConnect(AMDeviceRef);
 mach_error_t AMDeviceDisconnect(AMDeviceRef);
-mach_error_t AMDeviceIsPaired(AMDeviceRef);
+mach_error_t AMDeviceIsPaired(AMDeviceListRef);
 mach_error_t AMDeviceValidatePairing(AMDeviceRef);
 mach_error_t AMDeviceStartSession(AMDeviceRef);
 mach_error_t AMDeviceStopSession(AMDeviceRef);
 id AMDServiceConnectionGetSecureIOContext(AMDServiceConnectionRef);
 
-mach_error_t AMDeviceNotificationUnsubscribe(AMDeviceRef);
+mach_error_t AMDeviceNotificationUnsubscribe(AMDeviceListRef);
 mach_error_t AMDeviceSecureTransferPath(int, AMDeviceRef, NSURL*, NSDictionary *, void *, int);
 mach_error_t AMDeviceSecureInstallApplication(int, AMDeviceRef, NSURL*, NSDictionary*, void *, int);
 mach_error_t AMDeviceSecureUninstallApplication(AMDServiceConnectionRef connection, void * dunno, NSString *bundleIdentifier, NSDictionary *params, void (*installCallback)(NSDictionary*, void *));

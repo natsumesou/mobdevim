@@ -121,7 +121,7 @@ void print_manpage(void) {
   }
   char *manDescription = "\n\
   %sName%s\n\
-  %s%s%s -- (mobiledevice-improved) Interact with an iOS device (compiled %s)\n\n\
+  %s%s%s -- (mobiledevice-improved) Interact with a plugged in iOS device (compiled %s)\n\n\
   %sDescription%s\n\
   \tThe mobdevim utlity interacts with your plugged in iOS device over USB using Apple's\n\
   \tframework, MobileDevice.\n\n\
@@ -149,7 +149,7 @@ void print_manpage(void) {
   \t%s-l%s\tList app information\n\
         \t\t%smobdevim -l%s List all apps\n\
         \t\t%smobdevim -l com.example.test%s Get detailed information about app, com.example.test\n\
-        \t\t%smobdevim -l com.example.test Entitlements%s List \"Entitlements\" key from com.example.test\n\
+        \t\t%smobdevim -l com.example.test Entitlements%s List \"Entitlements\" key from com.example.test\n\n\
   \t%s-R%s\tUse color\n\n\
   \t%s-q%s\tQuiet mode, ideal for limiting output or checking if a value exists based upon return status\n\n\n\
   Environment variables:\n\t%sDSCOLOR%s - Use color (same as -R)\n\n\t%sDSDEBUG%s - verbose debugging\n";
@@ -204,7 +204,11 @@ void assertArg(void) {
 NSString * const kOptionArgumentDestinationPath = @"com.selander.destination";
 
 
-
+/*
+ When debugging with LLDB, we need an app on local disk to reference when
+ debugging remotely.  This writes an temporary app to the mac to fake.
+ This is a temporary hack solution...
+ */
 __attribute__ ((section ("__TEXT, __SBDummyTarget")))  unsigned char SBDummyTarget[] = {
   0x50, 0x4b, 0x03, 0x04, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4b, 0x9f,
   0x83, 0x4c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,

@@ -38,31 +38,42 @@ static NSMutableDictionary *getopt_options;
 
 
 static BOOL isCurrentlyRunning = NO;
-__unused static void connect_callback(AMDeviceRef deviceArray, int cookie) {
+
+static NSMutableSet *connectedDevices;
+
+__unused static void connect_callback(AMDeviceListRef deviceList, int cookie) {
     
     [_op cancel];
     _op = nil;
     
-    // For now, only support one device
-    if (isCurrentlyRunning) { return; }
+
+//
+    NSDictionary *connectionDetails = ((__bridge NSDictionary *)(deviceList->connectionDeets))[@"Properties"];
+    NSString *connectionType = connectionDetails[@"ConnectionType"];
+    if ([connectedDevices containsObject:connectionDetails[@"DeviceID"]]) {
+        return;
+    }
     
-    AMDeviceRef d = *(AMDeviceRef *) deviceArray;
+    AMDeviceRef d = deviceList->device;
+    dsdebug("Found device %s (DeviceID %d) with ConnectionType: %s\n", [connectionDetails[@"SerialNumber"] UTF8String], [connectionDetails[@"DeviceID"] intValue], [connectionType UTF8String]);
     
     // Connect
     AMDeviceConnect(d);
     
     // Is Paired
-    assert((AMDeviceIsPaired(deviceArray) == ERR_SUCCESS));
+    assert((AMDeviceIsPaired(deviceList) == ERR_SUCCESS));
     
+    NSString *deviceUDID = AMDeviceCopyValue(d, nil, @"DeviceName", 0);
     // Validate Pairing
     if (AMDeviceValidatePairing(d)) {
-        dsprintf(stderr, "The device \"%s\" might not have been paired yet, Trust this computer on the device\n", [AMDeviceCopyValue(d, nil, @"DeviceName", 0) UTF8String]);
+        dsprintf(stderr, "The device \"%s\" might not have been paired yet, Trust this computer on the device\n", [deviceUDID UTF8String]);
         exit(1);
     }
     //  assert(!AMDeviceValidatePairing(d));
     
     // Start Session
     assert(!AMDeviceStartSession(d));
+    [connectedDevices addObject:connectionDetails[@"DeviceID"]];
     
     NSString *deviceName = AMDeviceCopyValue(d, nil, @"DeviceName", 0);
     if (deviceName) {
@@ -75,9 +86,8 @@ __unused static void connect_callback(AMDeviceRef deviceArray, int cookie) {
         return_error = actionFunc(d, getopt_options);
     }
     
-    
     if (actionFunc != &debug_application) {
-        AMDeviceNotificationUnsubscribe(deviceArray);
+        AMDeviceNotificationUnsubscribe(deviceList);
         CFRunLoopStop(CFRunLoopGetMain());
     }
 }
@@ -97,6 +107,7 @@ int main(int argc, const char * argv[]) {
         }
         
         getopt_options = [NSMutableDictionary new];
+        connectedDevices = [NSMutableSet new];
         
         while ((option = getopt (argc, (char **)argv, ":d::Rr:fFqs:zd:u:hvg::l::i:Cc::p::y::")) != -1) {
             switch (option) {
@@ -239,7 +250,9 @@ int main(int argc, const char * argv[]) {
             unsetenv("DSCOLOR");
         }
         
-        AMDeviceNotificationSubscribe(connect_callback, 0, 0, 0, &__n);
+        
+        AMDeviceNotificationSubscribeWithOptions(connect_callback, 0, 0, 0, &__n, @{@"NotificationOptionSearchForPairedDevices" : @YES });
+//        AMDeviceNotificationSubscribe(connect_callback, 0, 0, 0, &__n);
         
         _op = [NSBlockOperation blockOperationWithBlock:^{
             dsprintf(stderr, "Your device might not be connected. You've got about 25 seconds to connect your device before the timeout gets fired or you can start fresh with a ctrl-c. Choose wisely... dun dun\n");
