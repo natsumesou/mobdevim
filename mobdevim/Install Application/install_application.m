@@ -8,7 +8,7 @@
 
 #import "install_application.h"
 #import "progressbar.h"
-
+#import <dlfcn.h>
 
 NSString * const kInstallApplicationPath = @"com.selander.installapplication.path";
 static progressbar *progress = nil;
@@ -38,7 +38,14 @@ void printInstallErrorAndDie(mach_error_t error, const char *path) {
 
 int install_application(AMDeviceRef d, NSDictionary *options) {
     // Get path to generated file
-    NSString *path = [(NSString *)[options objectForKey:kInstallApplicationPath] stringByExpandingTildeInPath];
+    NSString *path = [(NSString *)[options objectForKey:kInstallApplicationPath] stringByStandardizingPath];
+
+    extern int gLogLevel;
+    
+    if (!path || ![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+        ErrorMessageThenDie("Couldn't find a valid path at \"%s\"\n", [path fileSystemRepresentation]);
+    }
+    dsdebug("Installing app from \"%s\"\n", [path UTF8String]);
     NSURL *local_app_url = [NSURL fileURLWithPath:path isDirectory:TRUE];
     NSDictionary *params = @{@"PackageType" : @"Customer"};
     NSString *deviceName = AMDeviceCopyValue(d, nil, @"DeviceName", 0);

@@ -152,7 +152,9 @@ void print_manpage(void) {
         \t\t%smobdevim -l com.example.test Entitlements%s List \"Entitlements\" key from com.example.test\n\n\
   \t%s-R%s\tUse color\n\n\
   \t%s-q%s\tQuiet mode, ideal for limiting output or checking if a value exists based upon return status\n\n\n\
-  Environment variables:\n\t%sDSCOLOR%s - Use color (same as -R)\n\n\t%sDSDEBUG%s - verbose debugging\n";
+  Environment variables:\n\t%sDSCOLOR%s - Use color (same as -R)\n\n\
+  \t%sDSDEBUG%s - verbose debugging\n\n\
+  \t%sOS_ACTIVITY_DT_MODE%s - Combine w/ DSDEBUG to enable MobileDevice logging\n";
   
   char formattedString[4096];
   snprintf(formattedString, 4096, manDescription, dcolor("bold"), colorEnd(), dcolor("bold"), program_name, colorEnd(), __DATE__, dcolor("bold"), colorEnd(),
@@ -185,7 +187,8 @@ void print_manpage(void) {
            dcolor("bold"), colorEnd(), // -R
            dcolor("bold"), colorEnd(), // -R
            dcolor("bold"), colorEnd(), // -R
-           dcolor("bold"), colorEnd()); // -q
+           dcolor("bold"), colorEnd(), // -q
+           dcolor("bold"), colorEnd()); // -OS_ACTIVITY_DT_MODE
   
   dsprintf(stdout, "%s", formattedString);
   

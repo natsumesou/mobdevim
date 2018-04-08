@@ -11,6 +11,10 @@
 #import "ExternalDeclarations.h"
 #import "helpers.h"
 #import <sys/socket.h>
+#import <dlfcn.h>
+//#import <log.h>
+@import MachO;
+
 
 // Originals
 #import "debug_application.h"
@@ -46,8 +50,6 @@ __unused static void connect_callback(AMDeviceListRef deviceList, int cookie) {
     [_op cancel];
     _op = nil;
     
-
-//
     NSDictionary *connectionDetails = ((__bridge NSDictionary *)(deviceList->connectionDeets))[@"Properties"];
     NSString *connectionType = connectionDetails[@"ConnectionType"];
     if ([connectedDevices containsObject:connectionDetails[@"DeviceID"]]) {
@@ -92,11 +94,32 @@ __unused static void connect_callback(AMDeviceListRef deviceList, int cookie) {
     }
 }
 
+
+__attribute__((constructor))
+void onLoad() {
+    if (getenv("DSDEBUG")) {
+        dsdebug("Verbose mode enabled...\n");
+        unsigned long size = 0;
+        uint32_t* data = (uint32_t*)getsectdatafromFramework("MobileDevice", "__DATA", "__data", &size);
+        
+        for (int i = 0; i < size / sizeof(uint32_t); i++) {
+            Dl_info info;
+            dladdr(&data[i], &info);
+            if (strcmp(info.dli_sname, "gLogLevel") == 0) {
+                // Let's crank it ALLLLLL THE WAY UP
+                *(uint32_t*)info.dli_saddr = INT32_MAX - 1;
+                break;
+            }
+        }
+    }
+}
+
 //*****************************************************************************/
 #pragma mark - MAIN
 //*****************************************************************************/
 
 int main(int argc, const char * argv[]) {
+
     @autoreleasepool {
         int option = -1;
         char *addr;

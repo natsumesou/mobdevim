@@ -70,6 +70,10 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "DSDEBUG=1 -l"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-l"
             isEnabled = "YES">
          </CommandLineArgument>

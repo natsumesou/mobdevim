@@ -42,7 +42,7 @@ int get_provisioning_profiles(AMDeviceRef d, NSDictionary *options) {
         NSString *teamName = dict[@"TeamName"];
         NSString *appIDName = dict[@"AppIDName"];
         NSString *appID = dict[@"Entitlements"][@"application-identifier"];
-        NSString *apsEnv = dict[@"Entitlements"][@"aps-environment"];
+//        NSString *apsEnv = dict[@"Entitlements"][@"aps-environment"];
         NSString *uuid = dict[@"UUID"];
         NSString *name = dict[@"Name"];
         NSArray *certs = dict[@"DeveloperCertificates"];
