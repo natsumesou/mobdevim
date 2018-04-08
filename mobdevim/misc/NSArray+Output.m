@@ -27,31 +27,94 @@
 }
 @end
 
-@implementation NSArray (Output)
 
+@implementation NSNumber (Output)
 - (const char *)dsformattedOutput {
-    NSMutableString *outputString = [NSMutableString string];
+    BOOL plistOutput = (getenv("DSPLIST") != NULL);
     
     NSNumber *currentOffset = [self dsIndentOffset];
     if (!currentOffset) {
         currentOffset = @1;
     }
     
-    if ([self count] == 0) {
-        [outputString appendFormat:@"%s[ ]%s", dcolor("bold"), colorEnd()];
-        return [outputString UTF8String];
-    }
-    [outputString appendFormat:@"\n%*s%s[%s\n",  ([currentOffset intValue]-1) * 4 , "", dcolor("bold"), colorEnd()];
-    for (id itemObject in self) {
-        [itemObject setDsIndentOffset:@([currentOffset intValue] + 1)];
-
-        if ([itemObject respondsToSelector:@selector(dsformattedOutput)]) {
-            [outputString appendFormat:@"%*s%s\n", [currentOffset intValue] * 4 , "",  [itemObject dsformattedOutput]];
+    if (plistOutput) {
+        
+        Class boolClass = [[NSNumber numberWithBool:YES] class];
+        
+        if([self isKindOfClass:boolClass]) {
+            return [[NSString stringWithFormat:@"%*s<%s/>\n", ([currentOffset intValue]-1) * 4 , "",  [self boolValue] ? "true": "false"] UTF8String];
         } else {
-            [outputString appendFormat:@"%*s%@\n", [currentOffset intValue] * 4 , "", itemObject];
+            return [[NSString stringWithFormat:@"%*s<string>%@</string>\n", ([currentOffset intValue]-1) * 4 , "",  self] UTF8String];
         }
     }
-    [outputString appendFormat:@"%*s%s]%s", ([currentOffset intValue]-1) * 4 , "",  dcolor("bold"), colorEnd()];
+    
+    return [[self description] UTF8String];
+}
+@end
+
+@implementation NSString (Output)
+- (const char *)dsformattedOutput {
+    BOOL plistOutput = (getenv("DSPLIST") != NULL);
+    
+    NSNumber *currentOffset = [self dsIndentOffset];
+    if (!currentOffset) {
+        currentOffset = @1;
+    }
+    
+    if (plistOutput) {
+        return [[NSString stringWithFormat:@"%*s<string>%@</string>\n", ([currentOffset intValue]-1) * 4 , "",  self] UTF8String];
+    }
+    
+    return [[self description] UTF8String];
+}
+    
+
+@end
+
+@implementation NSArray (Output)
+
+- (const char *)dsformattedOutput {
+    NSMutableString *outputString = [NSMutableString string];
+    BOOL plistOutput = (getenv("DSPLIST") != NULL);
+    NSNumber *currentOffset = [self dsIndentOffset];
+    if (!currentOffset) {
+        currentOffset = @1;
+    }
+    if ([currentOffset intValue] == 1 && plistOutput) {
+        [outputString appendString:@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n"];
+    }
+    
+    
+    if ([self count] == 0) {
+        if (plistOutput) {
+            [outputString appendString:@"<array></array>\n"];
+        } else {
+            [outputString appendFormat:@"%s[ ]%s", dcolor("bold"), colorEnd()];
+        }
+        return [outputString UTF8String];
+    }
+    
+    if (plistOutput) {
+        [outputString appendFormat:@"%*s<array>\n", ([currentOffset intValue]-1) * 4 , ""];
+    } else {
+        [outputString appendFormat:@"\n%*s%s[%s\n",  ([currentOffset intValue]-1) * 4 , "", dcolor("bold"), colorEnd()];
+    }
+    for (id itemObject in self) {
+        [itemObject setDsIndentOffset:@([currentOffset intValue] + 1)];
+        [outputString appendFormat:@"%s", [itemObject dsformattedOutput]];
+    }
+    
+    
+    if (plistOutput) {
+        [outputString appendFormat:@"%*s</array>\n", ([currentOffset intValue]-1) * 4 , ""];
+    } else {
+        [outputString appendFormat:@"%*s%s]%s", ([currentOffset intValue]-1) * 4 , "",  dcolor("bold"), colorEnd()];
+    }
+    
+    if ([currentOffset intValue] == 1) {
+        [outputString appendString:@"</plist>\n"];
+    }
+    
     
     return [outputString UTF8String];
     
@@ -63,23 +126,41 @@
 
 - (const char *)dsformattedOutput {
     NSMutableString *outputString = [NSMutableString string];
-    
+    BOOL plistOutput = (getenv("DSPLIST") != NULL);
+
     NSNumber *currentOffset = [self dsIndentOffset];
     if (!currentOffset) {
         currentOffset = @1;
     }
-    [outputString appendFormat:@"%s{%s\n",  dcolor("bold"), colorEnd()];
+    
+    if ([currentOffset intValue] == 1 && plistOutput) {
+        [outputString appendString:@"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n"];
+    }
+    
+    if (plistOutput) {
+        [outputString appendFormat:@"%*s<dict>\n", ([currentOffset intValue] -1) * 4 , ""];
+    } else {
+        [outputString appendFormat:@"%s{%s\n",  dcolor("bold"), colorEnd()];
+    }
     for (id key in self) {
         id itemObject = [self objectForKey:key];
         [itemObject setDsIndentOffset:@([currentOffset integerValue] + 1)];
-        if ([itemObject respondsToSelector:@selector(dsformattedOutput)]) {
-            
-            [outputString appendFormat:@"%*s%s%@%s: %s\n", [currentOffset intValue] * 4 , "", dcolor("cyan"), key, colorEnd(), [itemObject dsformattedOutput]];
+
+        if (plistOutput) {
+            [outputString appendFormat:@"%*s<key>%@</key>\n%s", [currentOffset intValue] * 4 , "",  key, [itemObject dsformattedOutput]];
         } else {
-            [outputString appendFormat:@"%*s%s%@%s: %@\n", [currentOffset intValue] * 4 , "", dcolor("cyan"), key, colorEnd(), itemObject];
+            [outputString appendFormat:@"%*s%s%@%s: %s\n", [currentOffset intValue] * 4 , "", dcolor("cyan"), key, colorEnd(), [itemObject dsformattedOutput]];
         }
     }
-    [outputString appendFormat:@"%*s%s}%s\n", ([currentOffset intValue] -1)  * 4 , "",   dcolor("bold"), colorEnd()];
+    if (plistOutput) {
+        [outputString appendFormat:@"%*s</dict>\n", ([currentOffset intValue] -1)  * 4 , ""];
+    } else {
+        [outputString appendFormat:@"%*s%s}%s\n", ([currentOffset intValue] -1)  * 4 , "",   dcolor("bold"), colorEnd()];
+    }
+    
+    if ([currentOffset intValue] == 1) {
+        [outputString appendString:@"</plist>\n"];
+    }
     
     return [outputString UTF8String];
 }

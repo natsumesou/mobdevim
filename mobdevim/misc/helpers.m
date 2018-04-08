@@ -154,6 +154,7 @@ void print_manpage(void) {
   \t%s-q%s\tQuiet mode, ideal for limiting output or checking if a value exists based upon return status\n\n\n\
   Environment variables:\n\t%sDSCOLOR%s - Use color (same as -R)\n\n\
   \t%sDSDEBUG%s - verbose debugging\n\n\
+  \t%sDSPLIST%s - Display output in plist form (mobdevim -l com.test.example)\n\n\
   \t%sOS_ACTIVITY_DT_MODE%s - Combine w/ DSDEBUG to enable MobileDevice logging\n";
   
   char formattedString[4096];

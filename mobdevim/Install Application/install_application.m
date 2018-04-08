@@ -29,7 +29,7 @@ void installCallback(CFDictionaryRef d) {
 void printInstallErrorAndDie(mach_error_t error, const char *path) {
     switch (error) {
         default:
-            dsprintf(stderr, "Error installing \"%s\", err: %d\n", path, error);
+            dsprintf(stderr, "Error installing \"%s\", err: 0x%x\n", path, error);
             break;
     }
     

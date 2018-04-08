@@ -99,6 +99,9 @@ __unused static void connect_callback(AMDeviceListRef deviceList, int cookie) {
 
 __attribute__((constructor))
 void onLoad() {
+    if (getenv("DSPLIST")) {
+        quiet_mode = YES;
+    }
     if (getenv("DSDEBUG")) {
         dsdebug("Verbose mode enabled...\n");
         unsigned long size = 0;
@@ -183,9 +186,6 @@ int main(int argc, const char * argv[]) {
                     assertArg();
                     actionFunc = &delete_application;
                     [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kDeleteApplicationIdentifier];
-                    break;
-                case 'q':
-                    quiet_mode = YES;
                     break;
                 case 's':
                     assertArg();

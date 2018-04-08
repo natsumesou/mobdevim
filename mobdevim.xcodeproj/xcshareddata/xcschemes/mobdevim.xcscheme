@@ -70,11 +70,11 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "DSDEBUG=1 -l"
-            isEnabled = "NO">
+            argument = "-l com.godaddy.Voice "
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-l"
+            argument = "-q"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
@@ -89,17 +89,17 @@
             isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
+            key = "OS_ACTIVITY_DT_MODE"
+            value = "NO"
+            isEnabled = "NO">
+         </EnvironmentVariable>
+         <EnvironmentVariable
             key = "DSDEBUG"
             value = "1"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
       </EnvironmentVariables>
       <AdditionalOptions>
-         <AdditionalOption
-            key = "MallocStackLogging"
-            value = ""
-            isEnabled = "YES">
-         </AdditionalOption>
       </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
