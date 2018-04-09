@@ -48,7 +48,7 @@
         }
     }
     
-    return [[self description] UTF8String];
+    return [[NSString stringWithFormat:@"%*s%@\n", ([currentOffset intValue]-1) * 4 , "", self] UTF8String];
 }
 @end
 
@@ -65,7 +65,7 @@
         return [[NSString stringWithFormat:@"%*s<string>%@</string>\n", ([currentOffset intValue]-1) * 4 , "",  self] UTF8String];
     }
     
-    return [[self description] UTF8String];
+    return [[NSString stringWithFormat:@"%*s%@\n", ([currentOffset intValue]-1) * 4 , "", self] UTF8String];
 }
     
 
@@ -97,7 +97,7 @@
     if (plistOutput) {
         [outputString appendFormat:@"%*s<array>\n", ([currentOffset intValue]-1) * 4 , ""];
     } else {
-        [outputString appendFormat:@"\n%*s%s[%s\n",  ([currentOffset intValue]-1) * 4 , "", dcolor("bold"), colorEnd()];
+        [outputString appendFormat:@"%*s%s[%s\n",  ([currentOffset intValue]-1) * 4 , "", dcolor("bold"), colorEnd()];
     }
     for (id itemObject in self) {
         [itemObject setDsIndentOffset:@([currentOffset intValue] + 1)];
@@ -111,7 +111,7 @@
         [outputString appendFormat:@"%*s%s]%s", ([currentOffset intValue]-1) * 4 , "",  dcolor("bold"), colorEnd()];
     }
     
-    if ([currentOffset intValue] == 1) {
+    if ([currentOffset intValue] == 1 && plistOutput) {
         [outputString appendString:@"</plist>\n"];
     }
     
@@ -140,7 +140,7 @@
     if (plistOutput) {
         [outputString appendFormat:@"%*s<dict>\n", ([currentOffset intValue] -1) * 4 , ""];
     } else {
-        [outputString appendFormat:@"%s{%s\n",  dcolor("bold"), colorEnd()];
+        [outputString appendFormat:@"%*s%s{%s\n",  ([currentOffset intValue] -1) * 4 , "", dcolor("bold"), colorEnd()];
     }
     for (id key in self) {
         id itemObject = [self objectForKey:key];
@@ -148,8 +148,10 @@
 
         if (plistOutput) {
             [outputString appendFormat:@"%*s<key>%@</key>\n%s", [currentOffset intValue] * 4 , "",  key, [itemObject dsformattedOutput]];
+        } else if ([itemObject isKindOfClass:[NSDictionary class]] || [itemObject isKindOfClass:[NSArray class]])  {
+            [outputString appendFormat:@"%*s%s%@%s:\n%s\n", [currentOffset intValue] * 4 , "", dcolor("cyan"), key, colorEnd(), [itemObject dsformattedOutput]];
         } else {
-            [outputString appendFormat:@"%*s%s%@%s: %s\n", [currentOffset intValue] * 4 , "", dcolor("cyan"), key, colorEnd(), [itemObject dsformattedOutput]];
+            [outputString appendFormat:@"%*s%s%@%s: %@\n", [currentOffset intValue] * 4 , "", dcolor("cyan"), key, colorEnd(), itemObject];
         }
     }
     if (plistOutput) {
@@ -158,7 +160,7 @@
         [outputString appendFormat:@"%*s%s}%s\n", ([currentOffset intValue] -1)  * 4 , "",   dcolor("bold"), colorEnd()];
     }
     
-    if ([currentOffset intValue] == 1) {
+    if ([currentOffset intValue] == 1 && plistOutput) {
         [outputString appendString:@"</plist>\n"];
     }
     

@@ -73,7 +73,7 @@ NSString* extractDummyTarget(NSString *name) {
 void generateSetupScript(const char *localExecutablePath, const char * remoteExecutablePath, int port) {
     NSString *setupScript =
 @"platform select remote-ios\n\
-target create %s\n\
+target create \"%s\"\n\
 script lldb.target.module[0].SetPlatformFileSpec(lldb.SBFileSpec(\"%s\"))\n\
 process connect connect://127.0.0.1:%d\n\
 ";
