@@ -21,16 +21,7 @@ Alternatively, a precompiled version is available <a href="https://github.com/De
 
 ## Commands
 
-```
-Name
-  mobdevim -- (mobiledevice-improved) Interact with a plugged in iOS device (compiled Apr  8 2018)
-
-  Description
-  	The mobdevim utlity interacts with your plugged in iOS device over USB using Apple's
-  	framework, MobileDevice.
-
-  The options are as follows:
-  	
+```	
     -f	Get device info
 
   	-d	Debug application
