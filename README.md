@@ -22,7 +22,7 @@ Alternatively, a precompiled version is available <a href="https://github.com/De
 ## Commands
 
 ```	
-    -f	Get device info
+        -f	Get device info
 
   	-d	Debug application
           		mobdevim -d /application/bundle/on/mac/ Debugs application (must install app first)
