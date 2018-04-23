@@ -72,4 +72,6 @@ Alternatively, a precompiled version is available <a href="https://github.com/De
   	OS_ACTIVITY_DT_MODE - Combine w/ DSDEBUG to enable MobileDevice logging
 ```
  
+![mobdevim example](https://github.com/DerekSelander/mobdevim/raw/master/media/color_wow.png)
+
 More commands will be coming soon...

@@ -66,7 +66,7 @@ int list_applications(AMDeviceRef d, NSDictionary *options) {
         if (getenv("DSCOLOR")) {
             colorHelper = [NSString stringWithFormat:@"\t%s█ Hidden%s\t%s█ Developer%s\t%s█ System%s\t%s█ Internal%s\n", dcolor("yellow"), colorEnd(), dcolor("cyan"), colorEnd(), dcolor("red"), colorEnd(), dcolor("magenta"), colorEnd()];
         }
-        dsprintf(stdout, "Dumping bundleIDs for all apps\n\n%s%s\n\n", [colorHelper UTF8String],  [output UTF8String]);
+        dsprintf(stdout, "Dumping bundleIDs for all apps\n\n%s%s", [colorHelper UTF8String],  [output UTF8String]);
     }
     
     AMDeviceDisconnect(d);

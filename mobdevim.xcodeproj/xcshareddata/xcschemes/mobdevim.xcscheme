@@ -75,7 +75,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-q"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-i ~/Desktop/UT.app"
