@@ -137,7 +137,7 @@ int yoink_app(AMDeviceRef d, NSDictionary *options) {
     }
     
     NSFileManager *manager = [NSFileManager defaultManager];
-
+    
     // write the directories first
     for (NSString *path in exploredDirectories) {
         NSString *finalizedDirectory = [outputDirectory stringByAppendingPathComponent:path];
@@ -155,12 +155,12 @@ int yoink_app(AMDeviceRef d, NSDictionary *options) {
             continue;
         }
         
-        NSError *err = NULL;
         [[NSFileManager defaultManager] createFileAtPath:finalizedFile contents:nil attributes:nil];
-        NSFileHandle *handle = [NSFileHandle fileHandleForWritingToURL:[NSURL URLWithString:finalizedFile] error:&err];
-        if (err) {
-            dsprintf(stdout, "%s\nExiting...\n", [[err localizedDescription] UTF8String]);
-            return 1;
+         NSFileHandle *handle = [NSFileHandle fileHandleForWritingAtPath:finalizedFile];
+        if (!handle) {
+            dsprintf(stdout, "%s\nExiting...\n", [finalizedFile UTF8String]);
+            continue;
+            //            return 1;
         }
         int fd = [handle fileDescriptor];
         
@@ -204,6 +204,7 @@ int yoink_app(AMDeviceRef d, NSDictionary *options) {
         dsprintf(stdout, "Opening \"%s\"...\n", [outputDirectory UTF8String]);
         if (!quiet_mode) {
             NSString *systemCMDString = [NSString stringWithFormat:@"open -R %@", outputDirectory];
+            
             system([systemCMDString UTF8String]);
         }
     } else {
