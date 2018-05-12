@@ -30,7 +30,7 @@
 #import "delete_application.h"
 #import "instruments.h"
 
-static NSOperation *_op = nil; //
+static NSOperation *timeoutOperation = nil; // kill proc if nothing happens in 30 sec
 static NSString *optionalArgument = nil;
 static NSString *requiredArgument = nil;
 static NSString *ideviceName = nil;
@@ -47,19 +47,23 @@ static NSMutableSet *connectedDevices;
 
 __unused static void connect_callback(AMDeviceListRef deviceList, int cookie) {
     
-    [_op cancel];
-    _op = nil;
+    [timeoutOperation cancel];
+    timeoutOperation = nil;
     
-    NSDictionary *connectionDetails = ((__bridge NSDictionary *)(deviceList->connectionDeets))[@"Properties"];
-    NSString *connectionType = connectionDetails[@"ConnectionType"];
+  NSDictionary *connectionDetails = ((__bridge NSDictionary *)(deviceList->connectionDeets));
+  if ([connectionDetails isKindOfClass:[NSDictionary class]]) {
+    NSString *connectionType = connectionDetails[@"Properties"][@"ConnectionType"];
     
     // For now, just force a USB connection
     if ([connectionDetails[@"ConnectionType"] isEqualToString:@"Network"]) {
-        return;
+      return;
     }
-    
-    AMDeviceRef d = deviceList->device;
     dsdebug("Found device %s (DeviceID %d) with ConnectionType: %s\n", [connectionDetails[@"SerialNumber"] UTF8String], [connectionDetails[@"DeviceID"] intValue], [connectionType UTF8String]);
+    
+  }
+  
+  
+    AMDeviceRef d = deviceList->device;
     
     // Connect
     AMDeviceConnect(d);
@@ -73,7 +77,6 @@ __unused static void connect_callback(AMDeviceListRef deviceList, int cookie) {
         dsprintf(stderr, "The device \"%s\" might not have been paired yet, Trust this computer on the device\n", [deviceUDID UTF8String]);
         exit(1);
     }
-    //  assert(!AMDeviceValidatePairing(d));
     
     // Start Session
     assert(!AMDeviceStartSession(d));
@@ -279,12 +282,12 @@ int main(int argc, const char * argv[]) {
         AMDeviceNotificationSubscribeWithOptions(connect_callback, 0, 0, 0, &__n, @{@"NotificationOptionSearchForPairedDevices" : @YES });
 //        AMDeviceNotificationSubscribe(connect_callback, 0, 0, 0, &__n);
         
-        _op = [NSBlockOperation blockOperationWithBlock:^{
+        timeoutOperation = [NSBlockOperation blockOperationWithBlock:^{
             dsprintf(stderr, "Your device might not be connected. You've got about 25 seconds to connect your device before the timeout gets fired or you can start fresh with a ctrl-c. Choose wisely... dun dun\n");
         }];
         
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [[NSOperationQueue mainQueue] addOperation:_op];
+            [[NSOperationQueue mainQueue] addOperation:timeoutOperation];
         });
         
         if (shouldDisableTimeout) {
