@@ -44,22 +44,24 @@ int list_applications(AMDeviceRef d, NSDictionary *options) {
         }
     } else {
         // name is nil
-        AMDeviceLookupApplications(d, @{@"ReturnAttributes": @[@"ProfileValidated", @"CFBundleIdentifier", @"SBAppTags", @"ApplicationType"], @"ShowLaunchProhibitedApps" : @YES}, &dict);
+        AMDeviceLookupApplications(d, @{@"ReturnAttributes": @[@"ProfileValidated", @"CFBundleIdentifier", @"SBAppTags", @"ApplicationType", @"CFBundleDisplayName"], @"ShowLaunchProhibitedApps" : @YES}, &dict);
         NSMutableString *output = [NSMutableString string];
         for (NSString *key in [dict allKeys]) {
             NSDictionary *appDict = dict[key];
+            NSString *appName = appDict[@"CFBundleDisplayName"];
             if ([appDict[@"ProfileValidated"] boolValue]) {
-                [output appendString:[NSString stringWithFormat:@"%s%@%s\n", dcolor("cyan"), key, colorEnd()]];
+                [output appendString:[NSString stringWithFormat:@"%s%@, %@%s\n", dcolor("cyan"), key, appName, colorEnd()]];
             } else if ([appDict[@"ApplicationType"] isEqualToString:@"Internal"]) {
-                [output appendString:[NSString stringWithFormat:@"%s%@%s\n", dcolor("magenta"), key, colorEnd()]];
+                [output appendString:[NSString stringWithFormat:@"%s%@, %@%s\n", dcolor("magenta"), key, appName, colorEnd()]];
             } else if ([appDict[@"SBAppTags"] containsObject:@"hidden"]) {
-                [output appendString:[NSString stringWithFormat:@"%s%@%s\n", dcolor("yellow"), key, colorEnd()]];
+                [output appendString:[NSString stringWithFormat:@"%s%@, %@%s\n", dcolor("yellow"), key, appName, colorEnd()]];
             } else if ([appDict[@"ApplicationType"] isEqualToString:@"System"]) {
-                [output appendString:[NSString stringWithFormat:@"%s%@%s\n", dcolor("red"), key, colorEnd()]];
+                [output appendString:[NSString stringWithFormat:@"%s%@, %@%s\n", dcolor("red"), key, appName, colorEnd()]];
             }
             else {
-                [output appendString:[NSString stringWithFormat:@"%@\n", key]];
+                [output appendString:[NSString stringWithFormat:@"%@, %@\n", key, appName]];
             }
+          
         }
         
         NSString *colorHelper = @"";
