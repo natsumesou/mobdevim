@@ -50,19 +50,19 @@ __unused static void connect_callback(AMDeviceListRef deviceList, int cookie) {
     [timeoutOperation cancel];
     timeoutOperation = nil;
     
-  NSDictionary *connectionDetails = ((__bridge NSDictionary *)(deviceList->connectionDeets));
-  if ([connectionDetails isKindOfClass:[NSDictionary class]]) {
-    NSString *connectionType = connectionDetails[@"Properties"][@"ConnectionType"];
-    
-    // For now, just force a USB connection
-    if ([connectionDetails[@"ConnectionType"] isEqualToString:@"Network"]) {
-      return;
+    NSDictionary *connectionDetails = ((__bridge NSDictionary *)(deviceList->connectionDeets));
+    if ([connectionDetails isKindOfClass:[NSDictionary class]]) {
+        NSString *connectionType = connectionDetails[@"Properties"][@"ConnectionType"];
+        
+        // For now, just force a USB connection
+        if ([connectionDetails[@"ConnectionType"] isEqualToString:@"Network"]) {
+            return;
+        }
+        dsdebug("Found device %s (DeviceID %d) with ConnectionType: %s\n", [connectionDetails[@"SerialNumber"] UTF8String], [connectionDetails[@"DeviceID"] intValue], [connectionType UTF8String]);
+        
     }
-    dsdebug("Found device %s (DeviceID %d) with ConnectionType: %s\n", [connectionDetails[@"SerialNumber"] UTF8String], [connectionDetails[@"DeviceID"] intValue], [connectionType UTF8String]);
     
-  }
-  
-  
+    
     AMDeviceRef d = deviceList->device;
     
     // Connect
@@ -127,10 +127,12 @@ void onLoad() {
 //*****************************************************************************/
 
 int main(int argc, const char * argv[]) {
-
+    
     @autoreleasepool {
         int option = -1;
         char *addr;
+        
+        
         
         if (argc == 1) {
             print_manpage();
@@ -214,7 +216,7 @@ int main(int argc, const char * argv[]) {
                 case 'd':
                     assertArg();
                     shouldDisableTimeout = NO;
-                     [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kDebugApplicationIdentifier];
+                    [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kDebugApplicationIdentifier];
                     actionFunc = debug_application;
                     break;
                 case 'c':
@@ -279,8 +281,8 @@ int main(int argc, const char * argv[]) {
         }
         
         
-        AMDeviceNotificationSubscribeWithOptions(connect_callback, 0, 0, 0, &__n, @{@"NotificationOptionSearchForPairedDevices" : @YES });
-//        AMDeviceNotificationSubscribe(connect_callback, 0, 0, 0, &__n);
+        AMDeviceNotificationSubscribeWithOptions(connect_callback, 0,0,0,&__n, @{@"NotificationOptionSearchForPairedDevices" : @YES, @"NotificationOptionSearchForWiFiPairableDevices" : @NO });
+        // TODO uncripple WIFI in the future when working on remote debugging
         
         timeoutOperation = [NSBlockOperation blockOperationWithBlock:^{
             dsprintf(stderr, "Your device might not be connected. You've got about 25 seconds to connect your device before the timeout gets fired or you can start fresh with a ctrl-c. Choose wisely... dun dun\n");
