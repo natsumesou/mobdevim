@@ -106,7 +106,6 @@ int send_files(AMDeviceRef d, NSDictionary *options) {
     NSString *basePath = [NSString stringWithUTF8String:[fileURL fileSystemRepresentation]];
     NSRange range = [basePath rangeOfString:baseResolvedPath];
     
-    NSInteger location = range.location;
     range.location = range.length;
     range.length = [basePath length] - range.location;
     assert(range.length != 0);
