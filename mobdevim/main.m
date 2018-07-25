@@ -29,6 +29,8 @@
 #import "get_logs.h"
 #import "delete_application.h"
 #import "instruments.h"
+#import "sim_location.h"
+
 
 static NSOperation *timeoutOperation = nil; // kill proc if nothing happens in 30 sec
 static NSString *optionalArgument = nil;
@@ -49,6 +51,11 @@ __unused static void connect_callback(AMDeviceListRef deviceList, int cookie) {
     
     [timeoutOperation cancel];
     timeoutOperation = nil;
+  static BOOL hasRun = NO;
+  static dispatch_once_t onceToken;
+  
+  
+  if (hasRun) { return; }
     
     NSDictionary *connectionDetails = ((__bridge NSDictionary *)(deviceList->connectionDeets));
     if ([connectionDetails isKindOfClass:[NSDictionary class]]) {
@@ -97,6 +104,10 @@ __unused static void connect_callback(AMDeviceListRef deviceList, int cookie) {
         AMDeviceNotificationUnsubscribe(deviceList);
         CFRunLoopStop(CFRunLoopGetMain());
     }
+  
+  dispatch_once(&onceToken, ^{
+    hasRun = YES;
+  });
 }
 
 
@@ -142,7 +153,7 @@ int main(int argc, const char * argv[]) {
         getopt_options = [NSMutableDictionary new];
         connectedDevices = [NSMutableSet new];
         
-        while ((option = getopt (argc, (char **)argv, ":d::Rr:fFqs:zd:u:hvg::l::i:Cc::p::y::")) != -1) {
+      while ((option = getopt (argc, (char **)argv, ":d::Rr:fFqs:zd:u:hvg::l::i:Cc::p::y::L::")) != -1) {
             switch (option) {
                 case 'R': // Use color
                     setenv("DSCOLOR", "1", 1);
@@ -210,9 +221,17 @@ int main(int argc, const char * argv[]) {
                     [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kInstallApplicationPath];
                     requiredArgument = [NSString stringWithUTF8String:addr];
                     break;
+                case 'L':
+                    assertArg();
+                    shouldDisableTimeout = NO;
+                    actionFunc = &sim_location;
+                    [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kSimLocationLat];
+                    [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kSimLocationLon];
+                    break;
                 case 'h':
                     print_manpage();
                     exit(EXIT_SUCCESS);
+                    break;
                 case 'd':
                     assertArg();
                     shouldDisableTimeout = NO;
@@ -229,6 +248,9 @@ int main(int argc, const char * argv[]) {
                     actionFunc = &get_provisioning_profiles;
                     [getopt_options setObject:@YES forKey:kProvisioningProfilesCopyDeveloperCertificates];
                     break;
+                case '?': // TODO fix this
+                goto MEH_IM_DONE;
+                    break;
                 case 'p':
                     assertArg();
                     actionFunc = &get_provisioning_profiles;
@@ -239,7 +261,7 @@ int main(int argc, const char * argv[]) {
                     actionFunc = &yoink_app;
                     [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kYoinkBundleIDContents];
                     break;
-                case ':':
+                case ':': // cases for optional non argument
                     switch (optopt)
                 {
                     case 'g':
@@ -263,6 +285,12 @@ int main(int argc, const char * argv[]) {
                         dsprintf(stderr, "%sList a BundleIdentifier to yoink it's contents%s\n\n", dcolor("yellow"), colorEnd());
                         actionFunc = &list_applications;
                         break;
+                      case 'L':
+                        shouldDisableTimeout = NO;
+                        actionFunc = &sim_location;
+                        break;
+                      case '?':
+                        break;
                     default:
                         dsprintf(stderr, "option -%c is missing a required argument\n", optopt);
                         return EXIT_FAILURE;
@@ -274,6 +302,9 @@ int main(int argc, const char * argv[]) {
                     break;
             }
         }
+      
+MEH_IM_DONE:
+      
         
         
         if (!isatty(fileno(stdout))) {

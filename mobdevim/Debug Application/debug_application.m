@@ -243,7 +243,8 @@ int debug_application(AMDeviceRef d, NSDictionary* options) {
     port = ntohs(addr.sin_port);
     
     if (port == 0) {
-        ErrorMessageThenDie("Unable to bind port, exiting\n");
+      return 0;
+//        ErrorMessageThenDie("Unable to bind port, exiting\n");
     }
     CFRunLoopSourceRef runLoopSourceRef = CFSocketCreateRunLoopSource(NULL, fdvendor, 0);
     CFRunLoopAddSource(CFRunLoopGetMain(), runLoopSourceRef, kCFRunLoopCommonModes);

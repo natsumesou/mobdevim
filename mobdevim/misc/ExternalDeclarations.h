@@ -140,6 +140,8 @@ mach_error_t AFCConnectionOpen(AMDServiceConnectionRef, int, AFCConnectionRef * 
 
 mach_error_t AFCConnectionClose(AFCConnectionRef);
 mach_error_t AMDServiceConnectionSendMessage(AMDServiceConnectionRef serviceConnection, NSDictionary* message, CFPropertyListFormat format);
+
+mach_error_t AMDServiceConnectionSend(AMDServiceConnectionRef, void *content, size_t length);
 NSArray* AMDCreateDeviceList(void);
 NSString *AMDeviceGetName(AMDeviceRef);
 int AMDServiceConnectionGetSocket(AMDServiceConnectionRef);
