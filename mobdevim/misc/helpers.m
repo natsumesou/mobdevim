@@ -150,6 +150,9 @@ void print_manpage(void) {
         \t\t%smobdevim -l%s List all apps\n\
         \t\t%smobdevim -l com.example.test%s Get detailed information about app, com.example.test\n\
         \t\t%smobdevim -l com.example.test Entitlements%s List \"Entitlements\" key from com.example.test\n\n\
+  \t%s-L%s\tSimulate location\n\
+        \t\t%smobdevim -L%s Remove location simulation\n\
+        \t\t%smobdevim -L 40.7128 -73.935242%s Simulate phone in New York\n\n\
   \t%s-R%s\tUse color\n\n\
   \t%s-q%s\tQuiet mode, ideal for limiting output or checking if a value exists based upon return status\n\n\n\
   Environment variables:\n\t%sDSCOLOR%s - Use color (same as -R)\n\n\
@@ -185,6 +188,9 @@ void print_manpage(void) {
                dcolor("bold"), colorEnd(), // -l
                dcolor("bold"), colorEnd(), // -l
                dcolor("bold"), colorEnd(), // -l
+           dcolor("bold"), colorEnd(), // -L
+             dcolor("bold"), colorEnd(), // -L
+             dcolor("bold"), colorEnd(), // -L
            dcolor("bold"), colorEnd(), // -R
            dcolor("bold"), colorEnd(), // -R
            dcolor("bold"), colorEnd(), // -R
