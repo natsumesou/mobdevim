@@ -44,93 +44,81 @@ static NSMutableDictionary *getopt_options;
 
 
 static BOOL isCurrentlyRunning = NO;
-
 static NSMutableSet *connectedDevices;
 
-__unused static void connect_callback(AMDeviceListRef deviceList, int cookie) {
-    
-    [timeoutOperation cancel];
-    timeoutOperation = nil;
-  static BOOL hasRun = NO;
-  static dispatch_once_t onceToken;
+__unused static void connect_callback(AMDeviceCallBackDevice *device_callback, int cookie) {
   
+  [timeoutOperation cancel];
+  timeoutOperation = nil;
   
-  if (hasRun) { return; }
-    
-    NSDictionary *connectionDetails = ((__bridge NSDictionary *)(deviceList->connectionDeets));
-    if ([connectionDetails isKindOfClass:[NSDictionary class]]) {
-        NSString *connectionType = connectionDetails[@"Properties"][@"ConnectionType"];
-        
-        // For now, just force a USB connection
-        if ([connectionDetails[@"ConnectionType"] isEqualToString:@"Network"]) {
-            return;
-        }
-        dsdebug("Found device %s (DeviceID %d) with ConnectionType: %s\n", [connectionDetails[@"SerialNumber"] UTF8String], [connectionDetails[@"DeviceID"] intValue], [connectionType UTF8String]);
-        
-    }
-    
-    
-    AMDeviceRef d = deviceList->device;
-    
-    // Connect
-    AMDeviceConnect(d);
-    
-    // Is Paired
-    assert((AMDeviceIsPaired(deviceList) == ERR_SUCCESS));
-    
-    NSString *deviceUDID = AMDeviceCopyValue(d, nil, @"DeviceName", 0);
-    // Validate Pairing
-    if (AMDeviceValidatePairing(d)) {
-        dsprintf(stderr, "The device \"%s\" might not have been paired yet, Trust this computer on the device\n", [deviceUDID UTF8String]);
-        exit(1);
-    }
-    
-    // Start Session
-    assert(!AMDeviceStartSession(d));
-    [connectedDevices addObject:connectionDetails[@"DeviceID"]];
-    
-    NSString *deviceName = AMDeviceCopyValue(d, nil, @"DeviceName", 0);
-    if (deviceName) {
-        ideviceName = deviceName;
-        dsprintf(stdout, "%sConnected to: \"%s\" (%s)%s\n", dcolor("cyan"), [deviceName UTF8String], [AMDeviceGetName(d) UTF8String], colorEnd());
-    }
-    
-    if (actionFunc) {
-        isCurrentlyRunning = YES;
-        return_error = actionFunc(d, getopt_options);
-    }
-    
-    if (actionFunc != &debug_application) {
-        AMDeviceNotificationUnsubscribe(deviceList);
-        CFRunLoopStop(CFRunLoopGetMain());
-    }
+  // only monitor for connection callbacks
+  if (device_callback->status != DeviceConnectionStatusConnect) {
+    return;
+  }
   
-  dispatch_once(&onceToken, ^{
-    hasRun = YES;
-  });
+  NSDictionary *connectionDetails = ((__bridge NSDictionary *)(device_callback->connectionDeets));
+  if ([connectionDetails isKindOfClass:[NSDictionary class]]) {
+    NSString *connectionType = connectionDetails[@"Properties"][@"ConnectionType"];
+    dsdebug("Found device %s (DeviceID %d) with ConnectionType: %s\n", [connectionDetails[@"SerialNumber"] UTF8String], [connectionDetails[@"DeviceID"] intValue], [connectionType UTF8String]);
+  }
+
+  AMDeviceRef d = device_callback->device;
+  
+  // Connect
+  AMDeviceConnect(d);
+  
+  // Is Paired
+  assert((AMDeviceIsPaired(device_callback) == ERR_SUCCESS));
+  
+  NSString *deviceUDID = AMDeviceCopyValue(d, nil, @"DeviceName", 0);
+  // Validate Pairing
+  if (AMDeviceValidatePairing(d)) {
+    dsprintf(stderr, "The device \"%s\" might not have been paired yet, Trust this computer on the device\n", [deviceUDID UTF8String]);
+    exit(1);
+  }
+  
+  // Start Session
+  assert(!AMDeviceStartSession(d));
+  [connectedDevices addObject:connectionDetails[@"DeviceID"]];
+  
+  NSString *deviceName = AMDeviceCopyValue(d, nil, @"DeviceName", 0);
+  if (deviceName) {
+    ideviceName = deviceName;
+    dsprintf(stdout, "%sConnected to: \"%s\" (%s)%s\n", dcolor("cyan"), [deviceName UTF8String], [AMDeviceGetName(d) UTF8String], colorEnd());
+  }
+  
+  if (actionFunc) {
+    isCurrentlyRunning = YES;
+    return_error = actionFunc(d, getopt_options);
+  }
+  
+  if (actionFunc != &debug_application) {
+    AMDeviceNotificationUnsubscribe(device_callback);
+    CFRunLoopStop(CFRunLoopGetMain());
+  }
 }
 
 
 __attribute__((constructor))
 void onLoad() {
-    if (getenv("DSPLIST")) {
-        quiet_mode = YES;
+  if (getenv("DSPLIST")) {
+    quiet_mode = YES;
+  }
+  if (getenv("DSDEBUG")) {
+    dsdebug("Verbose mode enabled...\n");
+    unsigned long size = 0;
+    uint32_t* data = (uint32_t*)getsectdatafromFramework("MobileDevice", "__DATA", "__data", &size);
+    
+    for (int i = 0; i < size / sizeof(uint32_t); i++) {
+      Dl_info info;
+      dladdr(&data[i], &info);
+      if (strcmp(info.dli_sname, "gLogLevel") == 0) {
+        // Let's crank it ALLLLLL THE WAY UP
+        *(uint32_t*)info.dli_saddr = INT32_MAX - 1;
+        break;
+      }
     }
-    if (getenv("DSDEBUG")) {
-        dsdebug("Verbose mode enabled...\n");
-        unsigned long size = 0;
-        uint32_t* data = (uint32_t*)getsectdatafromFramework("MobileDevice", "__DATA", "__data", &size);
-        
-        for (int i = 0; i < size / sizeof(uint32_t); i++) {
-            Dl_info info;
-            dladdr(&data[i], &info);
-            if (strcmp(info.dli_sname, "gLogLevel") == 0) {
-                // Let's crank it ALLLLLL THE WAY UP
-                *(uint32_t*)info.dli_saddr = INT32_MAX - 1;
-                break;
-            }
-        }
-    }
+  }
 }
 
 //*****************************************************************************/
@@ -138,204 +126,217 @@ void onLoad() {
 //*****************************************************************************/
 
 int main(int argc, const char * argv[]) {
+  
+  @autoreleasepool {
+    int option = -1;
+    char *addr;
     
-    @autoreleasepool {
-        int option = -1;
-        char *addr;
-        
-        
-        
-        if (argc == 1) {
-            print_manpage();
-            exit(EXIT_SUCCESS);
-        }
-        
-        getopt_options = [NSMutableDictionary new];
-        connectedDevices = [NSMutableSet new];
-        
-      while ((option = getopt (argc, (char **)argv, ":d::Rr:fFqs:zd:u:hvg::l::i:Cc::p::y::L::")) != -1) {
-            switch (option) {
-                case 'R': // Use color
-                    setenv("DSCOLOR", "1", 1);
-                    break;
-                case 'r':
-                    assertArg();
-                    actionFunc = &remove_file;
-                    [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kRemoveFileBundleID];
-                    
-                    if (argc > optind) {
-                        [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kRemoveFileRemotePath];
-                    }
-                    break;
-                case 'v':
-                    printf("%s v%s\n", program_name, version_string);
-                    exit(EXIT_SUCCESS);
-                case 'g':
-                    assertArg();
-                    actionFunc = &get_logs;
-                    if (strcmp("__delete", optarg) == 0) {
-                        [getopt_options setObject:@YES forKey:kGetLogsDelete];
-                    } else {
-                        [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kGetLogsAppBundle];
-                    }
-                    
-                    if (argc > optind) {
-                        [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kGetLogsFilePath];
-                    }
-                    break;
-                case 'f':
-                    actionFunc = &get_device_info;
-                    break;
-                case 'F':
-                    actionFunc = &instruments;
-                    break;
-                case 'l':
-                    assertArg();
-                    actionFunc = &list_applications;
-                    addr = strdup(optarg);
-                    [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kListApplicationsName];
-                    if (argc > optind) {
-                        [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kListApplicationsKey];
-                    }
-                    break;
-                case 'u':
-                    assertArg();
-                    actionFunc = &delete_application;
-                    [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kDeleteApplicationIdentifier];
-                    break;
-                case 's':
-                    assertArg();
-                    if(argc != 4) {
-                        dsprintf(stderr, "Err: mobdevim -s BundleIdentifier /path/to/directories\n");
-                        exit(1);
-                    }
-                    actionFunc = &send_files;
-                    [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kSendFilePath];
-                    [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kSendAppBundle];
-                    break;
-                case 'i':
-                    assertArg();
-                    shouldDisableTimeout = NO;
-                    actionFunc = &install_application;
-                    addr = strdup(optarg);
-                    [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kInstallApplicationPath];
-                    requiredArgument = [NSString stringWithUTF8String:addr];
-                    break;
-                case 'L':
-                    assertArg();
-                    shouldDisableTimeout = NO;
-                    actionFunc = &sim_location;
-                    [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kSimLocationLat];
-                    [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kSimLocationLon];
-                    break;
-                case 'h':
-                    print_manpage();
-                    exit(EXIT_SUCCESS);
-                    break;
-                case 'd':
-                    assertArg();
-                    shouldDisableTimeout = NO;
-                    [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kDebugApplicationIdentifier];
-                    actionFunc = debug_application;
-                    break;
-                case 'c':
-                    assertArg();
-                    shouldDisableTimeout = NO;
-                    actionFunc = console;
-                    [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kConsoleProcessName];
-                    break;
-                case 'C':
-                    actionFunc = &get_provisioning_profiles;
-                    [getopt_options setObject:@YES forKey:kProvisioningProfilesCopyDeveloperCertificates];
-                    break;
-                case '?': // TODO fix this
-                goto MEH_IM_DONE;
-                    break;
-                case 'p':
-                    assertArg();
-                    actionFunc = &get_provisioning_profiles;
-                    [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kProvisioningProfilesFilteredByDevice];
-                    break;
-                case 'y':
-                    assertArg();
-                    actionFunc = &yoink_app;
-                    [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kYoinkBundleIDContents];
-                    break;
-                case ':': // cases for optional non argument
-                    switch (optopt)
-                {
-                    case 'g':
-                        actionFunc = &get_logs;
-                        break;
-                    case 'p':
-                        actionFunc = &get_provisioning_profiles;
-                        break;
-                    case 'c':
-                        shouldDisableTimeout = NO;
-                        actionFunc = console;
-                        break;
-                    case 'l':
-                        actionFunc = &list_applications;
-                        break;
-                    case 'd':
-                        shouldDisableTimeout = NO;
-                        actionFunc = debug_application;
-                        break;
-                    case 'y':
-                        dsprintf(stderr, "%sList a BundleIdentifier to yoink it's contents%s\n\n", dcolor("yellow"), colorEnd());
-                        actionFunc = &list_applications;
-                        break;
-                      case 'L':
-                        shouldDisableTimeout = NO;
-                        actionFunc = &sim_location;
-                        break;
-                      case '?':
-                        break;
-                    default:
-                        dsprintf(stderr, "option -%c is missing a required argument\n", optopt);
-                        return EXIT_FAILURE;
-                }
-                    break;
-                default:
-                    dsprintf(stderr, "%s\n", usage);
-                    exit(EXIT_FAILURE);
-                    break;
-            }
-        }
-      
-MEH_IM_DONE:
-      
-        
-        
-        if (!isatty(fileno(stdout))) {
-            unsetenv("DSCOLOR");
-        }
-        
-        
-        AMDeviceNotificationSubscribeWithOptions(connect_callback, 0,0,0,&__n, @{@"NotificationOptionSearchForPairedDevices" : @YES, @"NotificationOptionSearchForWiFiPairableDevices" : @NO });
-        // TODO uncripple WIFI in the future when working on remote debugging
-        
-        timeoutOperation = [NSBlockOperation blockOperationWithBlock:^{
-            dsprintf(stderr, "Your device might not be connected. You've got about 25 seconds to connect your device before the timeout gets fired or you can start fresh with a ctrl-c. Choose wisely... dun dun\n");
-        }];
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [[NSOperationQueue mainQueue] addOperation:timeoutOperation];
-        });
-        
-        if (shouldDisableTimeout) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                CFRunLoopStop(CFRunLoopGetMain());
-                dsprintf(stderr, "Script timed out, exiting now.\n");
-                exit(EXIT_FAILURE);
-                
-            });
-        }
-        
-        CFRunLoopRun();
-        
+    
+    
+    if (argc == 1) {
+      print_manpage();
+      exit(EXIT_SUCCESS);
     }
-    return return_error;
+    
+    int UseWifiToConnect = 0;
+    int UseUSBToConnect = 1;
+    getopt_options = [NSMutableDictionary new];
+    connectedDevices = [NSMutableSet new];
+    
+    while ((option = getopt (argc, (char **)argv, "QWUd::Rr:fFqs:zd:u:hvg::l::i:Cc::p::y::L:")) != -1) {
+      switch (option) {
+        case 'R': // Use color
+          setenv("DSCOLOR", "1", 1);
+          break;
+        case 'Q': // Use color
+          quiet_mode = YES;
+          break;
+        case 'W':
+          UseWifiToConnect = YES;
+          break;
+        case 'U':
+          UseUSBToConnect = YES;
+          break;
+
+        case 'r':
+          assertArg();
+          actionFunc = &remove_file;
+          [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kRemoveFileBundleID];
+          
+          if (argc > optind) {
+            [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kRemoveFileRemotePath];
+          }
+          break;
+        case 'v':
+          printf("%s v%s\n", program_name, version_string);
+          exit(EXIT_SUCCESS);
+        case 'g':
+          assertArg();
+          actionFunc = &get_logs;
+          if (strcmp("__delete", optarg) == 0) {
+            [getopt_options setObject:@YES forKey:kGetLogsDelete];
+          } else {
+            [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kGetLogsAppBundle];
+          }
+          
+          if (argc > optind) {
+            [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kGetLogsFilePath];
+          }
+          break;
+        case 'f':
+          actionFunc = &get_device_info;
+          break;
+        case 'F':
+          actionFunc = &instruments;
+          break;
+        case 'l':
+          assertArg();
+          actionFunc = &list_applications;
+          addr = strdup(optarg);
+          [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kListApplicationsName];
+          if (argc > optind) {
+            [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kListApplicationsKey];
+          }
+          break;
+        case 'u':
+          assertArg();
+          actionFunc = &delete_application;
+          [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kDeleteApplicationIdentifier];
+          break;
+        case 's':
+          assertArg();
+          if(argc != 4) {
+            dsprintf(stderr, "Err: mobdevim -s BundleIdentifier /path/to/directories\n");
+            exit(1);
+          }
+          actionFunc = &send_files;
+          [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kSendFilePath];
+          [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kSendAppBundle];
+          break;
+        case 'i':
+          assertArg();
+          shouldDisableTimeout = NO;
+          actionFunc = &install_application;
+          addr = strdup(optarg);
+          [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kInstallApplicationPath];
+          requiredArgument = [NSString stringWithUTF8String:addr];
+          break;
+        case 'L':
+          assertArg();
+          shouldDisableTimeout = NO;
+          actionFunc = &sim_location;
+          [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kSimLocationLat];
+          [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kSimLocationLon];
+          optind++;
+          break;
+        case 'h':
+          print_manpage();
+          exit(EXIT_SUCCESS);
+          break;
+        case 'd':
+          assertArg();
+          shouldDisableTimeout = NO;
+          [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kDebugApplicationIdentifier];
+          actionFunc = debug_application;
+          break;
+        case 'c':
+          assertArg();
+          shouldDisableTimeout = NO;
+          actionFunc = console;
+          [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kConsoleProcessName];
+          break;
+        case 'C':
+          actionFunc = &get_provisioning_profiles;
+          [getopt_options setObject:@YES forKey:kProvisioningProfilesCopyDeveloperCertificates];
+          break;
+        case '?': // TODO fix this
+          goto MEH_IM_DONE;
+          break;
+        case 'p':
+          assertArg();
+          actionFunc = &get_provisioning_profiles;
+          [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kProvisioningProfilesFilteredByDevice];
+          break;
+        case 'y':
+          assertArg();
+          actionFunc = &yoink_app;
+          [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kYoinkBundleIDContents];
+          break;
+        case ':': // cases for optional non argument
+          switch (optopt)
+        {
+          case 'g':
+            actionFunc = &get_logs;
+            break;
+          case 'p':
+            actionFunc = &get_provisioning_profiles;
+            break;
+          case 'c':
+            shouldDisableTimeout = NO;
+            actionFunc = console;
+            break;
+          case 'l':
+            actionFunc = &list_applications;
+            break;
+          case 'd':
+            shouldDisableTimeout = NO;
+            actionFunc = debug_application;
+            break;
+          case 'y':
+            dsprintf(stderr, "%sList a BundleIdentifier to yoink it's contents%s\n\n", dcolor("yellow"), colorEnd());
+            actionFunc = &list_applications;
+            break;
+          case 'L':
+            assertArg();
+            shouldDisableTimeout = NO;
+            actionFunc = &sim_location;
+            break;
+          case '?':
+            break;
+          default:
+            dsprintf(stderr, "option -%c is missing a required argument\n", optopt);
+            return EXIT_FAILURE;
+        }
+          break;
+        default:
+          dsprintf(stderr, "%s\n", usage);
+          exit(EXIT_FAILURE);
+          break;
+      }
+    }
+    
+  MEH_IM_DONE:
+    
+    
+    
+    if (!isatty(fileno(stdout))) {
+      unsetenv("DSCOLOR");
+    }
+    
+    
+    AMDeviceNotificationSubscribeWithOptions(connect_callback, 0,0,0,&__n, @{@"NotificationOptionSearchForPairedDevices" : @(UseUSBToConnect), @"NotificationOptionSearchForWiFiPairableDevices" : @(UseWifiToConnect) });
+
+    timeoutOperation = [NSBlockOperation blockOperationWithBlock:^{
+      dsprintf(stderr, "Your device might not be connected. You've got about 25 seconds to connect your device before the timeout gets fired or you can start fresh with a ctrl-c. Choose wisely... dun dun\n");
+    }];
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      [[NSOperationQueue mainQueue] addOperation:timeoutOperation];
+    });
+    
+    if (shouldDisableTimeout) {
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        CFRunLoopStop(CFRunLoopGetMain());
+        dsprintf(stderr, "Script timed out, exiting now.\n");
+        exit(EXIT_FAILURE);
+        
+      });
+    }
+    
+    CFRunLoopRun();
+    
+  }
+  return return_error;
 }
 
 

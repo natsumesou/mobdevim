@@ -68,11 +68,15 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-L"
+            argument = "-L 0 0"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-L 22.284681 114.158177"
+            argument = "-W "
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-L 40.730610 -73.935242 "
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

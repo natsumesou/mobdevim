@@ -33,7 +33,7 @@ int sim_location(AMDeviceRef d, NSDictionary *options) {
   NSString *lon = [options objectForKey:kSimLocationLon];
   
   int service = SERVICE_START;
-  if (!lon || !lat) {
+  if ([lon integerValue] == 0 || [lat integerValue] == 0) {
     service = SERVICE_STOP;
   }
   
