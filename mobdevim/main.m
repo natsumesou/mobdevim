@@ -143,7 +143,7 @@ int main(int argc, const char * argv[]) {
     getopt_options = [NSMutableDictionary new];
     connectedDevices = [NSMutableSet new];
     
-    while ((option = getopt (argc, (char **)argv, "QWUd::Rr:fFqs:zd:u:hvg::l::i:Cc::p::y::L:")) != -1) {
+    while ((option = getopt (argc, (char **)argv, ":QWUd::Rr:fFqs:zd:u:hvg::l::i:Cc::p::y::L:")) != -1) {
       switch (option) {
         case 'R': // Use color
           setenv("DSCOLOR", "1", 1);
@@ -190,7 +190,7 @@ int main(int argc, const char * argv[]) {
           actionFunc = &instruments;
           break;
         case 'l':
-          assertArg();
+//          assertArg();
           actionFunc = &list_applications;
           addr = strdup(optarg);
           [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kListApplicationsName];
