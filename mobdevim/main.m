@@ -30,6 +30,7 @@
 #import "delete_application.h"
 #import "instruments.h"
 #import "sim_location.h"
+#import "springboardservices.h"
 
 
 static NSOperation *timeoutOperation = nil; // kill proc if nothing happens in 30 sec
@@ -130,9 +131,7 @@ int main(int argc, const char * argv[]) {
   @autoreleasepool {
     int option = -1;
     char *addr;
-    
-    
-    
+
     if (argc == 1) {
       print_manpage();
       exit(EXIT_SUCCESS);
@@ -143,7 +142,7 @@ int main(int argc, const char * argv[]) {
     getopt_options = [NSMutableDictionary new];
     connectedDevices = [NSMutableSet new];
     
-    while ((option = getopt (argc, (char **)argv, ":QWUd::Rr:fFqs:zd:u:hvg::l::i:Cc::p::y::L:")) != -1) {
+    while ((option = getopt (argc, (char **)argv, ":QWUd::Rr:fFqS::s:zd:u:hvg::l::i:Cc::p::y::L:")) != -1) {
       switch (option) {
         case 'R': // Use color
           setenv("DSCOLOR", "1", 1);
@@ -213,6 +212,10 @@ int main(int argc, const char * argv[]) {
           [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kSendFilePath];
           [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kSendAppBundle];
           break;
+        case 'S':
+          [getopt_options setObject:[NSString stringWithUTF8String:optarg] forKey:kSBCommand];
+          actionFunc = &springboard_services;
+          break;
         case 'i':
           assertArg();
           shouldDisableTimeout = NO;
@@ -267,6 +270,9 @@ int main(int argc, const char * argv[]) {
         {
           case 'g':
             actionFunc = &get_logs;
+            break;
+          case 'S':
+            actionFunc = springboard_services;
             break;
           case 'p':
             actionFunc = &get_provisioning_profiles;

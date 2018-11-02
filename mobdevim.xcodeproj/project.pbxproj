@@ -18,6 +18,7 @@
 		A64553931FCD068E00C16506 /* yoink.m in Sources */ = {isa = PBXBuildFile; fileRef = A64553921FCD068E00C16506 /* yoink.m */; };
 		A64553961FCD088400C16506 /* get_device_info.m in Sources */ = {isa = PBXBuildFile; fileRef = A64553951FCD088400C16506 /* get_device_info.m */; };
 		A64553991FCD097200C16506 /* install_application.m in Sources */ = {isa = PBXBuildFile; fileRef = A64553981FCD097200C16506 /* install_application.m */; };
+		A64D3BEF218AE62700FD5E2F /* springboardservices.m in Sources */ = {isa = PBXBuildFile; fileRef = A64D3BED218AE62600FD5E2F /* springboardservices.m */; };
 		A66B9EC320405BFF0014CB4E /* delete_application.m in Sources */ = {isa = PBXBuildFile; fileRef = A66B9EC220405BFF0014CB4E /* delete_application.m */; };
 		A66B9EC72042292E0014CB4E /* statusbar.c in Sources */ = {isa = PBXBuildFile; fileRef = A66B9EC52042292E0014CB4E /* statusbar.c */; };
 		A66B9EC82042292E0014CB4E /* progressbar.c in Sources */ = {isa = PBXBuildFile; fileRef = A66B9EC62042292E0014CB4E /* progressbar.c */; };
@@ -84,6 +85,8 @@
 		A64553951FCD088400C16506 /* get_device_info.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = get_device_info.m; sourceTree = "<group>"; };
 		A64553971FCD097200C16506 /* install_application.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = install_application.h; sourceTree = "<group>"; };
 		A64553981FCD097200C16506 /* install_application.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = install_application.m; sourceTree = "<group>"; };
+		A64D3BED218AE62600FD5E2F /* springboardservices.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = springboardservices.m; sourceTree = "<group>"; tabWidth = 4; };
+		A64D3BEE218AE62600FD5E2F /* springboardservices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = springboardservices.h; sourceTree = "<group>"; };
 		A660482E1FCFF871007F529E /* LLDBRPC */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = LLDBRPC; path = ../../../../Applications/Xcode.app/Contents/SharedFrameworks/LLDBRPC.framework/Versions/A/LLDBRPC; sourceTree = "<group>"; };
 		A66B9EC120405BFF0014CB4E /* delete_application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = delete_application.h; sourceTree = "<group>"; };
 		A66B9EC220405BFF0014CB4E /* delete_application.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = delete_application.m; sourceTree = "<group>"; };
@@ -228,6 +231,16 @@
 			path = Console;
 			sourceTree = "<group>";
 		};
+		A64D3BEC218AE62600FD5E2F /* springboardservices */ = {
+			isa = PBXGroup;
+			children = (
+				A64D3BED218AE62600FD5E2F /* springboardservices.m */,
+				A64D3BEE218AE62600FD5E2F /* springboardservices.h */,
+			);
+			name = springboardservices;
+			path = mobdevim/springboardservices;
+			sourceTree = SOURCE_ROOT;
+		};
 		A66B9EC020405BC20014CB4E /* Delete Application */ = {
 			isa = PBXGroup;
 			children = (
@@ -268,6 +281,7 @@
 		A6B3AEE81F5CB27900ECCBF2 /* mobdevim */ = {
 			isa = PBXGroup;
 			children = (
+				A64D3BEC218AE62600FD5E2F /* springboardservices */,
 				A6C969302107642100B83B7A /* SimulateLocation */,
 				A6B3AEE91F5CB27900ECCBF2 /* main.m */,
 				A601BF41201824C300FF3BEB /* logs */,
@@ -385,6 +399,7 @@
 				A645538D1FCCF19200C16506 /* get_provisioning_profiles.m in Sources */,
 				A66B9EC82042292E0014CB4E /* progressbar.c in Sources */,
 				A601BF4420182F0500FF3BEB /* get_logs.m in Sources */,
+				A64D3BEF218AE62700FD5E2F /* springboardservices.m in Sources */,
 				A64553931FCD068E00C16506 /* yoink.m in Sources */,
 				A62202C42066E81300E1556B /* instruments.m in Sources */,
 				A66B9EC72042292E0014CB4E /* statusbar.c in Sources */,
