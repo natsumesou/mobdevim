@@ -62,6 +62,7 @@ int springboard_services(AMDeviceRef d, NSDictionary *options) {
         if ([options[kSBCommand] isEqualToString:@"restore"]) {
             NSData *data = [NSData dataWithContentsOfFile:savePath];
             NSArray *newIcons = [NSPropertyListSerialization propertyListWithData:data options:0 format:0 error:nil];
+            dsprintf(stdout, "Attempting to restore icons from \"%s\"\n", [savePath UTF8String]);
             if (AMDServiceConnectionSendMessage(serviceConnection, @{@"command" : @"setIconState", @"iconState" : [newIcons copy]}, kCFPropertyListXMLFormat_v1_0)) {
                 return EACCES;
             }
@@ -118,6 +119,7 @@ int springboard_services(AMDeviceRef d, NSDictionary *options) {
         return returnError;
     }
     
+    dsprintf(stdout, "Arranging apps in \"asshole\" mode\n");
     NSMutableArray *flatIcons = [NSMutableArray arrayWithCapacity:400];
     for (int pageIndex = 0; pageIndex < [iconsInfo count]; pageIndex++) {
         
