@@ -139,6 +139,11 @@ void print_manpage(void) {
           \t\t%smobdevim -s com.example.test /tmp/com.example.test%s Send contents in /tmp/com.example.test to app\n\n\
   \t%s-i%s\tInstall application, expects path to bundle\n\
           \t\t%smobdevim -i /path/to/app/bundle%s Install app\n\n\
+  \t%s-S%s\tArrange SpringBoard icons\n\
+          \t\t%smobdevim -S%s Write current SpringBoard icon layout\n\
+          \t\t%smobdevim -S /path/to/plist%s Set SpringBoard icon layout from plist file\n\
+          \t\t%smobdevim -S asshole%s Set SpringBoard icon layout to asshole mode\n\
+          \t\t%smobdevim -S restore%s Restore SpringBoard icon layout (if backup was created)\n\n\
   \t%s-u%s\tUninstall application, expects bundleIdentifier\n\
           \t\t%smobdevim -u com.example.test%s Uninstall app\n\n\
   \t%s-c%s\tDump out the console information. Use ctrl-c to terminate\n\n\
@@ -185,6 +190,11 @@ void print_manpage(void) {
                dcolor("bold"), colorEnd(), // -p
                dcolor("bold"), colorEnd(), // -p
            dcolor("bold"), colorEnd(), // -l
+           dcolor("bold"), colorEnd(), // -S
+               dcolor("bold"), colorEnd(), // -S
+               dcolor("bold"), colorEnd(), // -S
+               dcolor("bold"), colorEnd(), // -S
+               dcolor("bold"), colorEnd(), // -S
                dcolor("bold"), colorEnd(), // -l
                dcolor("bold"), colorEnd(), // -l
                dcolor("bold"), colorEnd(), // -l

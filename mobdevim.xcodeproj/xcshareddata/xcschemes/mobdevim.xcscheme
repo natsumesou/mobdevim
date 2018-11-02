@@ -73,11 +73,15 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-W "
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-L 40.730610 -73.935242 "
-            isEnabled = "YES">
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-S asshole"
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-d &quot;/Users/derekselander/Library/Developer/Xcode/DerivedData/Airdrop_Hack-grgcpqarisowumemywiouexretri/Build/Products/Debug-iphoneos/Airdrop Hack.app&quot;"
@@ -98,6 +102,10 @@
          <CommandLineArgument
             argument = "-i ~/Desktop/UT.app"
             isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-S &quot;/tmp/00008020-000E51183ED8002E_sbicons.plist&quot;"
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
       <EnvironmentVariables>
