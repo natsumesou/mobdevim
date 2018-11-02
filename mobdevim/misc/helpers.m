@@ -140,7 +140,7 @@ void print_manpage(void) {
   \t%s-i%s\tInstall application, expects path to bundle\n\
           \t\t%smobdevim -i /path/to/app/bundle%s Install app\n\n\
   \t%s-S%s\tArrange SpringBoard icons\n\
-          \t\t%smobdevim -S%s Write current SpringBoard icon layout\n\
+          \t\t%smobdevim -S%s Get current SpringBoard icon layout\n\
           \t\t%smobdevim -S /path/to/plist%s Set SpringBoard icon layout from plist file\n\
           \t\t%smobdevim -S asshole%s Set SpringBoard icon layout to asshole mode\n\
           \t\t%smobdevim -S restore%s Restore SpringBoard icon layout (if backup was created)\n\n\
