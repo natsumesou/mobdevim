@@ -57,9 +57,10 @@ int springboard_services(AMDeviceRef d, NSDictionary *options) {
         return EACCES;
     }
     
+    NSString *optionsCommand = options[kSBCommand];
 
     if ([[NSFileManager defaultManager] fileExistsAtPath:savePath]) {
-        if ([options[kSBCommand] isEqualToString:@"restore"]) {
+        if ([optionsCommand isEqualToString:@"restore"]) {
             NSData *data = [NSData dataWithContentsOfFile:savePath];
             NSArray *newIcons = [NSPropertyListSerialization propertyListWithData:data options:0 format:0 error:nil];
             dsprintf(stdout, "Attempting to restore icons from \"%s\"\n", [savePath UTF8String]);
@@ -80,7 +81,7 @@ int springboard_services(AMDeviceRef d, NSDictionary *options) {
         [[NSPropertyListSerialization dataWithPropertyList:iconsInfo format:NSPropertyListXMLFormat_v1_0 options:0 error:nil]  writeToFile:savePath atomically:YES];
     }
     
-    if (!options[kSBCommand]) {
+    if (!optionsCommand) {
         NSError *err = nil;
         NSData *data = [NSPropertyListSerialization dataWithPropertyList:iconsInfo format:NSPropertyListXMLFormat_v1_0 options:0 error:&err];
         if (err) {
@@ -95,11 +96,11 @@ int springboard_services(AMDeviceRef d, NSDictionary *options) {
     
     
     // Check if kSBCommand gives a valid path
-    if ([[NSFileManager defaultManager] fileExistsAtPath:options[kSBCommand]]) {
-        dsprintf(stdout, "Attempting to write Springboard icons from \"%s\"\n", [options[kSBCommand] UTF8String]);
-        NSData *data = [NSData dataWithContentsOfFile:options[kSBCommand]];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:optionsCommand]) {
+        dsprintf(stdout, "Attempting to write Springboard icons from \"%s\"\n", [optionsCommand UTF8String]);
+        NSData *data = [NSData dataWithContentsOfFile:optionsCommand];
         if (!data) {
-            dsprintf(stderr, "Invalid property list from \"%s\"s\n", options[kSBCommand]);
+            dsprintf(stderr, "Invalid property list from \"%s\"s\n", optionsCommand);
             return returnError;
         }
         NSError *err = nil;
@@ -115,7 +116,7 @@ int springboard_services(AMDeviceRef d, NSDictionary *options) {
     }
     
     
-    if (![options[kSBCommand] isEqualToString:@"asshole"]) {
+    if (![optionsCommand isEqualToString:@"asshole"]) {
         return returnError;
     }
     
@@ -213,7 +214,11 @@ int springboard_services(AMDeviceRef d, NSDictionary *options) {
     if (AMDServiceConnectionSendMessage(serviceConnection, @{@"command" : @"setIconState", @"iconState" : [newIcons copy]}, kCFPropertyListXMLFormat_v1_0)) {
         return EACCES;
     }
-
+    
+    id info = nil;
+    while(!AMDServiceConnectionReceive(serviceConnection, &info, 8)) { }
+    
+    
     AMDServiceConnectionInvalidate(serviceConnection);
     return returnError;
 }
