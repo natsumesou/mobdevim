@@ -142,7 +142,7 @@ int main(int argc, const char * argv[]) {
     getopt_options = [NSMutableDictionary new];
     connectedDevices = [NSMutableSet new];
     
-    while ((option = getopt (argc, (char **)argv, ":QWUd::Rr:fFqS::s:zd:u:hvg::l::i:Cc::p::y::L:")) != -1) {
+    while ((option = getopt (argc, (char **)argv, ":QWUV:D:d::Rr:fFqS::s:zd:u:hvg::l::i:Cc::p::y::L:")) != -1) {
       switch (option) {
         case 'R': // Use color
           setenv("DSCOLOR", "1", 1);
@@ -156,7 +156,19 @@ int main(int argc, const char * argv[]) {
         case 'U':
           UseUSBToConnect = YES;
           break;
-
+          case 'V': {
+              assertArg();
+              NSMutableArray *arr = nil;
+              if (getopt_options[kDebugEnvVars]) {
+                  arr = getopt_options[kDebugEnvVars];
+              } else {
+                  arr = [NSMutableArray array];
+              }
+              
+              [arr addObject:[NSString stringWithUTF8String:optarg]];
+              [getopt_options setObject:arr forKey:kDebugEnvVars];
+              break;
+          }
         case 'r':
           assertArg();
           actionFunc = &remove_file;
@@ -236,6 +248,9 @@ int main(int argc, const char * argv[]) {
           print_manpage();
           exit(EXIT_SUCCESS);
           break;
+        case 'D':
+              [getopt_options setObject:@YES forKey:kDebugQuickLaunch];
+           // drops through to debug
         case 'd':
           assertArg();
           shouldDisableTimeout = NO;

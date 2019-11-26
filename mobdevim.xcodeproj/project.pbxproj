@@ -363,6 +363,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = A6B3AEDD1F5CB27900ECCBF2;
@@ -387,7 +388,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "";
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -545,6 +546,7 @@
 					"-lncurses",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
@@ -566,6 +568,7 @@
 					"-lncurses",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
 			};
 			name = Release;
 		};

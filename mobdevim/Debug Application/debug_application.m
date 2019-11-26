@@ -18,6 +18,8 @@
 #define LLDB_SCRIPT_PATH @"/tmp/mobdevim_setupscript"
 
 NSString * const kDebugApplicationIdentifier = @"com.selander.debug.bundleidentifier";
+NSString * const kDebugQuickLaunch = @"com.selander.debug.quicklaunch";
+NSString * const kDebugEnvVars = @"com.selander.debug.envvar";;
 
 NSString* extractDummyTarget(NSString *name) {
     NSFileManager* manager = [NSFileManager defaultManager];
@@ -70,13 +72,19 @@ NSString* extractDummyTarget(NSString *name) {
     return dummyPath;
 }
 
-void generateSetupScript(const char *localExecutablePath, const char * remoteExecutablePath, int port) {
+void generateSetupScript(const char *localExecutablePath, const char * remoteExecutablePath, const char *launchCommand, int port) {
     NSString *setupScript =
 @"platform select remote-ios\n\
 target create \"%s\"\n\
 script lldb.target.module[0].SetPlatformFileSpec(lldb.SBFileSpec(\"%s\"))\n\
-process connect connect://127.0.0.1:%d\n\
-";
+process connect connect://127.0.0.1:%d\n";
+    
+    if (launchCommand) {
+setupScript = [setupScript stringByAppendingFormat:@"\
+script lldb.debugger.SetAsync(True)\n\
+%s\n\
+process detach", launchCommand];
+    }
     NSError *error = nil;
     if (!localExecutablePath) {
         dsprintf(stderr, "Attaching by bundleIdentifier not implemented yet, please use bundle path\n");
@@ -85,7 +93,6 @@ process connect connect://127.0.0.1:%d\n\
     NSString *script = [NSString stringWithFormat:setupScript, localExecutablePath, remoteExecutablePath, port];
     
     [script writeToFile:LLDB_SCRIPT_PATH atomically:YES encoding:NSUTF8StringEncoding error:&error];
-//    dsprintf(stderr, "%s\n", [script UTF8String]);
     if (error) {
         ErrorMessageThenDie("Couldn't write script to file: %s", [[error localizedDescription] UTF8String]);
     }
@@ -139,6 +146,20 @@ server_callback (CFSocketRef s, CFSocketCallBackType callbackType, CFDataRef add
         return;
     }
     res = write (CFSocketGetNative (lldb_socket), CFDataGetBytePtr (data), CFDataGetLength (data));
+}
+
+static const char* generateLaunchString(NSDictionary *options) {
+    if (!options[kDebugQuickLaunch]) {
+        return NULL;;
+    }
+    NSArray *envVars = options[kDebugEnvVars];
+    
+    NSMutableString *str = [NSMutableString stringWithString:@"process launch -X true "];
+    for (NSString *env in envVars) {
+        [str appendFormat:@" -v %@", env];
+    }
+    [str appendString:@" -- "];
+    return str.UTF8String;
 }
 
 void fdvendor_callback(CFSocketRef s, CFSocketCallBackType callbackType, CFDataRef address, const void *data, void *info) {
@@ -257,7 +278,11 @@ int debug_application(AMDeviceRef d, NSDictionary* options) {
     if (!localApplicationPath) {
         localApplicationPath = extractDummyTarget([appPath lastPathComponent]);
     }
-    generateSetupScript([localApplicationPath UTF8String], [appPath UTF8String], port);
+    
+
+        
+    generateSetupScript([localApplicationPath UTF8String], [appPath UTF8String], generateLaunchString(options), port);
+    
     
     pid_t pid;
     if ((pid = fork()) == 0) {
