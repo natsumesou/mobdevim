@@ -122,7 +122,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     size_t maxRecentSize = [appBundle integerValue];
     
     BOOL shouldDelete = [[options objectForKey:kGetLogsDelete] boolValue];
-    if (shouldDelete && !quiet_mode) {
+    if (shouldDelete && !global_options.quiet) {
         dsprintf(stdout, "About to delete all logs, please confirm [Y] ");
         if (getchar() != 89) {
             dsprintf(stdout, "\nExiting\n");
@@ -275,7 +275,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     
     if (appBundle && ![appBundle integerValue]) {
         dsprintf(stdout, "Opening \"%s\"...\n", [[baseURL path] UTF8String]);
-        if (!quiet_mode) {
+        if (!global_options.quiet) {
             NSString *systemCMDString = [NSString stringWithFormat:@"open -R %@", [baseURL path]];
             system([systemCMDString UTF8String]);
         }

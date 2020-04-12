@@ -19,7 +19,7 @@
 
 NSString * const kDebugApplicationIdentifier = @"com.selander.debug.bundleidentifier";
 NSString * const kDebugQuickLaunch = @"com.selander.debug.quicklaunch";
-NSString * const kDebugEnvVars = @"com.selander.debug.envvar";;
+NSString * const kProcessEnvVars = @"com.selander.debug.envvar";;
 
 NSString* extractDummyTarget(NSString *name) {
     NSFileManager* manager = [NSFileManager defaultManager];
@@ -152,7 +152,7 @@ static const char* generateLaunchString(NSDictionary *options) {
     if (!options[kDebugQuickLaunch]) {
         return NULL;;
     }
-    NSArray *envVars = options[kDebugEnvVars];
+    NSArray *envVars = options[kProcessEnvVars];
     
     NSMutableString *str = [NSMutableString stringWithString:@"process launch -X true "];
     for (NSString *env in envVars) {

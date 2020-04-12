@@ -26,7 +26,7 @@ int delete_application(AMDeviceRef d, NSDictionary *options) {
         return 1;
     }
     
-    if (!quiet_mode) {
+    if (!global_options.quiet) {
         dsprintf(stdout, "Are you sure you want to delete \"%s\"? [Y] ", [name UTF8String]);
         if (getchar() != 89) {
             dsprintf(stdout, "Exiting...\n");

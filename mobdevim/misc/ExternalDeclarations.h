@@ -89,7 +89,12 @@ typedef struct _AFCFileDescriptor {
 } AFCFileDescriptor;
 typedef AFCFileDescriptor *AFCFileDescriptorRef;
 
-
+// USB vs WIFI
+typedef enum : NSUInteger {
+    InterfaceTypeYOLODontCare = 0,
+    InterfaceTypeUSB = 1,
+    InterfaceTypeWIFI = 2,
+} InterfaceType;
 
 
 
@@ -118,10 +123,13 @@ mach_error_t AFCKeyValueClose(AFCIteratorRef);
 
 
 mach_error_t AMDeviceNotificationSubscribe(void (*)(AMDeviceCallBackDevice, int), int, int, int, void *);
-mach_error_t AMDeviceNotificationSubscribeWithOptions(void (*)(AMDeviceCallBackDevice*, int), int, int, int, void *, NSDictionary *);
+mach_error_t AMDeviceNotificationSubscribeWithOptions(void (*)(AMDeviceCallBackDevice*, int), int, InterfaceType, int, void *, NSDictionary *);
 mach_error_t AMDeviceConnect(AMDeviceRef);
 mach_error_t AMDeviceDisconnect(AMDeviceRef);
 mach_error_t AMDeviceIsPaired(AMDeviceCallBackDevice*);
+
+InterfaceType AMDeviceGetInterfaceType(AMDeviceRef);
+char* InterfaceTypeString(InterfaceType type);
 mach_error_t AMDeviceValidatePairing(AMDeviceRef);
 mach_error_t AMDeviceStartSession(AMDeviceRef);
 mach_error_t AMDeviceStopSession(AMDeviceRef);
@@ -142,6 +150,7 @@ mach_error_t AMDeviceSecureArchiveApplication(AMDServiceConnectionRef, AMDeviceR
 mach_error_t AMDeviceGetTypeID(AMDeviceRef);
 
 
+ NSArray* AMDCreateDeviceList(void);
 
 // device/file information functions
 //afc_error_t AFCDeviceInfoOpen(afc_connection conn, afc_dictionary *info);
@@ -150,6 +159,13 @@ mach_error_t AMDeviceSecureRemoveApplicationArchive(AMDServiceConnectionRef, AMD
 mach_error_t AFCConnectionOpen(AMDServiceConnectionRef, int, AFCConnectionRef * /*AFCConnection */);
 
 mach_error_t AFCConnectionClose(AFCConnectionRef);
+/*
+ ObserveNotification
+     "com.apple.mobile.lockdown.activation_state";
+     "com.apple.mobile.lockdown.developer_status_changed"
+     "com.apple.springboard.deviceWillShutDown"
+ 
+ */
 mach_error_t AMDServiceConnectionSendMessage(AMDServiceConnectionRef serviceConnection, NSDictionary* message, CFPropertyListFormat format);
 
 mach_error_t AMDServiceConnectionSend(AMDServiceConnectionRef, void *content, size_t length);

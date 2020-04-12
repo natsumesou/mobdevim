@@ -26,7 +26,7 @@ int list_applications(AMDeviceRef d, NSDictionary *options) {
         NSString *key = [options objectForKey:kListApplicationsKey];
         if (key) {
             if (getenv("DSPLIST")) {
-                quiet_mode = NO;
+                global_options.quiet = NO;
                 dsprintf(stdout, "%s\n", [[[dict objectForKey:name] objectForKey:key] dsformattedOutput]);
             } else {
                 dsprintf(stdout, "Dumping info for \"%s%s%s\" with key: \"%s%s%s\"\n%s\n", dcolor("red"), [name UTF8String], colorEnd(), dcolor("red"),  [key UTF8String], colorEnd(), [[[dict objectForKey:name] objectForKey:key] dsformattedOutput]);
@@ -36,7 +36,7 @@ int list_applications(AMDeviceRef d, NSDictionary *options) {
             }
         } else {
             if (getenv("DSPLIST")) {
-                quiet_mode = NO;
+                global_options.quiet = NO;
                 dsprintf(stdout, "%s\n", [[dict objectForKey:name] dsformattedOutput]);
             } else {
                 dsprintf(stdout, "%sDumping info for \"%s\"%s\n\n%s\n", dcolor("red"), [name UTF8String], colorEnd(),  [[dict objectForKey:name] dsformattedOutput]);

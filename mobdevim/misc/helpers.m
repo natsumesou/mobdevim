@@ -6,8 +6,7 @@
 //  Copyright © 2017 Selander. All rights reserved.
 //
 
-#include "helpers.h"
-
+#import "helpers.h"
 
 
 //*****************************************************************************/
@@ -16,13 +15,8 @@
 
 const char *version_string = "0.0.1";
 const char *program_name = "mobdevim";
-// TODO
-// const char *git_hash = "|||||";
+
 const char *usage = "mobdevim [-v] [-l|-l appIdent][-i path_to_app_dir] [-p|-p UUID_PROVSIONPROFILE] [-c] [-C] [-s bundleIdent path] [-f]";
-BOOL quiet_mode = NO;
-
-
-
 
 char* dcolor(char *color) {
   static BOOL useColor = NO;
@@ -70,7 +64,7 @@ char *colorEnd() {
 }
 
 void dsprintf(FILE * f, const char *format, ...) {
-  if (quiet_mode) {
+  if (global_options.quiet) {
     return;
   }
   va_list args;
@@ -79,8 +73,9 @@ void dsprintf(FILE * f, const char *format, ...) {
   va_end( args );
 }
 
+
 void dsdebug(const char *format, ...) {
-    if (quiet_mode) { return; }
+    if (global_options.quiet) { return; }
     
     static dispatch_once_t onceToken;
     static BOOL debugFlag = 0;
@@ -103,13 +98,12 @@ void dsdebug(const char *format, ...) {
 
 
 void ErrorMessageThenDie(const char *message, ...) {
-    if (quiet_mode) {
-        return;
+    if (!global_options.quiet) {
+        va_list args;
+        va_start(args, message);
+        vfprintf(stderr, message, args);
+        va_end( args );
     }
-    va_list args;
-    va_start(args, message);
-    vfprintf(stderr, message, args);
-    va_end( args );
     exit(1);
 }
 
@@ -220,6 +214,9 @@ void assertArg(void) {
     exit(1);
   }
 }
+
+/// Options used for getopt_long
+option_params global_options = {};
 
 NSString * const kOptionArgumentDestinationPath = @"com.selander.destination";
 
@@ -1580,5 +1577,16 @@ __attribute__ ((section ("__TEXT, __SBDummyTarget")))  unsigned char SBDummyTarg
 };
 unsigned int SBDummyTargetLen = 16153;
 
-
+char* InterfaceTypeString(InterfaceType type) {
+    switch (type) {
+        case InterfaceTypeYOLODontCare:
+            return "Unknown";
+        case InterfaceTypeUSB:
+            return "USB";
+        case InterfaceTypeWIFI:
+            return "WIFI";
+        default:
+            break;
+    }
+}
 

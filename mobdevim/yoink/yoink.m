@@ -202,7 +202,7 @@ int yoink_app(AMDeviceRef d, NSDictionary *options) {
     
     if (successfullyReadADirectory) {
         dsprintf(stdout, "Opening \"%s\"...\n", [outputDirectory UTF8String]);
-        if (!quiet_mode) {
+        if (!global_options.quiet) {
             NSString *systemCMDString = [NSString stringWithFormat:@"open -R %@", outputDirectory];
             
             system([systemCMDString UTF8String]);

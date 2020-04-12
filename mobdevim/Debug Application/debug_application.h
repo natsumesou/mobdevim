@@ -12,6 +12,6 @@
 /// The path to the IPA file
 extern NSString * const kDebugApplicationIdentifier;
 extern NSString * const kDebugQuickLaunch;
-extern NSString * const kDebugEnvVars;
+extern NSString * const kProcessEnvVars;
 
 int debug_application(AMDeviceRef d, NSDictionary* options);

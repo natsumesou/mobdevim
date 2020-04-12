@@ -8,6 +8,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "NSArray+Output.h"
+#import "ExternalDeclarations.h"
 
 /// Version String
 extern const char *version_string;
@@ -47,9 +48,6 @@ void dsdebug(const char *format, ...);
 /// Message then die
 void ErrorMessageThenDie(const char *message, ...);
 
-/// If true this will disable stderr/stdout
-extern BOOL quiet_mode;
-
 /// Self explanatory, right?... right?
 void print_manpage(void);
 
@@ -59,3 +57,27 @@ void assertArg(void);
 
 ///
 extern NSString * const kOptionArgumentDestinationPath;
+
+typedef struct {
+    AMDeviceRef device;
+    InterfaceType type;
+} DeviceSelection;
+
+typedef struct {
+    /// open_program, expects bundleID like com.apple.mobileslideshow
+    NSString *programBundleID;
+    
+    /// open_program, list of args i.e. "-NSBLahblah YES -UIFOOFOO NO"
+    NSString *programArguments;
+    
+    /// springboardservices, i.e. restore, asshole
+    NSString *springboardCommand;
+    
+    /// Supress output
+    BOOL quiet;
+
+    /// Used for hunting for a particular device and connection
+    DeviceSelection deviceSelection;
+} option_params;
+
+extern option_params global_options;

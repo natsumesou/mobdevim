@@ -52,7 +52,7 @@ int install_application(AMDeviceRef d, NSDictionary *options) {
     
     // Get a secure path
     
-    if (quiet_mode) {
+    if (global_options.quiet) {
         assert(!AMDeviceSecureTransferPath(0, d, local_app_url, params, NULL, 0));
         return AMDeviceSecureInstallApplication(0, d, local_app_url, params, NULL, 0);
     } else {
