@@ -76,11 +76,10 @@ int open_program(AMDeviceRef d, NSDictionary *options) {
     PFTProcess *process = [[PFTProcess alloc] initWithDevice:device path:path bundleIdentifier:bundleID arguments:arguments environment:dictionaryEnvironment launchOptions:nil];
     
     NSError *error = nil;
-    int pid = [device launchProcess:process suspended:NO error:&error];
+    [device launchProcess:process suspended:NO error:&error];
     if (error) {
         printf("%s\n", error.localizedDescription.UTF8String);
     }
 
-    printf("pid: %d\n", pid);
     return 0;
 }
