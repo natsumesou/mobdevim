@@ -2,7 +2,7 @@
 //  OnLoad.c
 //  mobdevim
 //
-//  Created by Derek Selander on 3/28/20.
+//  
 //  Copyright © 2020 Selander. All rights reserved.
 //
 

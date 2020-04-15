@@ -2,8 +2,8 @@
 //  send_files.m
 //  mobdevim
 //
-//  Created by Derek Selander on 12/4/17.
-//  Copyright © 2017 Selander. All rights reserved.
+//  
+//  Copyright © 2020 Selander. All rights reserved.
 //
 
 #import "send_files.h"

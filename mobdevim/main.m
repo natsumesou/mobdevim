@@ -2,8 +2,8 @@
 //  main.m
 //  YOYO
 //
-//  Created by Derek Selander on 9/3/17.
-//  Copyright © 2017 Selander. All rights reserved.
+//  
+//  Copyright © 2020 Selander. All rights reserved.
 //
 
 @import MachO;

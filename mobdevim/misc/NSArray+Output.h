@@ -2,8 +2,8 @@
 //  NSArray+Output.h
 //  mobdevim
 //
-//  Created by Derek Selander on 4/2/18.
-//  Copyright © 2018 Selander. All rights reserved.
+//  
+//  Copyright © 2020 Selander. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

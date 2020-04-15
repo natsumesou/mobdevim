@@ -3,7 +3,7 @@
 //  mobdevim
 //
 //  Created by Derek Selander
-//  Copyright © 2017 Selander. All rights reserved.
+//  Copyright © 2020 Selander. All rights reserved.
 //
 
 /*
