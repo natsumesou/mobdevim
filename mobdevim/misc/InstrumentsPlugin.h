@@ -36,6 +36,7 @@
 @interface DTXMessage : NSObject
 @property(copy, nonatomic) id payloadObject;
 + messageWithSelector:(SEL)sel objectArguments: (id)args, ...;
+- (NSError*)error;
 @end
 
 
@@ -56,9 +57,17 @@
 
 @end
 
+@protocol DTXDSProtocol <NSObject>
+-(id)makeChannelWithIdentifier:(NSString*)identifier;
+-(int)remoteCapabilityVersion:(NSString*)identifier;
+-(void)cancel;
+-(void)suspend;
+@end
+
 @interface XRDevice : NSObject
 
 @property(retain) DTXChannel *deviceInfoService;
+-(id<DTXDSProtocol>)connection;
 @property(copy) NSImage *downsampledDeviceImage;
 @property(retain) DTXChannel *capabilitiesChannel;
 @property double timeDifference;
@@ -151,7 +160,9 @@
 - (id)baseSymbolsPath;
 - (void)teardownConnection;
 - (int)processControlServiceVersion;
+- (id)makeConnection;
 - (void)prepareConnection:(id)arg1;
+- (id)_faultConnection;
 - (id)initWithTemplateData:(id)arg1;
 - (id)templateData;
 - (BOOL)supportsProcessControlEventDictionaries;

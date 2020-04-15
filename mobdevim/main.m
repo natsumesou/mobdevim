@@ -146,8 +146,7 @@ int main(int argc, const char * argv[]) {
         
         getopt_options = [NSMutableDictionary new];
         connectedDevices = [NSMutableSet new];
-        
-        while ((option = getopt (argc, (char **)argv, ":Qo:WA:UV:D:d::Rr:fFqS::s:zd:u:hv::g::l::i:Cc::p::y::L:")) != -1) {
+        while ((option = getopt (argc, (char **)argv, ":Qn:o:WA:UV:D:d::Rr:fFqS::s:zd:u:hv::g::l::i:Cc::p::y::L:")) != -1) {
             switch (option) {
                 case 'R': // Use color
                     setenv("DSCOLOR", "1", 1);
@@ -163,13 +162,13 @@ int main(int argc, const char * argv[]) {
                     actionFunc = &open_program;
                     global_options.programBundleID = [NSString stringWithUTF8String:optarg];
                     break;
-                case 'W':
+                case 'W': // Prefer Use WIFI
                     global_options.deviceSelection.type = InterfaceTypeWIFI;
                     break;
-                case 'U':
+                case 'U': // Prefer Use USB
                     global_options.deviceSelection.type = InterfaceTypeUSB;
                     break;
-                case 'v': {
+                case 'v': { // version if by itself, environment variables if other args
                     if (argc == 2) {
                         printf("%s v%s\n", program_name, version_string);
                         exit(EXIT_SUCCESS);
@@ -194,6 +193,13 @@ int main(int argc, const char * argv[]) {
                     
                     if (argc > optind) {
                         [getopt_options setObject:[NSString stringWithUTF8String:argv[optind]] forKey:kRemoveFileRemotePath];
+                    }
+                    break;
+                case 'n': // push notifications
+                    global_options.programBundleID = [NSString stringWithUTF8String:optarg];
+                    actionFunc = notification_proxy;
+                    if (argc > optind) {
+                        global_options.pushNotificationPayloadPath = [NSString stringWithUTF8String:argv[optind]];
                     }
                     break;
                 case 'V':
@@ -307,10 +313,10 @@ int main(int argc, const char * argv[]) {
                             actionFunc = &get_logs;
                             break;
                         case 'S':
-                            actionFunc = springboard_services;
+                            actionFunc = &springboard_services;
                             break;
                         case 'n':
-                            actionFunc = notification_proxy;
+                            actionFunc = &notification_proxy;
                             break;
                         case 'p':
                             actionFunc = &get_provisioning_profiles;
@@ -324,7 +330,7 @@ int main(int argc, const char * argv[]) {
                             break;
                         case 'd':
                             shouldDisableTimeout = NO;
-                            actionFunc = debug_application;
+                            actionFunc = &debug_application;
                             break;
                         case 'y':
                             dsprintf(stderr, "%sList a BundleIdentifier to yoink it's contents%s\n\n", dcolor("yellow"), colorEnd());

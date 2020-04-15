@@ -73,14 +73,14 @@ int open_program(AMDeviceRef d, NSDictionary *options) {
         [dictionaryEnvironment setObject:object forKey:key];
     }
     
-    NSDictionary *launchOptions = @{@"UIApplicationLaunchOptionsURLKey" : @"https://www.google.com"};
-    PFTProcess *process = [[PFTProcess alloc] initWithDevice:device path:path bundleIdentifier:bundleID arguments:arguments environment:dictionaryEnvironment launchOptions:launchOptions];
+    PFTProcess *process = [[PFTProcess alloc] initWithDevice:device path:path bundleIdentifier:bundleID arguments:arguments environment:dictionaryEnvironment launchOptions:nil];
     
     NSError *error = nil;
-    [device launchProcess:process suspended:NO error:&error];
+    int pid = [device launchProcess:process suspended:NO error:&error];
     if (error) {
         printf("%s\n", error.localizedDescription.UTF8String);
     }
 
+    printf("pid: %d\n", pid);
     return 0;
 }

@@ -73,6 +73,9 @@ typedef struct {
     /// springboardservices, i.e. restore, asshole
     NSString *springboardCommand;
     
+    /// For -n, the payload path is specified after the bundle ID
+    NSString *pushNotificationPayloadPath;
+    
     /// Supress output
     BOOL quiet;
 
