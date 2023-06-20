@@ -183,7 +183,7 @@ void fdvendor_callback(CFSocketRef s, CFSocketCallBackType callbackType, CFDataR
 ********************************************************************************/
 
 static pid_t childPID = 0;
-void Kill_The_Spare__AVADA_KEDAVRA() {
+void Kill_The_Spare__AVADA_KEDAVRA(void) {
     if (childPID) {
         dsdebug("Killing the child PID %d\n", childPID);
         kill(childPID, SIGKILL);

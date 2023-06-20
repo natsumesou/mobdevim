@@ -9,16 +9,9 @@
 #import "open_program.h"
 #import "../misc/InstrumentsPlugin.h"
 #import "../Debug Application/debug_application.h"
+#import "ios_instruments_client.h"
 #import <dlfcn.h>
 
-static void preload() {
-    XRUniqueIssueAccumulator *responder = [XRUniqueIssueAccumulator new];
-    XRPackageConflictErrorAccumulator *accumulator = [[XRPackageConflictErrorAccumulator alloc] initWithNextResponder:responder];
-    [DVTDeveloperPaths initializeApplicationDirectoryName:@"Instruments"];
-    
-    void (*PFTLoadPlugin)(id, id) = dlsym(RTLD_DEFAULT, "PFTLoadPlugins");
-    PFTLoadPlugin(nil, accumulator);
-}
 
 int open_program(AMDeviceRef d, NSDictionary *options) {
    
@@ -47,12 +40,12 @@ int open_program(AMDeviceRef d, NSDictionary *options) {
         return 1;
     }
     
-    preload();
-    XRMobileDevice* device  = [[NSClassFromString(@"XRMobileDevice") alloc] initWithDevice:d];
-    if (!device) {
-        dsprintf(stderr, "couldn't maintain a device connection\n");
-        return 1;
-    }
+//    preload();
+//    XRMobileDevice* device  = [[NSClassFromString(@"XRMobileDevice") alloc] initWithDevice:d];
+//    if (!device) {
+//        dsprintf(stderr, "couldn't maintain a device connection\n");
+//        return 1;
+//    }
     // ___lldb_unnamed_symbol79$$XRMobileDeviceDiscoveryPlugIn
     // AMDCopyArrayOfDevicesMatchingQuery
 
@@ -73,13 +66,19 @@ int open_program(AMDeviceRef d, NSDictionary *options) {
         [dictionaryEnvironment setObject:object forKey:key];
     }
     
-    PFTProcess *process = [[PFTProcess alloc] initWithDevice:device path:path bundleIdentifier:bundleID arguments:arguments environment:dictionaryEnvironment launchOptions:nil];
     
-    NSError *error = nil;
-    [device launchProcess:process suspended:NO error:&error];
-    if (error) {
-        printf("%s\n", error.localizedDescription.UTF8String);
-    }
+    am_device_service_connection* instruments_connection = (am_device_service_connection*) connect_to_instruments_server(d);
+
+    launch_application(instruments_connection, bundleID.UTF8String, (__bridge CFArrayRef)[arguments componentsSeparatedByString:@" "], (__bridge CFDictionaryRef)dictionaryEnvironment);
+//    launch_application(instruments_connection, NULL, NULL, NULL);
+//
+//    PFTProcess *process = [[PFTProcess alloc] initWithDevice:device path:path bundleIdentifier:bundleID arguments:arguments environment:dictionaryEnvironment launchOptions:nil];
+//
+//    NSError *error = nil;
+//    [device launchProcess:process suspended:NO error:&error];
+//    if (error) {
+//        printf("%s\n", error.localizedDescription.UTF8String);
+//    }
 
     return 0;
 }

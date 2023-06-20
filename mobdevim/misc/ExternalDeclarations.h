@@ -29,6 +29,11 @@
 #define ExternalDeclarations_h
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef struct _AMDevice {
   void *unknown0[4];
   CFStringRef deviceID;
@@ -49,30 +54,32 @@ typedef struct _AMDevice {
 
 
 #pragma mark - typedef
-typedef struct AMDevice *AMDeviceRef;
-typedef struct _AMDServiceConnection {} AMDServiceConnection;
-typedef struct AMDServiceConnection *AMDServiceConnectionRef;
-typedef struct _AFCConnection  {} AFCConnection;
-typedef AFCConnection *AFCConnectionRef;
+typedef  AMDevice *AMDeviceRef;
+typedef struct _AMDServiceConnection AMDServiceConnection;
+typedef AMDServiceConnection *AMDServiceConnectionRef;
+typedef struct _AFCConnection  *AFCConnectionRef;
 
 typedef enum : int {
+    DeviceConnectionStatusError = 0,
   DeviceConnectionStatusConnect = 1,
   DeviceConnectionStatusDisconnected = 2,
-  DeviceConnectionStatusUnsubscribed = 3,
+  DeviceConnectionStatusStopped = 3,
+    DeviceConnectionPairRequest = 4
 } DeviceConnectionStatus;
 
 
+typedef struct am_device_service_connection *DeviceNotificationRef;
 
 typedef struct AMDeviceCallBackDevice {
     AMDeviceRef device;
     DeviceConnectionStatus status;
-    int dunno1;
-    void *dunno2;
-    int dunno[4];
+    DeviceNotificationRef notification;
+//    int dunno1;
+//    void *ref;
+    uintptr_t dunno[2];
     
     CFDictionaryRef connectionDeets;
 } AMDeviceCallBackDevice;
-//typedef AMDeviceList *AMDeviceListRef;
 
 typedef struct _AFCIterator {
   char boring[0x10];
@@ -80,8 +87,7 @@ typedef struct _AFCIterator {
 } AFCIterator;
 typedef AFCIterator *AFCIteratorRef;
 
-typedef struct _AFCFileInfo {} AFCFileInfo;
-typedef AFCFileInfo *AFCFileInfoRef;
+typedef struct _AFCFileInfo *AFCFileInfoRef;
 
 typedef struct _AFCFileDescriptor {
   char boring[0x24];
@@ -96,6 +102,9 @@ typedef enum : NSUInteger {
     InterfaceTypeWIFI = 2,
 } InterfaceType;
 
+    
+typedef uint32_t amd_err;
+#define AMD_SUCCESS 0
 
 
 //*****************************************************************************/
@@ -103,51 +112,66 @@ typedef enum : NSUInteger {
 //*****************************************************************************/
 
 // file i/o functions (thank you Samantha Marshall for these)
-mach_error_t AFCFileRefOpen(AFCConnectionRef, const char *path, uint64_t mode,AFCFileDescriptorRef*);
-mach_error_t AFCFileRefClose(AFCConnectionRef, AFCFileDescriptorRef);
-mach_error_t AFCFileRefSeek(AFCConnectionRef,  AFCFileDescriptorRef, int64_t offset, uint64_t mode);
-mach_error_t AFCFileRefTell(AFCConnectionRef, AFCFileDescriptorRef, uint64_t *offset);
+    amd_err AFCFileRefOpen(AFCConnectionRef, const char *path, uint64_t mode,AFCFileDescriptorRef*);
+    amd_err AFCFileRefClose(AFCConnectionRef, AFCFileDescriptorRef);
+    amd_err AFCFileRefSeek(AFCConnectionRef,  AFCFileDescriptorRef, int64_t offset, uint64_t mode);
+    amd_err AFCFileRefTell(AFCConnectionRef, AFCFileDescriptorRef, uint64_t *offset);
 size_t AFCFileRefRead(AFCConnectionRef,AFCFileDescriptorRef,void **buf,size_t *len);
-mach_error_t AFCFileRefSetFileSize(AFCConnectionRef,AFCFileDescriptorRef, uint64_t offset);
-mach_error_t AFCFileRefWrite(AFCConnectionRef,AFCFileDescriptorRef ref, const void *buf, uint32_t len);
+    amd_err AFCFileRefSetFileSize(AFCConnectionRef,AFCFileDescriptorRef, uint64_t offset);
+    amd_err AFCFileRefWrite(AFCConnectionRef,AFCFileDescriptorRef ref, const void *buf, uint32_t len);
 
-mach_error_t AFCDirectoryOpen(AFCConnectionRef, const char *, AFCIteratorRef*);
-mach_error_t AFCDirectoryRead(AFCConnectionRef, AFCIteratorRef, void *);
-mach_error_t AFCDirectoryClose(AFCConnectionRef, AFCIteratorRef);
-mach_error_t AFCDirectoryCreate(AFCConnectionRef, const char *);
-mach_error_t AFCRemovePath(AFCConnectionRef, const char *); 
+    amd_err AFCDirectoryOpen(AFCConnectionRef, const char *, AFCIteratorRef*);
+    amd_err AFCDirectoryRead(AFCConnectionRef, AFCIteratorRef, void *);
+    amd_err AFCDirectoryClose(AFCConnectionRef, AFCIteratorRef);
+    amd_err AFCDirectoryCreate(AFCConnectionRef, const char *);
+    amd_err AFCRemovePath(AFCConnectionRef, const char *);
 
-mach_error_t AFCFileInfoOpen(AFCConnectionRef, const char *, AFCIteratorRef*);
-mach_error_t AFCKeyValueRead(AFCIteratorRef,  char **key,  char **val);
-mach_error_t AFCKeyValueClose(AFCIteratorRef);
+    amd_err AFCFileInfoOpen(AFCConnectionRef, const char *, AFCIteratorRef*);
+    amd_err AFCKeyValueRead(AFCIteratorRef,  char **key,  char **val);
+    amd_err AFCKeyValueClose(AFCIteratorRef);
+
+//*****************************************************************************/
+#pragma mark - AMDevice.* Functions, Main interaction w device
+//*****************************************************************************/
 
 
-mach_error_t AMDeviceNotificationSubscribe(void (*)(AMDeviceCallBackDevice, int), int, int, int, void *);
-mach_error_t AMDeviceNotificationSubscribeWithOptions(void (*)(AMDeviceCallBackDevice*, int), int, InterfaceType, int, void *, NSDictionary *);
-mach_error_t AMDeviceConnect(AMDeviceRef);
-mach_error_t AMDeviceDisconnect(AMDeviceRef);
-mach_error_t AMDeviceIsPaired(AMDeviceCallBackDevice*);
+    amd_err AMDeviceNotificationSubscribe(void (*)(AMDeviceCallBackDevice, int), int, int, int, void *);
+    typedef void (*AMDeviceNotificationCallback)(AMDeviceCallBackDevice*, void* dunno);
+    typedef void (*AMDevicePairAnotherCallback)(NSString * dunno, AMDeviceRef device);
+    typedef void (^AMDevicePairRequestCallback)(AMDeviceRef, uint64_t options, uint64_t dunno,  AMDevicePairAnotherCallback anothercallback);
+    amd_err AMDeviceNotificationSubscribeWithOptions(AMDeviceNotificationCallback, int, InterfaceType, void*, void *, NSDictionary *);
+    amd_err AMDeviceConnect(AMDeviceRef);
+    amd_err AMDeviceDisconnect(AMDeviceRef);
+    amd_err AMDeviceIsPaired(AMDeviceRef);
+    DEPRECATED_MSG_ATTRIBUTE("Dont use, looks like they are using AMDevicePairWithCallback now")
+    amd_err AMDevicePair(AMDeviceRef);
+    
+    amd_err AMDevicePairWithCallback(AMDeviceRef device, AMDevicePairRequestCallback callback, NSDictionary* option, NSDictionary **outDict);
+    
+    amd_err AMDeviceUnpair(AMDeviceRef device);
 
 InterfaceType AMDeviceGetInterfaceType(AMDeviceRef);
 char* InterfaceTypeString(InterfaceType type);
-mach_error_t AMDeviceValidatePairing(AMDeviceRef);
-mach_error_t AMDeviceStartSession(AMDeviceRef);
-mach_error_t AMDeviceStopSession(AMDeviceRef);
-mach_error_t AMDeviceNotificationUnsubscribe(AMDeviceCallBackDevice*);
+    amd_err AMDeviceValidatePairing(AMDeviceRef);
+    amd_err AMDeviceStartSession(AMDeviceRef);
+    amd_err AMDeviceStopSession(AMDeviceRef);
+    amd_err AMDeviceNotificationUnsubscribe(DeviceNotificationRef);
 id AMDServiceConnectionGetSecureIOContext(AMDServiceConnectionRef);
-
-mach_error_t AMDeviceSecureTransferPath(int, AMDeviceRef, NSURL*, NSDictionary *, void *, int);
-mach_error_t AMDeviceSecureInstallApplication(int, AMDeviceRef, NSURL*, NSDictionary*, void *, int);
-mach_error_t AMDeviceSecureUninstallApplication(AMDServiceConnectionRef connection, void * dunno, NSString *bundleIdentifier, NSDictionary *params, void (*installCallback)(NSDictionary*, void *));
-mach_error_t AMDeviceSecureInstallApplicationBundle(AMDeviceRef, NSURL *path, NSDictionary *params, void (*installCallback)(NSDictionary*, void *));
-
-mach_error_t AMDeviceStartHouseArrestService(AMDeviceRef, id, id, int *, void *);
-
-mach_error_t AMDeviceLookupApplications(AMDeviceRef, id, NSDictionary **);
-mach_error_t AMDeviceSecureStartService(AMDeviceRef, NSString *, NSDictionary *, void *);
-mach_error_t AMDeviceStartServiceWithOptions(AMDeviceRef, NSString *, NSDictionary *, int *socket);
-mach_error_t AMDeviceSecureArchiveApplication(AMDServiceConnectionRef, AMDeviceRef, NSString *, NSDictionary *, void * /* */, id);
-mach_error_t AMDeviceGetTypeID(AMDeviceRef);
+    amd_err AMDeviceSecureTransferPath(int, AMDeviceRef, NSURL*, NSDictionary *, void *, int);
+    amd_err AMDeviceSecureInstallApplication(int, AMDeviceRef, NSURL*, NSDictionary*, void *, int);
+    amd_err AMDeviceSecureUninstallApplication(AMDServiceConnectionRef connection, void * dunno, NSString *bundleIdentifier, NSDictionary *params, void (*installCallback)(NSDictionary*, void *));
+    amd_err AMDeviceSecureInstallApplicationBundle(AMDeviceRef, NSURL *path, NSDictionary *params, void (*installCallback)(NSDictionary*, void *));
+    
+    DEPRECATED_MSG_ATTRIBUTE("Dont use, looks like they are using AMDeviceCreateHouseArrestService now")
+    amd_err AMDeviceStartHouseArrestService(AMDeviceRef, NSString *ident, NSDictionary *options, int *, void *);
+    amd_err AMDeviceCreateHouseArrestService(AMDeviceRef device, NSString * ident, NSDictionary* options, AFCConnectionRef *connection);
+    amd_err AMDeviceLookupApplications(AMDeviceRef, id, NSDictionary **);
+    amd_err AMDeviceSecureStartService(AMDeviceRef, NSString *, NSDictionary *, void *);
+    
+    DEPRECATED_MSG_ATTRIBUTE("Use AMDeviceSecureStartService instead")
+    amd_err AMDeviceStartServiceWithOptions(AMDeviceRef, NSString *, NSDictionary *, int *socket);
+    amd_err AMDeviceSecureArchiveApplication(AMDServiceConnectionRef, AMDeviceRef, NSString *, NSDictionary *, void * /* */, id);
+    amd_err AMDeviceGetTypeID(AMDeviceRef);
 
 
  NSArray* AMDCreateDeviceList(void);
@@ -155,34 +179,56 @@ mach_error_t AMDeviceGetTypeID(AMDeviceRef);
 // device/file information functions
 //afc_error_t AFCDeviceInfoOpen(afc_connection conn, afc_dictionary *info);
 
-mach_error_t AMDeviceSecureRemoveApplicationArchive(AMDServiceConnectionRef, AMDeviceRef, NSString *, void *, void *, void *);
+    amd_err AMDeviceSecureRemoveApplicationArchive(AMDServiceConnectionRef, AMDeviceRef, NSString *, void *, void *, void *);
+    
+NSString *AMDeviceGetName(AMDeviceRef);
+    
+//*****************************************************************************/
+#pragma mark - AMDService.* connects to a lockdownd service
+//*****************************************************************************/
+
+    /*
+     ObserveNotification
+         "com.apple.mobile.lockdown.activation_state";
+         "com.apple.mobile.lockdown.developer_status_changed"
+         "com.apple.springboard.deviceWillShutDown"
+     
+     */
+    amd_err AMDServiceConnectionSendMessage(AMDServiceConnectionRef serviceConnection, NSDictionary* message, CFPropertyListFormat format);
+
+    amd_err AMDServiceConnectionSend(AMDServiceConnectionRef, void *content, size_t length);
+    NSArray* AMDCreateDeviceList(void);
+
+    int AMDServiceConnectionGetSocket(AMDServiceConnectionRef);
+    long AMDServiceConnectionReceive(AMDServiceConnectionRef, void *, long);
+    amd_err AMDServiceConnectionReceiveMessage(AMDServiceConnectionRef serviceConnection, CFPropertyListRef, CFPropertyListFormat*);
+    void AMDServiceConnectionInvalidate(AMDServiceConnectionRef);
+    
+//#define HANDLE_ERR(X)  HANDLE_ERR__((X), ({}))
+#define DEBUG_SHIT()
+#define HANDLE_ERR(X) { kern_return_t ___kr = (X); if (___kr) {fprintf(stderr, "err: %s\n\t%s:%d %s (%x)\n\n", __FILE__, __PRETTY_FUNCTION__, __LINE__, AMDErrorString(___kr), ___kr); DEBUG_SHIT(); exit(6);} }
+#define HANDLE_ERR_RET(X) { amd_err ___kr = (X); if (___kr) {fprintf(stderr, "err: %s\n\t%s:%d %s (%x)\n\n", __FILE__, __PRETTY_FUNCTION__, __LINE__, AMDErrorString(___kr), ___kr); DEBUG_SHIT(); return ___kr;} }
+    
+//*****************************************************************************/
+#pragma mark - AFC Apple File Conduit file transfer stuff
+//*****************************************************************************/
+
+    
 mach_error_t AFCConnectionOpen(AMDServiceConnectionRef, int, AFCConnectionRef * /*AFCConnection */);
 
 mach_error_t AFCConnectionClose(AFCConnectionRef);
-/*
- ObserveNotification
-     "com.apple.mobile.lockdown.activation_state";
-     "com.apple.mobile.lockdown.developer_status_changed"
-     "com.apple.springboard.deviceWillShutDown"
- 
- */
-mach_error_t AMDServiceConnectionSendMessage(AMDServiceConnectionRef serviceConnection, NSDictionary* message, CFPropertyListFormat format);
 
-mach_error_t AMDServiceConnectionSend(AMDServiceConnectionRef, void *content, size_t length);
-NSArray* AMDCreateDeviceList(void);
-NSString *AMDeviceGetName(AMDeviceRef);
-int AMDServiceConnectionGetSocket(AMDServiceConnectionRef);
-long AMDServiceConnectionReceive(AMDServiceConnectionRef, void *, long);
-mach_error_t AMDServiceConnectionReceiveMessage(AMDServiceConnectionRef serviceConnection, CFPropertyListRef, CFPropertyListFormat*);
-void AMDServiceConnectionInvalidate(AMDServiceConnectionRef);
 id _AMDeviceCopyInstalledAppInfo(AMDeviceRef, char *);
 id AMDeviceCopyValue(AMDeviceRef, void *, NSString *, unsigned long int /* device id */);
+id AMDeviceSetValue(AMDeviceRef,  NSString *, NSString *, id newValue); /* device id */
 NSString *AMDeviceCopyDeviceIdentifier(AMDeviceRef);
 void *AMDeviceCopyDeviceLocation(AMDeviceRef);
 NSDictionary* MISProfileCopyPayload(id);
 NSArray *AMDeviceCopyProvisioningProfiles(AMDeviceRef);
 
 
+mach_error_t AMDeviceMountImage(AMDeviceRef device, NSString* imagePath, NSDictionary *options, void (*callback)(NSDictionary *status, id deviceToken), id context, NSError **error);
+mach_error_t AMDeviceUnmountImage(id device, NSString *imagePath);
 
 AFCConnectionRef AFCConnectionCreate(int unknown, int socket, int unknown2, int unknown3, void *context);
 
@@ -190,6 +236,30 @@ AFCConnectionRef AFCConnectionCreate(int unknown, int socket, int unknown2, int 
 /// Queries information about the device see below for examples
 extern id AMDeviceCopyValueWithError(AMDeviceRef ref, NSString * domain, NSString * value, NSError **err);
 
+/// Wirelessly connect to devices
+extern long AMDeviceSetWirelessBuddyFlags(AMDeviceRef d, long flags);
+extern long AMDeviceGetWirelessBuddyFlags(AMDeviceRef d, long* flags);
+
+extern char* AMDErrorString(long);
+
+long AMDeviceCreateWakeupToken(AMDeviceRef d, NSDictionary *, NSDictionary**, NSError**);
+long AMDeviceWakeupUsingToken(NSDictionary *, AMDeviceRef d);
+
+
+
+// opaque structures
+struct am_device;
+struct am_device_notification;
+struct am_device_service_connection;
+
+extern struct am_device_service_connection *GDeviceConnection;
+extern void* connection_callback;
+AMDServiceConnectionRef connect_to_instruments_server(AMDeviceRef d);
+
+#define AMDSessionActiveError 0xe800001d
+#ifdef __cplusplus
+}
+#endif
 /* AMDeviceCopyValueWithError (domain, values) examples
  ChipID / 32734
  DeviceName / Bobs’s iPhone

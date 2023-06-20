@@ -13,7 +13,7 @@
 
 
 //NSString * const kSBSFileBundleID = @"com.selander.springboard_services.bundleid";
-
+NSString * const kProcessKillPID = @"com.selander.process.kill";
 NSString * const kSBCommand = @"com.selander.springboard_services.command";
 
 /// Max file size found in AFCFileRefRead

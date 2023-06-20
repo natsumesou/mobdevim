@@ -10,6 +10,10 @@
 #import "NSArray+Output.h"
 #import "ExternalDeclarations.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// Version String
 extern const char *version_string;
 
@@ -34,13 +38,26 @@ extern const char *usage;
  
  You must use the *colorEnd* function to stop using that color
  */
-char* dcolor(char *color);
+char* dcolor(const char *color);
 
 /// Ends the color option if the DSCOLOR env var is set
 char *colorEnd(void);
 
 /// My printf
 void dsprintf(FILE * f, const char *format, ...);
+    
+#define  derror(STR_, ...) \
+{\
+    if (!global_options.quiet) {\
+        if (global_options.verbose) {\
+            fprintf(stderr, "err: [%s:%d] " STR_,  __FILE__, __LINE__, ##__VA_ARGS__);\
+        } else {\
+            fprintf(stderr,  STR_, ##__VA_ARGS__);\
+        } \
+    }\
+}
+    
+void dprint(const char *format, ...);
 
 /// Enabled by DSDEBUG env var
 void dsdebug(const char *format, ...);
@@ -52,7 +69,7 @@ void ErrorMessageThenDie(const char *message, ...);
 void print_manpage(void);
 
 /// Makes sure the optarg is valid, exit(1) if false
-void assertArg(void);
+void assert_opt_arg(void);
 
 
 ///
@@ -76,11 +93,29 @@ typedef struct {
     /// For -n, the payload path is specified after the bundle ID
     NSString *pushNotificationPayloadPath;
     
+    NSString *ddiInstallPath;
+    NSString *ddiSignatureInstallPath;
+    
     /// Supress output
     BOOL quiet;
 
     /// Used for hunting for a particular device and connection
     DeviceSelection deviceSelection;
+    
+    NSString *expectedPartialUDID;
+    
+    BOOL choose_specific_device;
+    int verbose;
 } option_params;
 
 extern option_params global_options;
+
+void String4Interface(InterfaceType interface, char **out_str);
+BOOL isWIFIConnected(AMDeviceRef d, NSString *uuid);
+
+NSString *GetHostUUID(void);
+
+
+#ifdef __cplusplus
+}
+#endif

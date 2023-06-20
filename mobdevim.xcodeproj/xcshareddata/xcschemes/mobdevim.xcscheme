@@ -62,7 +62,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-d com.godaddy.Voice"
+            argument = "-o com.whova.event"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -74,15 +74,27 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
+            argument = "-Uo com.apple.news -A &quot;-simulate_app_obsolescence YES&quot;"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-p"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-w F0A160FE-9444-4D50-8F4D-312771409850&#10;-w 072F950A-878D-4D8C-8ACC-60AA145B485F"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
             argument = "-D /Users/lolgrep/Library/Developer/Xcode/DerivedData/WOOT-aycvdznsxaqhakfhxltlcdwobjtv/Build/Products/Debug-iphoneos/WOOT.app -V AppleLanguages=(es)"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "-n com.atebits.Tweetie2 /tmp/apns_payload.plist"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-o selander.iOSTest"
+            argument = "-o com.apple.mobilesafari"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -90,7 +102,27 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "-W "
+            argument = "  -F 00080  -l"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-f"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-o com.apple.Music"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-P"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-I /Users/lolgrep/Downloads/DeveloperDiskImage.dmg /Users/lolgrep/Downloads/DeveloperDiskImage.dmg.signature"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "-F000E51183ED8002E  -l"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
@@ -140,7 +172,7 @@
          <EnvironmentVariable
             key = "DTProcessControlServiceLog"
             value = "1"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
          <EnvironmentVariable
             key = "OS_ACTIVITY_DT_MODE"
@@ -150,16 +182,9 @@
          <EnvironmentVariable
             key = "DSDEBUG"
             value = "1"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </EnvironmentVariable>
       </EnvironmentVariables>
-      <AdditionalOptions>
-         <AdditionalOption
-            key = "MallocStackLogging"
-            value = ""
-            isEnabled = "YES">
-         </AdditionalOption>
-      </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

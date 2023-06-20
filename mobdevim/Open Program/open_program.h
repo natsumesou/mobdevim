@@ -11,4 +11,10 @@
 #import "helpers.h"
 
 /// Opens program
+#ifdef __cplusplus
+extern "C" {
+#endif
 int open_program(AMDeviceRef d, NSDictionary *options);
+#ifdef __cplusplus
+}
+#endif

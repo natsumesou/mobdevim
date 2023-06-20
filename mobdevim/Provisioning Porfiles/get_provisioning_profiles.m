@@ -18,6 +18,11 @@ int get_provisioning_profiles(AMDeviceRef d, NSDictionary *options) {
     
     BOOL copyDeveloperCertificates = [[options objectForKey:kProvisioningProfilesCopyDeveloperCertificates] boolValue];
     NSString* filterProvisioninProfilesThatOnlyFitDevice = [options objectForKey:kProvisioningProfilesFilteredByDevice];
+    for (id a  in profiles) {
+        extern int AMDeviceRemoveProvisioningProfile(AMDeviceRef b, NSString* a);
+        int b =AMDeviceRemoveProvisioningProfile(d, [MISProfileCopyPayload(a) objectForKey:@"UUID"]);
+        printf("%d\n", b);
+    }
     
     NSArray *filteredProfiles = [profiles filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable evaluatedObject, NSDictionary<NSString *,id> * _Nullable bindings) {
         

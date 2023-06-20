@@ -13,7 +13,7 @@
 #import <mach-o/loader.h>
 
 __attribute__((constructor))
-void onLoad() {
+void onLoad(void) {
     if (getenv("DSPLIST")) {
         global_options.quiet = YES;
     }
