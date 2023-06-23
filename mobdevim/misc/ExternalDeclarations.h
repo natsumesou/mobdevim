@@ -55,6 +55,7 @@ typedef struct _AMDevice {
 
 #pragma mark - typedef
 typedef  AMDevice *AMDeviceRef;
+typedef  NSObject* AMDeviceObjc;
 typedef struct _AMDServiceConnection AMDServiceConnection;
 typedef AMDServiceConnection *AMDServiceConnectionRef;
 typedef struct _AFCConnection  *AFCConnectionRef;
@@ -106,7 +107,15 @@ typedef enum : NSUInteger {
 typedef uint32_t amd_err;
 #define AMD_SUCCESS 0
 
+//*****************************************************************************/
+#pragma mark - AMS.* Functions, backup
+//*****************************************************************************/
 
+    typedef int32_t ams_err;
+typedef void (*AMSBackupProgressCallback) (NSString * identifier, int percent, void *context);
+ ams_err AMSInitialize(NSString * backupPath);
+ ams_err AMSBackupWithOptions(NSString* identifier, NSString * deviceUUID, NSDictionary *info, NSDictionary *options, AMSBackupProgressCallback callback, void *context);
+ ams_err AMSCleanup(void);
 //*****************************************************************************/
 #pragma mark - AFC.* Functions, File Coordinator logic (I/O)
 //*****************************************************************************/

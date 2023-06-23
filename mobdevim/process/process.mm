@@ -10,27 +10,10 @@
 #include <time.h>
 #include <utime.h>
 #include <sys/stat.h>
+#import <dlfcn.h>
 
 #import "ios_instruments_client.h"
-
-
-//NSString * const kSBSFileBundleID = @"com.selander.springboard_services.bundleid";
-
-//NSString * const kSBCommand = @"com.selander.springboard_services.command";
-
-//
-//  open_program.m
-//  mobdevim
-//
-//
-//  Copyright © 2020 Selander. All rights reserved.
-//
-
-//#import "open_program.h"
-//#import "../misc/InstrumentsPlugin.h"
-//#import "../Debug Application/debug_application.h"
 #import "process.h"
-#import <dlfcn.h>
 
 extern bool ssl_enabled;
 
@@ -65,14 +48,6 @@ AMDServiceConnectionRef connect_to_instruments_server(AMDeviceRef d) {
     return serviceConnection;
 }
 
-//static void preload() {
-//    XRUniqueIssueAccumulator *responder = [XRUniqueIssueAccumulator new];
-//    XRPackageConflictErrorAccumulator *accumulator = [[XRPackageConflictErrorAccumulator alloc] initWithNextResponder:responder];
-//    [DVTDeveloperPaths initializeApplicationDirectoryName:@"Instruments"];
-//
-//    void (*PFTLoadPlugin)(id, id) = dlsym(RTLD_DEFAULT, "PFTLoadPlugins");
-//    PFTLoadPlugin(nil, accumulator);
-//}
 int kill_process(AMDeviceRef d, NSDictionary *options) {
     am_device_service_connection *serviceConnection = (am_device_service_connection*)connect_to_instruments_server(d);
     
@@ -90,7 +65,7 @@ int kill_process(AMDeviceRef d, NSDictionary *options) {
     {
         NSArray* pids = get_proclist_matching_name(serviceConnection, killpid);
         for (NSNumber *p in pids) {
-            printf("killing \"s\" %d\n", killpid.UTF8String, p.intValue);
+            printf("killing \"%s\" %d\n", killpid.UTF8String, p.intValue);
             kill(serviceConnection, p.intValue);
         }
     }

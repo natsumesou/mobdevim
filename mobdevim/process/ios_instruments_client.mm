@@ -224,7 +224,7 @@ static bool send_message(
     mheader.cb = sizeof(DTXMessageHeader);
     mheader.fragmentId = 0;
     mheader.fragmentCount = 1;
-    mheader.length = sizeof(pheader) + pheader.totalLength;
+    mheader.length = (uint32_t)(sizeof(pheader) + pheader.totalLength);
     mheader.identifier = id;
     mheader.conversationIndex = 0;
     mheader.channelCode = channel;
@@ -240,8 +240,7 @@ static bool send_message(
     ssize_t nsent = ssl_enabled
     ? MobileDevice.AMDServiceConnectionSend(conn, msg.data(), msglen)
     : write(MobileDevice.AMDServiceConnectionGetSocket(conn), msg.data(), msglen);
-    if ( nsent != msglen )
-    {
+    if ( nsent != msglen ) {
         fprintf(stderr, "Failed to send 0x%lx bytes of message: %s\n", msglen, strerror(errno));
         return false;
     }
@@ -678,9 +677,9 @@ static bool print_applist(am_device_service_connection *conn)
 //            CFDictionaryRef environment_vars
 //            CFDictionaryRef launch_options
 //   returns: CFNumberRef pid
-bool launch_application(am_device_service_connection *conn, const char *_bid, CFArrayRef appargs, CFDictionaryRef env)
+bool launch_application(am_device_service_connection *conn, const char *_bid, NSArray* appargs, NSDictionary* env)
 {
-    int channel = make_channel(conn, CFSTR("com.apple.instruments.server.services.processcontrol"));
+    int channel = make_channel(conn, (__bridge CFStringRef)@"com.apple.instruments.server.services.processcontrol");
     if ( channel < 0 )
         return false;
     
@@ -721,21 +720,18 @@ bool launch_application(am_device_service_connection *conn, const char *_bid, CF
     args.append_obj(appargs);
     args.append_obj(options);
     
-//    CFRelease(v1);
-//    CFRelease(v0);
-//    CFRelease(options);
-//    CFRelease(env);
-//    CFRelease(appargs);
-//    CFRelease(bid);
-//    CFRelease(path);
+    CFRelease(v1);
+    CFRelease(v0);
+    CFRelease(options);
+    CFRelease(bid);
+    CFRelease(path);
     
     CFTypeRef retobj = NULL;
     
     if ( !send_message(conn, channel, CFSTR("launchSuspendedProcessWithDevicePath:bundleIdentifier:environment:arguments:options:"), &args)
         || !recv_message(conn, &retobj, NULL)
-        || retobj == NULL )
-    {
-        fprintf(stderr, "Error: failed to launch %s\n", _bid);
+        || retobj == NULL ) {
+        derror("Error: failed to launch %s\n", _bid);
         return false;
     }
     
@@ -749,7 +745,7 @@ bool launch_application(am_device_service_connection *conn, const char *_bid, CF
     }
     else
     {
-        fprintf(stderr, "failed to retrieve the process ID: %s\n", get_description(retobj).c_str());
+        derror("failed to retrieve the process ID: %s\n", get_description(retobj).c_str());
         ok = false;
     }
     

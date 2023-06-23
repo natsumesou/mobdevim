@@ -57,6 +57,15 @@ void dsprintf(FILE * f, const char *format, ...);
     }\
 }
     
+#define AMDStartService(_D, _S, _C) {\
+    NSDictionary *_inputDict = @{@"InvalidateOnDetach": @YES, @"CloseOnInvalidate" : @YES, @"UnlockEscrowBag": @YES};\
+    HANDLE_ERR_RET(AMDeviceSecureStartService(_D, _S, _inputDict, _C))\
+    if (*_C) {\
+        derror("invalid connection to %s\n", [_S UTF8String]);\
+        return 1;\
+    }\
+}
+    
 void dprint(const char *format, ...);
 
 /// Enabled by DSDEBUG env var

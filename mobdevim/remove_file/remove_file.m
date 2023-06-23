@@ -60,11 +60,7 @@ int remove_file(AMDeviceRef d, NSDictionary *options) {
     
     
     AMDServiceConnectionRef serviceConnection = nil;
-    NSDictionary *inputDict = @{@"CloseOnInvalidate" : @NO, @"UnlockEscrowBag": @YES};
-    AMDeviceSecureStartService(d, @"com.apple.mobile.house_arrest", inputDict, &serviceConnection);
-    if (!serviceConnection) {
-        return EACCES;
-    }
+    AMDStartService(d, @"com.apple.mobile.house_arrest", &serviceConnection);
     
     
     NSDictionary *inputDictionary = @{ @"Command" : @"VendContainer", @"Identifier" : appBundle };

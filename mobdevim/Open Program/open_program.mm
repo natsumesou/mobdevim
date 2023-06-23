@@ -19,8 +19,8 @@ int open_program(AMDeviceRef d, NSDictionary *options) {
     NSDictionary *dict = nil;
     mach_error_t err = AMDeviceLookupApplications(d, @{ @"ReturnAttributes": @YES, @"ShowLaunchProhibitedApps" : @YES }, &dict);
     if (err) {
-        dsprintf(stderr, "Err looking up application, exiting...\n");
-        exit(1);
+        derror("Err looking up application, exiting...\n");
+        return 1;
     }
     
     if (!name) {
@@ -31,12 +31,12 @@ int open_program(AMDeviceRef d, NSDictionary *options) {
     NSDictionary *appParams = [dict objectForKey:name];
     NSString *path = appParams[@"Path"];
     if (!path) {
-        dsprintf(stderr, "couldn't get the path\n");
+        derror("couldn't get the path for app %s\n", name.UTF8String);
         return 1;
     }
     NSString *bundleID = appParams[@"CFBundleIdentifier"];
     if (!bundleID) {
-        dsprintf(stderr, "couldn't get the bundleID\n");
+        derror("couldn't get the bundleID\n");
         return 1;
     }
     
@@ -50,7 +50,7 @@ int open_program(AMDeviceRef d, NSDictionary *options) {
     // AMDCopyArrayOfDevicesMatchingQuery
 
 //    NSString *arguments = @"-NSAccentuateLocalizedStrings YES";
-//    NSDictionary *environment = @{};
+//    NSDictionary *environme   nt = @{};
     NSString *arguments = global_options.programArguments;
     NSArray *environment = options[kProcessEnvVars];
     
@@ -69,7 +69,8 @@ int open_program(AMDeviceRef d, NSDictionary *options) {
     
     am_device_service_connection* instruments_connection = (am_device_service_connection*) connect_to_instruments_server(d);
 
-    launch_application(instruments_connection, bundleID.UTF8String, (__bridge CFArrayRef)[arguments componentsSeparatedByString:@" "], (__bridge CFDictionaryRef)dictionaryEnvironment);
+    launch_application(instruments_connection, bundleID.UTF8String, [arguments componentsSeparatedByString:@" "], dictionaryEnvironment);
+    
 //    launch_application(instruments_connection, NULL, NULL, NULL);
 //
 //    PFTProcess *process = [[PFTProcess alloc] initWithDevice:device path:path bundleIdentifier:bundleID arguments:arguments environment:dictionaryEnvironment launchOptions:nil];

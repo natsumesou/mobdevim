@@ -43,7 +43,7 @@ public:
 };
 
 bool print_proclist(am_device_service_connection *conn);
-bool launch_application(am_device_service_connection *conn, const char *_bid, CFArrayRef args, CFDictionaryRef env);
+bool launch_application(am_device_service_connection *conn, const char *_bid, NSArray* args, NSDictionary* env);
 bool perform_handshake(am_device_service_connection *conn);
 bool kill(am_device_service_connection *conn, int pid);
 void* load_extern_implementation(void);

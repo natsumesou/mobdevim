@@ -68,6 +68,48 @@ static NSDictionary* handleNoFilepathGiven() {
 }
 
 int notification_proxy(AMDeviceRef d, NSDictionary *options) {
+    NSString *name = global_options.programBundleID;
+    NSDictionary *dict = nil;
+    mach_error_t err = AMDeviceLookupApplications(d, @{ @"ReturnAttributes": @YES, @"ShowLaunchProhibitedApps" : @YES }, &dict);
+    if (err) {
+        derror("Err looking up application, exiting...\n");
+        exit(1);
+    }
+    
+    if (!name) {
+        derror("%sCouldn't find the bundleIdentifier \"%s\", try listing all bundleIDs with %s%smobdevim -l%s\n", dcolor("yellow"), [name UTF8String], colorEnd(), dcolor("bold"), colorEnd());
+        return 1;
+    }
+    
+    NSDictionary *appParams = [dict objectForKey:name];
+    NSString *path = appParams[@"Path"];
+    if (!path) {
+        derror("couldn't get the path for app %s\n", name.UTF8String);
+        return 1;
+    }
+    NSString *bundleID = appParams[@"CFBundleIdentifier"];
+    if (!bundleID) {
+        derror("couldn't get the bundleID\n");
+        return 1;
+    }
+    AMDServiceConnectionRef serviceConnection = nil;
+    AMDStartService(d, @"com.apple.mobile.notification_proxy", &serviceConnection);
+    
+    // gets the max counts for what springboard will allow
+    if (AMDServiceConnectionSendMessage(serviceConnection,  @{ @"command" : @"getHomeScreenIconMetrics" }, kCFPropertyListXMLFormat_v1_0)) {
+        return EACCES;
+    }
+    NSDictionary *metricDict = nil;
+    if (AMDServiceConnectionReceiveMessage(serviceConnection, &metricDict, nil)) {
+        return  EACCES;
+    }
+    
+    
+    
+    return 0;
+}
+    
+int notification_proxy2(AMDeviceRef d, NSDictionary *options) {
 //    if (!getenv("YAYYAY")) {
 //        return 0;
 //    }
@@ -88,7 +130,7 @@ int notification_proxy(AMDeviceRef d, NSDictionary *options) {
     NSDictionary *appParams = [dict objectForKey:name];
     NSString *path = appParams[@"Path"];
     if (!path) {
-        dsprintf(stderr, "couldn't get the path\n");
+        dsprintf(stderr, "couldn't get the path for app %s\n", name.UTF8String);
         return 1;
     }
     NSString *bundleID = appParams[@"CFBundleIdentifier"];

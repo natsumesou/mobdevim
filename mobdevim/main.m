@@ -34,12 +34,12 @@
 #import "install_ddi.h"
 #import "process.h"
 #import "wifie_connect.h"
+#import "backup_device.h"
 #import "process/process.h"
 
 static NSOperation *timeoutOperation = nil; // kill proc if nothing happens in 30 sec
 static NSString *optionalArgument = nil;
 static NSString *requiredArgument = nil;
-static NSString *ideviceName = nil;
 static int return_error = 0;
 struct am_device_service_connection *GDeviceConnection = NULL;
 struct am_device_notification *notify_handle = NULL;
@@ -72,19 +72,23 @@ __unused static void subscription_connect_callback(AMDeviceCallBackDevice *callb
         return;
     }
     
+    NSString *deviceName = nil;
     if (connect_and_handle_device(d) != AMD_SUCCESS) {
         derror("Error connecting to device\n");
         goto end;
     }
     
-    if (actionFunc != &debug_application) {
-        CFRunLoopStop(CFRunLoopGetMain());
-        return;
-    }
+
+    
+//    if (actionFunc != &debug_application) {
+//        CFRunLoopStop(CFRunLoopGetMain());
+//        return;
+//    }
     
 end:
-    AMDeviceNotificationUnsubscribe(callback->notification);
-    AMDeviceStopSession(callback->device);
+    ;
+//    AMDeviceNotificationUnsubscribe(callback->notification);
+//    AMDeviceStopSession(callback->device);
     
 }
 
@@ -102,23 +106,21 @@ static amd_err connect_and_handle_device(AMDeviceRef device) {
             printf("test\n");
             
         }, nil, &outDict));
-//        int er = AMDevicePair(device);
-//        if (er != 0) {
-//            derror("Error: %s\n", AMDErrorString(er));
-//        }
+        derror("device needs to be paired\n");
+        return 1;
     }
     
     NSString *deviceUDID = AMDeviceCopyValue(device, nil, @"DeviceName", 0);
     // Validate Pairing
     if (AMDeviceValidatePairing(device)) {
-        dsprintf(stderr, "The device \"%s\" might not have been paired yet, Trust this computer on the device\n", [deviceUDID UTF8String]);
+        derror("The device \"%s\" might not have been paired yet, Trust this computer on the device\n", [deviceUDID UTF8String]);
         exit(1);
     }
     
     // Start Session
     if ((status = AMDeviceStartSession(device))) {
         if (status != AMDSessionActiveError ) { // we're already active, ignore
-            dsprintf(stderr, "Error: %s %d\n", AMDErrorString(status), status);
+            derror("Error: %s %d\n", AMDErrorString(status), status);
             exit(1);
         }
     }
@@ -126,7 +128,6 @@ static amd_err connect_and_handle_device(AMDeviceRef device) {
     NSString *deviceName = AMDeviceCopyValue(device, nil, @"DeviceName", 0);
     
     if (deviceName) {
-        ideviceName = deviceName;
         char *interface_type = NULL;
         String4Interface( AMDeviceGetInterfaceType(device), &interface_type);
         dprint("%sConnected to: \"%s\" (%s)%s %s%s%s\n", dcolor("cyan"), [deviceName UTF8String], [AMDeviceGetName(device) UTF8String], colorEnd(), dcolor("yellow"), interface_type, colorEnd() );
@@ -207,7 +208,6 @@ void exit_handler(void) {
         AMDeviceNotificationUnsubscribe(GDeviceConnection);
         GDeviceConnection = NULL;
     }
-    
 }
 
 __attribute__((constructor))
@@ -228,7 +228,7 @@ int main(int argc, const char * argv[]) {
     }
     
     getopt_options = [NSMutableDictionary new];
-    while ((option = getopt (argc, (char **)argv, ":QNn:o:w::WA:k:UV:D:d::Rr:fF:qS::s:zd:u:hv::g::l::I:i:Cc::pP::y::L:")) != -1) {
+    while ((option = getopt (argc, (char **)argv, ":QbNn:o:w::WA:k:UV:D:d::Rr:fF:qS::s:zd:u:hv::g::l::I:i:Cc::pP::y::L:")) != -1) {
         switch (option) {
             case 'R': // Use color
                 setenv("DSCOLOR", "1", 1);
@@ -292,6 +292,10 @@ int main(int argc, const char * argv[]) {
                 [getopt_options setObject:arr forKey:kProcessEnvVars];
                 break;
             }
+            case 'b':
+                actionFunc = &backup_device;
+                
+                break;
             case 'r':
                 assert_opt_arg();
                 actionFunc = &remove_file;
@@ -531,35 +535,56 @@ int main(int argc, const char * argv[]) {
         }
     } else {
         
-        
-        AMDeviceNotificationSubscribeWithOptions(subscription_connect_callback, 0, global_options.deviceSelection.type, NULL /* arg passed into callback */, &GDeviceConnection, nil);
-        
-        /* @{@"NotificationOptionSearchForPairedDevices" : @(UseUSBToConnect), @"NotificationOptionSearchForWiFiPairableDevices" : @(UseWifiToConnect) }*/
-        
-        timeoutOperation = [NSBlockOperation blockOperationWithBlock:^{
-            dsprintf(stderr, "Your device might not be connected. You've got about 25 seconds to connect your device before the timeout gets fired or you can start fresh with a ctrl-c. Choose wisely... dun dun\n");
-        }];
-        
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [[NSOperationQueue mainQueue] addOperation:timeoutOperation];
-        });
-        
-        if (disableTimeout) {
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                
-                if (GDeviceConnection) {
-                    AMDeviceNotificationUnsubscribe(GDeviceConnection);
-                    GDeviceConnection = NULL;
-//                    AMDeviceDisconnect(GDeviceConnection);
-                }
-                derror("Script timed out, exiting now.\n");
-                exit(EXIT_FAILURE);
-                
-            });
+        NSArray <AMDeviceObjc>*devices = AMDCreateDeviceList();
+        if (devices.count == 0) {
+            derror("Cannot find any connected devices!\n");
+            exit(5);
         }
-        // we expect to get an exit call before this event happens
-//        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 20, false);
-        CFRunLoopRun();
+        
+        AMDeviceRef preferred = nil;
+        for (AMDeviceObjc d in devices) {
+            if (AMDeviceGetInterfaceType((__bridge AMDeviceRef)(d))== InterfaceTypeUSB) {
+                preferred = (__bridge AMDeviceRef)(d);
+                break;
+            }
+        }
+        if (preferred == nil) {
+            preferred = (__bridge AMDeviceRef)(devices[0]);
+        }
+        
+        amd_err e;
+        if ((e = connect_and_handle_device(preferred) != AMD_SUCCESS)) {
+            HANDLE_ERR(e);
+        }
+        
+//        AMDeviceNotificationSubscribeWithOptions(subscription_connect_callback, 0, global_options.deviceSelection.type, NULL /* arg passed into callback */, &GDeviceConnection, nil);
+//
+//        /* @{@"NotificationOptionSearchForPairedDevices" : @(UseUSBToConnect), @"NotificationOptionSearchForWiFiPairableDevices" : @(UseWifiToConnect) }*/
+//
+//        timeoutOperation = [NSBlockOperation blockOperationWithBlock:^{
+//            dsprintf(stderr, "Your device might not be connected. You've got about 25 seconds to connect your device before the timeout gets fired or you can start fresh with a ctrl-c. Choose wisely... dun dun\n");
+//        }];
+//
+//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//            [[NSOperationQueue mainQueue] addOperation:timeoutOperation];
+//        });
+//
+//        if (disableTimeout) {
+//            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//
+//                if (GDeviceConnection) {
+//                    AMDeviceNotificationUnsubscribe(GDeviceConnection);
+//                    GDeviceConnection = NULL;
+////                    AMDeviceDisconnect(GDeviceConnection);
+//                }
+//                derror("Script timed out, exiting now.\n");
+//                exit(EXIT_FAILURE);
+//
+//            });
+//        }
+//        // we expect to get an exit call before this event happens
+////        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 20, false);
+//        CFRunLoopRun();
         
     }
 }

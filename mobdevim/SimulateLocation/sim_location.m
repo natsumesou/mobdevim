@@ -38,13 +38,8 @@ int sim_location(AMDeviceRef d, NSDictionary *options) {
   }
   
   AMDServiceConnectionRef serviceConnection = nil;
-  NSDictionary *inputDict = @{@"CloseOnInvalidate" : @YES};
-  AMDeviceSecureStartService(d, @"com.apple.dt.simulatelocation", inputDict, &serviceConnection);
-  
-  if (!serviceConnection) {
-    dsprintf(stderr, "Couldn't connect to location simulation service, make sure developer disk is installed!\n");
-    return 1;
-  }
+  AMDStartService(d, @"com.apple.dt.simulatelocation", &serviceConnection);
+
   
   int result = AMDServiceConnectionSend(serviceConnection, &service, 4);
   if (result && service == SERVICE_STOP) {

@@ -27,11 +27,8 @@ int springboard_services(AMDeviceRef d, NSDictionary *options) {
     
     int returnError = 0;
     AMDServiceConnectionRef serviceConnection = nil;
-    NSDictionary *inputDict = @{@"CloseOnInvalidate" : @YES, @"UnlockEscrowBag": @YES};
-    AMDeviceSecureStartService(d, @"com.apple.springboardservices", inputDict, &serviceConnection);
-    if (!serviceConnection) {
-        return EACCES;
-    }
+    AMDStartService(d, @"com.apple.springboardservices", &serviceConnection);
+
     
     
     // gets the max counts for what springboard will allow

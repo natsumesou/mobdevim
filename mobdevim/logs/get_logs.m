@@ -67,11 +67,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     }
     
     AMDServiceConnectionRef serviceConnection = nil;
-    NSDictionary *inputDict = @{@"CloseOnInvalidate" : @YES, @"InvalidateOnDetach": @YES};
-    AMDeviceSecureStartService(d, @"com.apple.crashreportmover", inputDict, &serviceConnection);
-    if (!serviceConnection) {
-        return EACCES;
-    }
+    AMDStartService(d, @"com.apple.crashreportmover", &serviceConnection);
     
     void *info = nil;
     if (AMDServiceConnectionReceive(serviceConnection, &info, 5) <= 4) {
@@ -85,10 +81,7 @@ int get_logs(AMDeviceRef d, NSDictionary *options) {
     serviceConnection = nil;
     
     // if we got the ping, we're all good, start querying crash logs
-    AMDeviceSecureStartService(d, @"com.apple.crashreportcopymobile", inputDict, &serviceConnection);
-    if (!serviceConnection) {
-        return EACCES;
-    }
+    AMDStartService(d, @"com.apple.crashreportcopymobile", &serviceConnection);
     long socket = AMDServiceConnectionGetSocket(serviceConnection);
     //    id context = AMDServiceConnectionGetSecureIOContext(serviceConnection);
     //    if (context) {
