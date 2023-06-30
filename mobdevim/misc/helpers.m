@@ -147,7 +147,12 @@ void print_manpage(void) {
     
     dprint("\t-F\t# List all available connections, or connect to a specific device\n\n");
     dprint("\t\tmobdevim -F       # List all known devices\n");
-    dprint("\t\tmobdevim -F 00234 # Connect to first device that has a UDID containing 00234\n\n");
+    dprint("\t\tmobdevim -F 00234 # Connect to first device that has a UDID containing 00234\n");
+    dprint("\t\tmobdevim -F\\?     # Check for devices\n\n");
+    
+    dprint("\t\tmobdevim -U       # Prefer connection over USB\n\n");
+    
+    dprint("\t\tmobdevim -W       # Prefer connection over WIFI\n\n");
     
     dprint("\t-f\t# Get device info to a connected device (defaults to first USB connection)\n\n");
     
@@ -170,8 +175,10 @@ void print_manpage(void) {
     dprint("\t-s\t# Send content to device (use content from yoink command)\n\n"
            "\t\tmobdevim -s com.example.test /tmp/com.example.test # Send contents in /tmp/com.example.test to app\n\n");
     
-    dprint("\t-i\t# Install application (expects path to bundle)\n\n"
-           "\t\tmobdevim -i /path/to/app/bundle # Install app\n\n");
+    dprint("\t-i\t# Install application (expects path to bundle)\n\n");
+    dprint("\t-I\t# Install a DDI (via Xcode subdir or repos like https://github.com/mspvirajpatel/Xcode_Developer_Disk_Images\n\n"
+           "\t\tmobdevim -I /path/to/ddi.signature /path/to/ddi.dmg # Install DDI\n\n");
+    
     
     dprint("\t-u\t# Uninstall application, expects bundleIdentifier\n\n"
            "\t\tmobdevim -u com.example.test # Uninstall app\n\n");
@@ -179,7 +186,7 @@ void print_manpage(void) {
     dprint("\t-w\t# Connect device to WiFi mode\n\n"
             "\t\tmobdevim -w              # Connect device to wifi for this computer\n"
             "\t\tmobdevim -w uuid_here    # Connect device to wifi for UUID\n"
-            "\t\tmobdevim -w ?            # Display the computer's host uuid\n\n");
+            "\t\tmobdevim -w\\?            # Display the computer's host uuid\n\n");
     
     dprint("\t-S\t# Arrange SpringBoard icons\n\n"
           "\t\tmobdevim -S                # Get current SpringBoard icon layout\n"
@@ -193,18 +200,24 @@ void print_manpage(void) {
     
     dprint("\t-c\t# Dump out the console information. Use ctrl-c to terminate\n\n");
     dprint("\t-C\t# Get developer certificates on device\n\n");
-    dprint("\t-p\t# Display running processes on the device\n\n");
+    dprint("\t-p\t# Display running processes on the device (requiers DDI)\n\n");
+    
+    dprint("\t-k\t# Kill a process (requiers DDI)\n\n");
+    dprint("\t\tTODO");
+    dprint("\t-b\t# Backup device\n\n");
+        
+    
     dprint("\t-P\t# Display developer provisioning profile info\n\n"
            "\t\tmobdevim -P List all installed provisioning profiles\n"
            "\t\tmobdevim -P b68410a1-d825-4b7c-8e5d-0f76a9bde6b9%s Get detailed provisioning UUID info\n\n");
     
-    dprint("\t-o\t# Open application\n\n"
+    dprint("\t-o\t# Open application (requires DDI)\n\n"
           "\t\tmobdevim -o com.reverse.domain # open app\n"
           "\t\tmobdevim -o com.reverse.domain -A \"Some args here\" -V AnEnv=EnValue -V A=B%s # open app with launch args and env vars\n\n");
     
     
     dprint("\t-R\t# Use color\n\n"
-           "\t-q\t# Quiet mode, ideal for limiting output or checking if a value exists based upon return status\n\n");
+           "\t-Q\t# Quiet mode, ideal for limiting output or checking if a value exists based upon return status\n\n");
     
     dprint("Environment variables:\
            \tDSCOLOR - Use color (same as -R)\n\n\

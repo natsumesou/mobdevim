@@ -23,31 +23,30 @@ int install_ddi(AMDeviceRef d, NSDictionary *options) {
 
     if (!global_options.ddiInstallPath || !global_options.ddiSignatureInstallPath)
     {
-        printf("<DDI> <DDI Signature> needed\n");
+        derror("<DDI> <DDI Signature> needed\n");
         exit(1);
     }
     
 
     NSData *dataSIG = [NSData dataWithContentsOfFile:global_options.ddiSignatureInstallPath];
-    if (!dataSIG)
-    {
+    if (!dataSIG) {
         printf("Need a valid signature\n");
         exit(1);
     }
     NSDictionary *op = @{@"ImageSignature" :  dataSIG, @"ImageType": @"Developer", @"DiskImage" : @"/Developer"};
 
-
-     NSError *err = nil;
-     mach_error_t  er = AMDeviceMountImage(d,  global_options.ddiInstallPath, op, image_callback, nil, &err);
+     amd_err er = AMDeviceMountImage(d,  global_options.ddiInstallPath, op, image_callback, nil);
     
     
-    if (err || er != ERR_SUCCESS)
+    if ( er != ERR_SUCCESS)
     {
-        printf("Error (%s) %s\n", AMDErrorString(er), err.description.UTF8String);
-        AMDeviceStopSession(d);
-        AMDeviceDisconnect(d);
+        derror("Error (%s) %d\n", AMDErrorString(er), er);
         return 1;
+    } else {
+        dprint("Image successfully mounted to /Developer\n");
     }
+    AMDeviceStopSession(d);
+    AMDeviceDisconnect(d);
     
 
      

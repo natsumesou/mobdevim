@@ -30,6 +30,7 @@ int get_device_info(AMDeviceRef d, NSDictionary *options) {
   NSString *serialNumber = AMDeviceCopyValue(d, nil, @"SerialNumber", 0);
   NSString *hardwareModel = AMDeviceCopyValue(d, nil, @"HardwareModel", 0);
   
+  NSString *productType = AMDeviceCopyValue(d, nil, @"ProductType", 0);
   
   NSString *bonjour = AMDeviceCopyValue(d, @"com.apple.mobile.wireless_lockdown",
                                         @"BonjourFullServiceName", 0);
@@ -41,7 +42,8 @@ int get_device_info(AMDeviceRef d, NSDictionary *options) {
   char *s = dcolor("gray");
   char *e = colorEnd();
   dsprintf(stdout, "\n%sname%s\t%s\n"
-           "%sUDID%s\t%s\n\n"
+           "%sUDID%s\t%s\n"
+           "%sProduct Type%s\t%s\n\n"
            "%sState%s\t%s\n"
            "%sType%s\t%s\n"
            "%sVersion%s\t%s\n"
@@ -59,6 +61,7 @@ int get_device_info(AMDeviceRef d, NSDictionary *options) {
            "%sBL Addr%s\t%s\n",
            s, e, [deviceName UTF8String],
            s, e, [udid UTF8String],
+           s, e, [productType UTF8String],
            s, e, [activationState UTF8String],
            s, e, [classType UTF8String],
            s, e, [productVersion UTF8String],

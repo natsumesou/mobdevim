@@ -69,8 +69,19 @@ int backup_device(AMDeviceRef d, NSDictionary *options) {
 #endif
     
     NSString *deviceUUID = AMDeviceGetName(d);
+    
+
+    
+    NSString *deviceName = AMDeviceCopyValue(d, nil, @"DeviceName", 0);
+    NSString *productVersion = AMDeviceCopyValue(d, nil, @"ProductVersion", 0);
+    NSString *productType = AMDeviceCopyValue(d, nil, @"ProductType", 0);
+   
+    
     NSDictionary *info =  @{
+        @"Display Name" : deviceName,
+        @"Product Type" : productType,
         @"Target Identifier" : deviceUUID,
+        @"Product Version" : productVersion,
         @"Notes" : @"created by mobdevim",
     };
     
@@ -81,11 +92,12 @@ int backup_device(AMDeviceRef d, NSDictionary *options) {
         goto cleanup;
     }
     
+    
 //    progressbar_update_label(progress, "Extracting...");
 //    progressbar_update(progress, 0);
-    dprint("Enter the device password (present iOS 16+), your device will rumble upon success and will start preparing the backup remotely. You can verify with the rotating circular arrows in the upper left of the device. Once complete, you'll start to see the download transfer progress.\nDo not exit this program\n");
+    dprint("Enter the device password (present iOS 16+), your will start preparing the backup remotely. You can verify with the rotating circular arrows in the upper corner of the device. Once complete, you'll start to see the download transfer progress.\nDo not exit this program\n");
     
-    if ((err = AMSBackupWithOptions(@"-1", deviceUUID, info, @{}, backup_callback, d))) {
+    if ((err = AMSBackupWithOptions(@"-1", deviceUUID, info, @{@"ForceFullBackup" : @YES, @"WillEncrypt": @NO}, backup_callback, d))) {
         derror("err %d\n", err);
         goto cleanup;
     }
@@ -94,7 +106,7 @@ int backup_device(AMDeviceRef d, NSDictionary *options) {
         printf("err %d\n", err);
     } else {
         
-        dprint("backup created @ \"%s/Library/Application Support/MobileSync/Backup/%s\"", [[[NSFileManager defaultManager] homeDirectoryForCurrentUser] path].UTF8String, deviceUUID.UTF8String);
+        dprint("backup created @ \"%s/Library/Application Support/MobileSync/Backup/%s\"\n", [[[NSFileManager defaultManager] homeDirectoryForCurrentUser] path].UTF8String, deviceUUID.UTF8String);
     }
 cleanup:
     

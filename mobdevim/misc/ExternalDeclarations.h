@@ -236,7 +236,7 @@ NSDictionary* MISProfileCopyPayload(id);
 NSArray *AMDeviceCopyProvisioningProfiles(AMDeviceRef);
 
 
-mach_error_t AMDeviceMountImage(AMDeviceRef device, NSString* imagePath, NSDictionary *options, void (*callback)(NSDictionary *status, id deviceToken), id context, NSError **error);
+mach_error_t AMDeviceMountImage(AMDeviceRef device, NSString* imagePath, NSDictionary *options, void (*callback)(NSDictionary *status, id deviceToken), id context);
 mach_error_t AMDeviceUnmountImage(id device, NSString *imagePath);
 
 AFCConnectionRef AFCConnectionCreate(int unknown, int socket, int unknown2, int unknown3, void *context);
